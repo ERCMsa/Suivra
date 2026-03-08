@@ -101,6 +101,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
               <Input type="number" min={0} value={form.min_quantity} onChange={(e) => setForm({ ...form, min_quantity: Number(e.target.value) })} className="rounded-xl mt-1" />
             </div>
           </div>
+          <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>
             <Button className="flex-1 rounded-xl" onClick={handleSubmit}>{t.save}</Button>
