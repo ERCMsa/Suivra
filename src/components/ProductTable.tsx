@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Trash2 } from 'lucide-react';
+import { Search, Trash2, PackageOpen } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -35,69 +35,91 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement }: Produc
   const getProductMovements = (productId: string) => movements.filter((m) => m.product_id === productId);
 
   return (
-    <Card className="shadow-card animate-slide-up border-0">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-lg">قائمة المنتجات</CardTitle>
-          <div className="relative w-full sm:w-72">
+    <Card className="shadow-card border-0 overflow-hidden" style={{ animation: 'slideUp 0.5s ease-out backwards', animationDelay: '0.2s' }}>
+      <CardHeader className="pb-3 border-b border-border/50">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <CardTitle className="text-base font-semibold">قائمة المنتجات</CardTitle>
+          <div className="relative w-full sm:w-64">
             <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="بحث عن منتج..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-10" />
+            <Input
+              placeholder="بحث عن منتج..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pr-9 h-9 text-sm rounded-xl bg-secondary/50 border-0 focus-visible:ring-1"
+            />
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {filteredProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="rounded-full bg-muted p-4"><Search className="h-8 w-8 text-muted-foreground" /></div>
-            <h3 className="mt-4 text-lg font-medium">لا توجد منتجات</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{searchTerm ? 'لم يتم العثور على منتجات تطابق البحث' : 'ابدأ بإضافة منتج جديد'}</p>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="rounded-2xl bg-muted/50 p-5">
+              <PackageOpen className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <h3 className="mt-4 text-sm font-medium text-foreground">لا توجد منتجات</h3>
+            <p className="mt-1 text-xs text-muted-foreground max-w-48">
+              {searchTerm ? 'لم يتم العثور على منتجات تطابق البحث' : 'ابدأ بإضافة منتج جديد'}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="gradient-header hover:bg-primary/90">
-                  <TableHead className="text-center text-primary-foreground font-semibold">التسمية</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">النوع</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">اللون</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">السمك</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">الوحدة</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">الكمية</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">الطول</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">العرض</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">المساحة</TableHead>
-                  <TableHead className="text-center text-primary-foreground font-semibold">الإجراءات</TableHead>
+                <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">التسمية</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">النوع</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">اللون</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">السمك</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">الوحدة</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">الكمية</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">الطول</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">العرض</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">المساحة</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product, index) => (
-                  <TableRow key={product.id} className={index % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
-                    <TableCell className="font-medium text-center">{product.designation}</TableCell>
-                    <TableCell className="text-center">{product.type}</TableCell>
-                    <TableCell className="text-center">{product.color || '-'}</TableCell>
-                    <TableCell className="text-center">{product.thickness} مم</TableCell>
-                    <TableCell className="text-center">{product.unit}</TableCell>
-                    <TableCell className="text-center font-semibold">{product.quantity.toLocaleString('ar-SA')}</TableCell>
-                    <TableCell className="text-center">{product.length} م</TableCell>
-                    <TableCell className="text-center">{product.width} م</TableCell>
-                    <TableCell className="text-center font-semibold text-primary">{product.surface.toLocaleString('ar-SA')} م²</TableCell>
+                  <TableRow
+                    key={product.id}
+                    className="hover:bg-secondary/20 transition-colors border-border/30"
+                  >
+                    <TableCell className="font-medium text-center text-sm">{product.designation}</TableCell>
+                    <TableCell className="text-center text-sm">{product.type}</TableCell>
+                    <TableCell className="text-center text-sm">{product.color || '-'}</TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">{product.thickness} مم</TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">{product.unit}</TableCell>
+                    <TableCell className="text-center">
+                      <span className="inline-flex items-center rounded-lg bg-primary/8 px-2.5 py-0.5 text-sm font-semibold text-primary">
+                        {product.quantity.toLocaleString('ar-SA')}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">{product.length} م</TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">{product.width} م</TableCell>
+                    <TableCell className="text-center">
+                      <span className="inline-flex items-center rounded-lg bg-accent/8 px-2.5 py-0.5 text-sm font-semibold text-accent">
+                        {product.surface.toLocaleString('ar-SA')} م²
+                      </span>
+                    </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center gap-1">
+                      <div className="flex items-center justify-center gap-0.5">
                         <StockMovementForm product={product} type="in" onSubmit={onStockMovement} />
                         <StockMovementForm product={product} type="out" onSubmit={onStockMovement} />
                         <MovementHistory product={product} movements={getProductMovements(product.id)} />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
+                          <AlertDialogContent className="rounded-2xl">
                             <AlertDialogHeader>
                               <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
                               <AlertDialogDescription>سيتم حذف المنتج "{product.designation}" نهائياً مع جميع حركات المخزون المرتبطة به.</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(product.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">حذف</AlertDialogAction>
+                              <AlertDialogCancel className="rounded-xl">إلغاء</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(product.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">حذف</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>

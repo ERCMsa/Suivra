@@ -37,60 +37,65 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2"><Plus className="h-5 w-5" />إضافة منتج جديد</Button>
+        <Button className="gap-2 rounded-xl h-9 text-sm shadow-sm">
+          <Plus className="h-4 w-4" />
+          إضافة منتج جديد
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader><DialogTitle className="text-xl">إضافة منتج جديد</DialogTitle></DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-4 space-y-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="designation">التسمية *</Label>
-              <Input id="designation" value={formData.designation} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} placeholder="مثال: PS Couverture TI70mm" className="text-right" />
+      <DialogContent className="max-w-2xl rounded-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-lg">إضافة منتج جديد</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="mt-3 space-y-5">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="designation" className="text-xs">التسمية *</Label>
+              <Input id="designation" value={formData.designation} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} placeholder="مثال: PS Couverture TI70mm" className="text-right h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="type">النوع *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="type" className="text-xs">النوع *</Label>
               <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                <SelectTrigger><SelectValue placeholder="اختر النوع" /></SelectTrigger>
-                <SelectContent>{PRODUCT_TYPES.map((type) => (<SelectItem key={type} value={type}>{type}</SelectItem>))}</SelectContent>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder="اختر النوع" /></SelectTrigger>
+                <SelectContent className="rounded-xl">{PRODUCT_TYPES.map((type) => (<SelectItem key={type} value={type}>{type}</SelectItem>))}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="color">اللون</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="color" className="text-xs">اللون</Label>
               <Select value={formData.color} onValueChange={(value) => setFormData({ ...formData, color: value })}>
-                <SelectTrigger><SelectValue placeholder="اختر اللون" /></SelectTrigger>
-                <SelectContent>{COLORS.map((color) => (<SelectItem key={color} value={color}>{color}</SelectItem>))}</SelectContent>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder="اختر اللون" /></SelectTrigger>
+                <SelectContent className="rounded-xl">{COLORS.map((color) => (<SelectItem key={color} value={color}>{color}</SelectItem>))}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="thickness">السمك (مم)</Label>
-              <Input id="thickness" type="number" step="0.1" min="0" value={formData.thickness} onChange={(e) => setFormData({ ...formData, thickness: parseFloat(e.target.value) || 0 })} />
+            <div className="space-y-1.5">
+              <Label htmlFor="thickness" className="text-xs">السمك (مم)</Label>
+              <Input id="thickness" type="number" step="0.1" min="0" value={formData.thickness} onChange={(e) => setFormData({ ...formData, thickness: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="unit">الوحدة</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="unit" className="text-xs">الوحدة</Label>
               <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                <SelectTrigger><SelectValue placeholder="اختر الوحدة" /></SelectTrigger>
-                <SelectContent>{UNITS.map((unit) => (<SelectItem key={unit} value={unit}>{unit}</SelectItem>))}</SelectContent>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder="اختر الوحدة" /></SelectTrigger>
+                <SelectContent className="rounded-xl">{UNITS.map((unit) => (<SelectItem key={unit} value={unit}>{unit}</SelectItem>))}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="quantity">الكمية</Label>
-              <Input id="quantity" type="number" min="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })} />
+            <div className="space-y-1.5">
+              <Label htmlFor="quantity" className="text-xs">الكمية</Label>
+              <Input id="quantity" type="number" min="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="length">الطول (م)</Label>
-              <Input id="length" type="number" step="0.01" min="0" value={formData.length} onChange={(e) => setFormData({ ...formData, length: parseFloat(e.target.value) || 0 })} />
+            <div className="space-y-1.5">
+              <Label htmlFor="length" className="text-xs">الطول (م)</Label>
+              <Input id="length" type="number" step="0.01" min="0" value={formData.length} onChange={(e) => setFormData({ ...formData, length: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="width">العرض (م)</Label>
-              <Input id="width" type="number" step="0.01" min="0" value={formData.width} onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })} />
+            <div className="space-y-1.5">
+              <Label htmlFor="width" className="text-xs">العرض (م)</Label>
+              <Input id="width" type="number" step="0.01" min="0" value={formData.width} onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
           </div>
-          <div className="rounded-lg bg-muted p-4">
-            <p className="text-sm text-muted-foreground">المساحة المحسوبة: <span className="font-bold text-foreground">{(formData.quantity * formData.length * formData.width).toFixed(2)} م²</span></p>
+          <div className="rounded-xl bg-primary/5 border border-primary/10 p-3">
+            <p className="text-xs text-muted-foreground">المساحة المحسوبة: <span className="font-bold text-primary">{(formData.quantity * formData.length * formData.width).toFixed(2)} م²</span></p>
           </div>
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>إلغاء</Button>
-            <Button type="submit">إضافة المنتج</Button>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl text-sm">إلغاء</Button>
+            <Button type="submit" className="rounded-xl text-sm">إضافة المنتج</Button>
           </div>
         </form>
       </DialogContent>
