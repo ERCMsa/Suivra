@@ -6,6 +6,7 @@ import ExportButtons from '@/components/ExportButtons';
 import DamageReportForm from '@/components/DamageReportForm';
 import DamageReportList from '@/components/DamageReportList';
 import { useInventory } from '@/hooks/useInventory';
+import { useEmployees } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
@@ -14,6 +15,7 @@ const Index = () => {
     products, movements, damageReports, isLoading, addProduct, deleteProduct,
     addStockMovement, bulkImport, addDamageReport, getTotalStock, getTotalSurface,
   } = useInventory();
+  const { employees } = useEmployees();
 
   if (isLoading) {
     return (
