@@ -1,4 +1,4 @@
-import { Users, Phone, Mail, Trash2, Building2, User } from 'lucide-react';
+import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Employee } from '@/hooks/useEmployees';
 import EditEmployeeForm from './EditEmployeeForm';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface EmployeeListProps {
   employees: Employee[];
@@ -18,6 +19,29 @@ interface EmployeeListProps {
 const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
+
+  const exportEmployeesExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+      const rows = employees.map((e) => ({
+        [t.empFullName]: e.full_name,
+        [t.empId]: e.employee_id || '',
+        [t.empDepartment]: deptLabel(e.department),
+        [t.empPosition]: e.position || '',
+        [t.empPhone]: e.phone || '',
+        [t.empEmail]: e.email || '',
+        [t.empStatus]: statusLabel(e.status),
+        [t.notes]: e.notes || '',
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+      XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success(t.exportSuccess);
+    } catch {
+      toast.error(t.exportFail);
+    }
+  };
 
   const deptLabel = (d: string) => {
     const map: Record<string, string> = {
@@ -75,17 +99,23 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
   return (
     <Card className="rounded-2xl">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-5 w-5 text-primary" />
             {t.employeeList} ({employees.length.toLocaleString('fr-FR')})
           </CardTitle>
-          <Input
-            placeholder={t.searchEmployee}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs rounded-xl text-sm"
-          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={exportEmployeesExcel} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-secondary/50">
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+              {t.exportEmployeesExcel}
+            </Button>
+            <Input
+              placeholder={t.searchEmployee}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="max-w-xs rounded-xl text-sm"
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
