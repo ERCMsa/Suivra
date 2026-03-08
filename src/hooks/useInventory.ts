@@ -5,6 +5,21 @@ import { Tables } from '@/integrations/supabase/types';
 export type Product = Tables<'products'>;
 export type StockMovement = Tables<'stock_movements'>;
 
+export interface DamageReport {
+  id: string;
+  product_id: string;
+  damage_date: string;
+  description: string;
+  severity: string;
+  responsible_person: string | null;
+  responsible_team: string | null;
+  quantity_damaged: number;
+  action_taken: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
 export interface ProductFormData {
   designation: string;
   type: string;
