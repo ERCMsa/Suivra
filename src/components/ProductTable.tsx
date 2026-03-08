@@ -61,10 +61,11 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
             <Table>
               <TableHeader>
                  <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
+                   <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.designation}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.type}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.color}</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.locationLabel}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.unitCol}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.quantity}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.actions}</TableHead>
