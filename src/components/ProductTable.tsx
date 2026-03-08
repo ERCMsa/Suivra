@@ -20,7 +20,7 @@ interface ProductTableProps {
   onRefresh: () => void;
 }
 
-const ProductTable = ({ products, movements, onDelete, onStockMovement }: ProductTableProps) => {
+const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { t } = useLanguage();
 
