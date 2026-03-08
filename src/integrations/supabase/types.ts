@@ -22,6 +22,7 @@ export type Database = {
           damage_date: string
           description: string
           id: string
+          image_url: string | null
           notes: string | null
           product_id: string
           quantity_damaged: number
@@ -36,6 +37,7 @@ export type Database = {
           damage_date?: string
           description: string
           id?: string
+          image_url?: string | null
           notes?: string | null
           product_id: string
           quantity_damaged?: number
@@ -50,6 +52,7 @@ export type Database = {
           damage_date?: string
           description?: string
           id?: string
+          image_url?: string | null
           notes?: string | null
           product_id?: string
           quantity_damaged?: number
@@ -119,7 +122,9 @@ export type Database = {
           created_by: string | null
           designation: string
           id: string
+          image_url: string | null
           length: number
+          min_quantity: number
           quantity: number
           surface: number
           thickness: number
@@ -134,7 +139,9 @@ export type Database = {
           created_by?: string | null
           designation: string
           id?: string
+          image_url?: string | null
           length?: number
+          min_quantity?: number
           quantity?: number
           surface?: number
           thickness?: number
@@ -149,7 +156,9 @@ export type Database = {
           created_by?: string | null
           designation?: string
           id?: string
+          image_url?: string | null
           length?: number
+          min_quantity?: number
           quantity?: number
           surface?: number
           thickness?: number
@@ -227,6 +236,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      withdrawal_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          department: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          reason: string | null
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity?: number
+          reason?: string | null
+          requested_by: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+          requested_by?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_requests_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
