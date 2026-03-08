@@ -6,7 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const Employees = () => {
   const { t } = useLanguage();
-  const { employees, isLoading, addEmployee, deleteEmployee } = useEmployees();
+  const { employees, isLoading, addEmployee, deleteEmployee, fetchEmployees } = useEmployees();
 
   if (isLoading) {
     return (
