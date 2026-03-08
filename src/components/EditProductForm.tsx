@@ -36,6 +36,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
     quantity: product.quantity,
     min_quantity: (product as any).min_quantity || 0,
     image_url: (product as any).image_url || '',
+    location: (product as any).location || 'Magasin',
   });
 
   const handleSubmit = async () => {
