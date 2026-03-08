@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { FileSpreadsheet, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { Product, StockMovement } from '@/hooks/useInventory';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ExportButtonsProps {
   products: Product[];
@@ -9,17 +10,19 @@ interface ExportButtonsProps {
 }
 
 const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
+  const { t } = useLanguage();
+
   const getProductRows = () =>
     products.map((p) => ({
-      التسمية: p.designation,
-      النوع: p.type,
-      اللون: p.color,
-      السماكة: p.thickness,
-      الوحدة: p.unit,
-      الكمية: p.quantity,
-      الطول: p.length,
-      العرض: p.width,
-      المساحة: p.surface,
+      [t.designation]: p.designation,
+      [t.type]: p.type,
+      [t.color]: p.color,
+      [t.thickness]: p.thickness,
+      [t.unitCol]: p.unit,
+      [t.quantity]: p.quantity,
+      [t.length]: p.length,
+      [t.width]: p.width,
+      [t.surface]: p.surface,
     }));
 
   const exportExcel = async () => {
@@ -27,11 +30,11 @@ const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
       const XLSX = await import('xlsx');
       const ws = XLSX.utils.json_to_sheet(getProductRows());
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'المخزون');
+      XLSX.utils.book_append_sheet(wb, ws, 'Stock');
       XLSX.writeFile(wb, `inventory_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      toast.success('تم تصدير الملف بنجاح');
+      toast.success(t.exportSuccess);
     } catch {
-      toast.error('فشل تصدير الملف');
+      toast.error(t.exportFail);
     }
   };
 
@@ -40,7 +43,7 @@ const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'landscape' });
-      const headers = ['المساحة', 'العرض', 'الطول', 'الكمية', 'الوحدة', 'السماكة', 'اللون', 'النوع', 'التسمية'];
+      const headers = [t.surface, t.width, t.length, t.quantity, t.unitCol, t.thickness, t.color, t.type, t.designation];
       const rows = products.map((p) => [p.surface, p.width, p.length, p.quantity, p.unit, p.thickness, p.color, p.type, p.designation]);
       (doc as any).autoTable({
         head: [headers],
@@ -50,9 +53,9 @@ const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
         margin: { top: 20 },
       });
       doc.save(`inventory_${new Date().toISOString().slice(0, 10)}.pdf`);
-      toast.success('تم تصدير الملف بنجاح');
+      toast.success(t.exportSuccess);
     } catch {
-      toast.error('فشل تصدير الملف');
+      toast.error(t.exportFail);
     }
   };
 
