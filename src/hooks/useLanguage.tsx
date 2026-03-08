@@ -223,7 +223,7 @@ const translations = {
   },
 } as const;
 
-type Translations = typeof translations.ar;
+type Translations = Record<keyof typeof translations.ar, string>;
 
 interface LanguageContextType {
   lang: Language;
