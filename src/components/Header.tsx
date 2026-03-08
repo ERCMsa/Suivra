@@ -37,6 +37,25 @@ const Header = () => {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/')}
+            >
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navInventory}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/employees' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/employees')}
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navEmployees}</span>
+            </Button>
+          </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
