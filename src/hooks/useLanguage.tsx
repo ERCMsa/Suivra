@@ -192,6 +192,34 @@ const translations = {
     pdfGeneratedOn: 'تم إنشاء التقرير في',
     pdfPage: 'صفحة',
 
+    // Edit
+    editProduct: 'تعديل المادة',
+    editEmployee: 'تعديل الشخص',
+    editSuccess: 'تم التعديل بنجاح',
+    editFail: 'فشل التعديل',
+    save: 'حفظ',
+    minQuantity: 'الحد الأدنى',
+    lowStockAlert: 'تنبيه مخزون منخفض',
+
+    // Charts
+    chartStockByCategory: 'المخزون حسب الفئة',
+    chartMovementTrend: 'حركة المخزون (7 أيام)',
+    chartDamageBySeverity: 'التلف حسب الخطورة',
+    navDashboard: 'لوحة التحكم',
+
+    // Withdrawal Requests
+    withdrawalRequests: 'طلبات السحب',
+    newRequest: 'طلب جديد',
+    reqRequestedBy: 'مقدم الطلب',
+    reqReason: 'السبب',
+    reqReasonPlaceholder: 'سبب طلب السحب...',
+    reqPending: 'قيد الانتظار',
+    reqApproved: 'موافق عليه',
+    reqRejected: 'مرفوض',
+    reqCreated: 'تم إنشاء الطلب بنجاح',
+    reqCreateFail: 'فشل إنشاء الطلب',
+    noRequests: 'لا توجد طلبات',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
