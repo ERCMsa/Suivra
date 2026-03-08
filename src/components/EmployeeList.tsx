@@ -99,17 +99,23 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
   return (
     <Card className="rounded-2xl">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-5 w-5 text-primary" />
             {t.employeeList} ({employees.length.toLocaleString('fr-FR')})
           </CardTitle>
-          <Input
-            placeholder={t.searchEmployee}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs rounded-xl text-sm"
-          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={exportEmployeesExcel} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-secondary/50">
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+              {t.exportEmployeesExcel}
+            </Button>
+            <Input
+              placeholder={t.searchEmployee}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="max-w-xs rounded-xl text-sm"
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
