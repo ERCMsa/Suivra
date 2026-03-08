@@ -55,9 +55,10 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     // Map new fields into existing DB columns
     onSubmit({
       ...formData,
-      thickness: parseFloat(reference) || 0, // reference stored in thickness
-      length: 0, // location info stored as text in notes context
+      thickness: parseFloat(reference) || 0,
+      length: 0,
       width: 0,
+      image_url: imageUrl || undefined,
     });
     toast.success(t.productAdded);
     setOpen(false);
