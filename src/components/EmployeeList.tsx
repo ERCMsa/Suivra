@@ -20,6 +20,29 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
 
+  const exportEmployeesExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+      const rows = employees.map((e) => ({
+        [t.employeeName]: e.full_name,
+        [t.employeeId]: e.employee_id || '',
+        [t.department]: deptLabel(e.department),
+        [t.position]: e.position || '',
+        [t.phone]: e.phone || '',
+        [t.email]: e.email || '',
+        [t.status]: statusLabel(e.status),
+        [t.notes]: e.notes || '',
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+      XLSX.writeFile(wb, `employees_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success(t.exportSuccess);
+    } catch {
+      toast.error(t.exportFail);
+    }
+  };
+
   const deptLabel = (d: string) => {
     const map: Record<string, string> = {
       production: t.deptProduction,
