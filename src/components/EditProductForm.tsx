@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
+import ImageUpload from './ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +34,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
     unit: product.unit,
     quantity: product.quantity,
     min_quantity: (product as any).min_quantity || 0,
+    image_url: (product as any).image_url || '',
   });
 
   const handleSubmit = async () => {
@@ -44,6 +46,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
       unit: form.unit,
       quantity: form.quantity,
       min_quantity: form.min_quantity,
+      image_url: form.image_url || null,
     } as any).eq('id', product.id);
     if (error) { toast.error(t.editFail); return; }
     toast.success(t.editSuccess);
@@ -98,6 +101,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
               <Input type="number" min={0} value={form.min_quantity} onChange={(e) => setForm({ ...form, min_quantity: Number(e.target.value) })} className="rounded-xl mt-1" />
             </div>
           </div>
+          <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>
             <Button className="flex-1 rounded-xl" onClick={handleSubmit}>{t.save}</Button>

@@ -29,6 +29,7 @@ export interface ProductFormData {
   quantity: number;
   length: number;
   width: number;
+  image_url?: string;
 }
 
 export const useInventory = () => {

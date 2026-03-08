@@ -60,7 +60,8 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
+                 <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.designation}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.type}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.color}</TableHead>
@@ -72,6 +73,13 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
               <TableBody>
                 {filteredProducts.map((product) => (
                   <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30">
+                    <TableCell className="text-center">
+                      {(product as any).image_url ? (
+                        <img src={(product as any).image_url} alt="" className="w-9 h-9 rounded-lg object-cover mx-auto" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-lg bg-muted/50 mx-auto" />
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium text-center text-sm">{product.designation}</TableCell>
                     <TableCell className="text-center text-sm">{product.type}</TableCell>
                     <TableCell className="text-center text-sm">
