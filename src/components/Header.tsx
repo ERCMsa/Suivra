@@ -1,7 +1,8 @@
-import { LogOut, Settings, Globe } from 'lucide-react';
+import { LogOut, Settings, Globe, Package, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,8 @@ import logo from '@/assets/logo.png';
 const Header = () => {
   const { signOut } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <header className="gradient-header shadow-elevated sticky top-0 z-50">
@@ -33,7 +36,27 @@ const Header = () => {
               </p>
             </div>
           </div>
+
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/')}
+            >
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navInventory}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/employees' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/employees')}
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navEmployees}</span>
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
