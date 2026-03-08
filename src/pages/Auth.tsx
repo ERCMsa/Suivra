@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Package } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useLanguage } from '@/hooks/useLanguage';
+import logo from '@/assets/logo.png';
 
 const Auth = () => {
   const { user, isLoading, signIn, signUp } = useAuth();
@@ -91,12 +91,8 @@ const Auth = () => {
       </div>
       <div className="w-full max-w-sm space-y-6 relative z-10">
         <div className="text-center space-y-3">
-          <div className="inline-block relative">
-            <div className="absolute inset-0 rounded-3xl blur-xl opacity-40 bg-gradient-to-br from-blue-500 to-indigo-600" />
-            <div className="relative flex h-16 w-16 mx-auto items-center justify-center rounded-3xl bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-xl">
-              <div className="absolute inset-[1px] rounded-[23px] bg-gradient-to-b from-white/30 to-transparent" />
-              <Package className="h-8 w-8 text-white relative z-10 drop-shadow-sm" strokeWidth={2} />
-            </div>
+          <div className="inline-block">
+            <img src={logo} alt="ERCM SA" className="h-20 w-auto mx-auto drop-shadow-lg" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">{t.inventorySystem}</h1>
