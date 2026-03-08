@@ -54,7 +54,7 @@ const Index = () => {
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} />
-        <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={approveRequest} onReject={rejectRequest} />
+        <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
       </main>

@@ -39,11 +39,58 @@ export const useWithdrawalRequests = () => {
 
   const approveRequest = async (id: string) => {
     const user = (await supabase.auth.getUser()).data.user;
+    
+    // Get request details
+    const { data: request, error: requestError } = await supabase
+      .from('withdrawal_requests')
+      .select('product_id, quantity')
+      .eq('id', id)
+      .single();
+    
+    if (requestError || !request) throw requestError || new Error('Request not found');
+    
+    // Get product details
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('quantity, length, width')
+      .eq('id', request.product_id)
+      .single();
+    
+    if (productError || !product) throw productError || new Error('Product not found');
+    
+    // Calculate new quantity and surface
+    const newQuantity = Math.max(0, product.quantity - request.quantity);
+    const movementSurface = request.quantity * product.length * product.width;
+    const newSurface = newQuantity * product.length * product.width;
+    
+    // Update product quantity and surface
+    await supabase
+      .from('products')
+      .update({ 
+        quantity: newQuantity, 
+        surface: parseFloat(newSurface.toFixed(2)) 
+      })
+      .eq('id', request.product_id);
+    
+    // Add stock movement
+    await supabase.from('stock_movements').insert({
+      product_id: request.product_id,
+      type: 'out',
+      quantity: request.quantity,
+      length: product.length,
+      width: product.width,
+      surface: parseFloat(movementSurface.toFixed(2)),
+      notes: 'سحب بموجب طلب معتمد',
+      created_by: user?.id,
+    });
+    
+    // Update request status
     const { error } = await supabase.from('withdrawal_requests').update({
       status: 'approved',
       approved_by: user?.id,
       approved_at: new Date().toISOString(),
     } as any).eq('id', id);
+    
     if (error) throw error;
     await fetchRequests();
   };
