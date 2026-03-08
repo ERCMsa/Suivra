@@ -80,7 +80,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement }: Produc
                     <TableCell className="text-center text-sm text-muted-foreground">{product.unit}</TableCell>
                     <TableCell className="text-center">
                       <span className="inline-flex items-center rounded-lg bg-primary/8 px-2.5 py-0.5 text-sm font-semibold text-primary">
-                        {product.quantity.toLocaleString('ar-SA')}
+                        {product.quantity.toLocaleString('fr-FR')}
                       </span>
                     </TableCell>
                     <TableCell>

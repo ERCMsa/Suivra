@@ -46,7 +46,7 @@ const StatsCards = ({ products, movements, totalStock }: StatsCardsProps) => {
             <div className="flex items-start justify-between">
               <div className="space-y-1.5">
                 <p className="text-[11px] font-medium text-muted-foreground">{stat.title}</p>
-                <p className="text-2xl font-bold text-foreground tabular-nums leading-none">{stat.value.toLocaleString('ar-SA')}</p>
+                <p className="text-2xl font-bold text-foreground tabular-nums leading-none">{stat.value.toLocaleString('fr-FR')}</p>
                 <p className="text-[10px] text-muted-foreground/70">{stat.unit}</p>
               </div>
               <div className="group-hover:scale-110 transition-transform duration-300">
