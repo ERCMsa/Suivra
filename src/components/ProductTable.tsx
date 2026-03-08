@@ -61,10 +61,11 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
             <Table>
               <TableHeader>
                  <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
+                   <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.designation}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.type}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.color}</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.locationLabel}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.unitCol}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.quantity}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.actions}</TableHead>
@@ -86,6 +87,9 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                       {product.color ? (
                         <span className="inline-flex items-center rounded-lg bg-secondary/60 px-2 py-0.5 text-xs">{product.color}</span>
                       ) : '-'}
+                    </TableCell>
+                    <TableCell className="text-center text-sm">
+                      <span className="inline-flex items-center rounded-lg bg-accent/60 px-2 py-0.5 text-xs font-medium">{(product as any).location || 'Magasin'}</span>
                     </TableCell>
                     <TableCell className="text-center text-sm text-muted-foreground">{product.unit}</TableCell>
                     <TableCell className="text-center">

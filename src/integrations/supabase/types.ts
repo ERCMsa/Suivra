@@ -124,6 +124,7 @@ export type Database = {
           id: string
           image_url: string | null
           length: number
+          location: string
           min_quantity: number
           quantity: number
           surface: number
@@ -141,6 +142,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           length?: number
+          location?: string
           min_quantity?: number
           quantity?: number
           surface?: number
@@ -158,6 +160,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           length?: number
+          location?: string
           min_quantity?: number
           quantity?: number
           surface?: number

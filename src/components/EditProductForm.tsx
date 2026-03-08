@@ -18,6 +18,7 @@ const PRODUCT_TYPES = [
 ];
 const STATUSES = ['Neuf / جديد', 'Bon état / حالة جيدة', 'Usé / مستعمل', 'En réparation / قيد الإصلاح', 'Hors service / خارج الخدمة'];
 const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
+const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
 
 interface EditProductFormProps {
   product: Product;
@@ -35,6 +36,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
     quantity: product.quantity,
     min_quantity: (product as any).min_quantity || 0,
     image_url: (product as any).image_url || '',
+    location: (product as any).location || 'Magasin',
   });
 
   const handleSubmit = async () => {
@@ -47,6 +49,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
       quantity: form.quantity,
       min_quantity: form.min_quantity,
       image_url: form.image_url || null,
+      location: form.location,
     } as any).eq('id', product.id);
     if (error) { toast.error(t.editFail); return; }
     toast.success(t.editSuccess);
@@ -100,6 +103,13 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
               <Label className="text-xs">{t.minQuantity}</Label>
               <Input type="number" min={0} value={form.min_quantity} onChange={(e) => setForm({ ...form, min_quantity: Number(e.target.value) })} className="rounded-xl mt-1" />
             </div>
+          </div>
+          <div>
+            <Label className="text-xs">{t.locationLabel}</Label>
+            <Select value={form.location} onValueChange={(v) => setForm({ ...form, location: v })}>
+              <SelectTrigger className="rounded-xl mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>{LOCATIONS.map((loc) => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
           <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">

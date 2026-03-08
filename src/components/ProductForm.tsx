@@ -35,6 +35,8 @@ const STATUSES = [
 
 const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
 
+const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
+
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
@@ -42,7 +44,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0,
   });
   const [reference, setReference] = useState('');
-  const [location, setLocation] = useState('');
+  const [storageLocation, setStorageLocation] = useState('Magasin');
   const [supplier, setSupplier] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
@@ -59,12 +61,13 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       length: 0,
       width: 0,
       image_url: imageUrl || undefined,
-    });
+      location: storageLocation,
+    } as any);
     toast.success(t.productAdded);
     setOpen(false);
     setFormData({ designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0 });
     setReference('');
-    setLocation('');
+    setStorageLocation('Magasin');
     setSupplier('');
     setImageUrl('');
   };
@@ -115,8 +118,11 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Input id="quantity" type="number" min="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="location" className="text-xs">{t.lengthLabel}</Label>
-              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Magasin A, Bureau 3..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+              <Label htmlFor="location" className="text-xs">{t.locationLabel}</Label>
+              <Select value={storageLocation} onValueChange={setStorageLocation}>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder={t.selectLocation} /></SelectTrigger>
+                <SelectContent className="rounded-xl">{LOCATIONS.map((loc) => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="supplier" className="text-xs">{t.widthLabel}</Label>

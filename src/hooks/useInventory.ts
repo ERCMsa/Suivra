@@ -64,13 +64,13 @@ export const useInventory = () => {
   const calculateSurface = (quantity: number, length: number, width: number) =>
     parseFloat((quantity * length * width).toFixed(2));
 
-  const addProduct = async (data: ProductFormData) => {
+  const addProduct = async (data: ProductFormData & { location?: string }) => {
     const surface = calculateSurface(data.quantity, data.length, data.width);
     const user = (await supabase.auth.getUser()).data.user;
 
     const { data: newProduct, error } = await supabase
       .from('products')
-      .insert({ ...data, surface, created_by: user?.id })
+      .insert({ ...data, surface, created_by: user?.id, location: (data as any).location || 'Magasin' } as any)
       .select()
       .single();
 
