@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { Product, StockMovement } from '@/hooks/useInventory';
 
@@ -39,30 +39,16 @@ const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
     try {
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
-
       const doc = new jsPDF({ orientation: 'landscape' });
-
       const headers = ['المساحة', 'العرض', 'الطول', 'الكمية', 'الوحدة', 'السماكة', 'اللون', 'النوع', 'التسمية'];
-      const rows = products.map((p) => [
-        p.surface,
-        p.width,
-        p.length,
-        p.quantity,
-        p.unit,
-        p.thickness,
-        p.color,
-        p.type,
-        p.designation,
-      ]);
-
+      const rows = products.map((p) => [p.surface, p.width, p.length, p.quantity, p.unit, p.thickness, p.color, p.type, p.designation]);
       (doc as any).autoTable({
         head: [headers],
         body: rows,
         styles: { font: 'helvetica', halign: 'center', fontSize: 9 },
-        headStyles: { fillColor: [59, 130, 246], halign: 'center' },
+        headStyles: { fillColor: [66, 99, 235], halign: 'center' },
         margin: { top: 20 },
       });
-
       doc.save(`inventory_${new Date().toISOString().slice(0, 10)}.pdf`);
       toast.success('تم تصدير الملف بنجاح');
     } catch {
@@ -72,12 +58,12 @@ const ExportButtons = ({ products, movements }: ExportButtonsProps) => {
 
   return (
     <div className="flex gap-2">
-      <Button variant="outline" size="sm" onClick={exportExcel}>
-        <FileSpreadsheet className="h-4 w-4" />
+      <Button variant="outline" size="sm" onClick={exportExcel} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-secondary/50">
+        <FileSpreadsheet className="h-3.5 w-3.5" />
         Excel
       </Button>
-      <Button variant="outline" size="sm" onClick={exportPDF}>
-        <FileText className="h-4 w-4" />
+      <Button variant="outline" size="sm" onClick={exportPDF} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-secondary/50">
+        <FileText className="h-3.5 w-3.5" />
         PDF
       </Button>
     </div>
