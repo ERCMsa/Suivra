@@ -137,6 +137,7 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                        </div>
                       </div>
 
                       <div className="flex flex-wrap gap-1.5">
