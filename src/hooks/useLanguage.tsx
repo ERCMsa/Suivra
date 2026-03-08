@@ -169,6 +169,7 @@ const translations = {
     deptCivilEngineering: 'فرق الإسمنت والهندسة المدنية',
     navInventory: 'المخزون',
     navEmployees: 'الأشخاص',
+    exportEmployeesExcel: 'تصدير الأشخاص إلى Excel',
 
     // Damage Stats
     totalDamageReports: 'إجمالي التقارير',
