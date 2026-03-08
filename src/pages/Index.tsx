@@ -10,7 +10,7 @@ const Index = () => {
   const { t } = useLanguage();
   const {
     products, movements, isLoading, addProduct, deleteProduct,
-    addStockMovement, getTotalStock, getTotalSurface,
+    addStockMovement, bulkImport, getTotalStock, getTotalSurface,
   } = useInventory();
 
   if (isLoading) {
@@ -31,7 +31,7 @@ const Index = () => {
         <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
         <div className="flex items-center justify-between gap-3">
           <ProductForm onSubmit={addProduct} />
-          <ExportButtons products={products} movements={movements} />
+          <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
       </main>

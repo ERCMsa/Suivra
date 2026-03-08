@@ -108,6 +108,32 @@ export const useInventory = () => {
     await Promise.all([fetchProducts(), fetchMovements()]);
   };
 
+  const bulkImport = async (items: ProductFormData[]) => {
+    const user = (await supabase.auth.getUser()).data.user;
+    for (const data of items) {
+      const surface = calculateSurface(data.quantity, data.length, data.width);
+      const { data: newProduct } = await supabase
+        .from('products')
+        .insert({ ...data, surface, created_by: user?.id })
+        .select()
+        .single();
+
+      if (newProduct) {
+        await supabase.from('stock_movements').insert({
+          product_id: newProduct.id,
+          type: 'in',
+          quantity: data.quantity,
+          length: data.length,
+          width: data.width,
+          surface,
+          notes: 'استيراد من ملف Excel',
+          created_by: user?.id,
+        });
+      }
+    }
+    await Promise.all([fetchProducts(), fetchMovements()]);
+  };
+
   const getTotalStock = () => products.reduce((acc, p) => acc + p.quantity, 0);
   const getTotalSurface = () => parseFloat(products.reduce((acc, p) => acc + p.surface, 0).toFixed(2));
 
@@ -118,6 +144,7 @@ export const useInventory = () => {
     addProduct,
     deleteProduct,
     addStockMovement,
+    bulkImport,
     getTotalStock,
     getTotalSurface,
   };
