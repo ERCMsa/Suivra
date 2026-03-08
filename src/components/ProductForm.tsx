@@ -44,6 +44,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [reference, setReference] = useState('');
   const [location, setLocation] = useState('');
   const [supplier, setSupplier] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
