@@ -42,6 +42,7 @@ const Index = () => {
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
+        <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
       </main>
       <footer className="border-t border-border/50 py-5 mt-8">
