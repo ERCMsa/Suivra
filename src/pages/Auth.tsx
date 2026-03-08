@@ -89,7 +89,6 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      {/* Subtle background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-accent/5 blur-3xl" />
@@ -97,8 +96,13 @@ const Auth = () => {
 
       <div className="w-full max-w-sm space-y-6 relative z-10">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl gradient-primary shadow-glow">
-            <Package className="h-7 w-7 text-primary-foreground" />
+          {/* Glassmorphism auth icon */}
+          <div className="inline-block relative">
+            <div className="absolute inset-0 rounded-3xl blur-xl opacity-40 bg-gradient-to-br from-blue-500 to-indigo-600" />
+            <div className="relative flex h-16 w-16 mx-auto items-center justify-center rounded-3xl bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-xl">
+              <div className="absolute inset-[1px] rounded-[23px] bg-gradient-to-b from-white/30 to-transparent" />
+              <Package className="h-8 w-8 text-white relative z-10 drop-shadow-sm" strokeWidth={2} />
+            </div>
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">نظام المخزون</h1>
