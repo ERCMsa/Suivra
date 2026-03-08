@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Product, StockMovement } from '@/hooks/useInventory';
 import StockMovementForm from './StockMovementForm';
 import MovementHistory from './MovementHistory';
+import EditProductForm from './EditProductForm';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -16,9 +17,10 @@ interface ProductTableProps {
   movements: StockMovement[];
   onDelete: (id: string) => void;
   onStockMovement: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string) => void;
+  onRefresh: () => void;
 }
 
-const ProductTable = ({ products, movements, onDelete, onStockMovement }: ProductTableProps) => {
+const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { t } = useLanguage();
 
@@ -85,6 +87,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement }: Produc
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-0.5">
+                        <EditProductForm product={product} onUpdated={onRefresh} />
                         <StockMovementForm product={product} type="in" onSubmit={onStockMovement} />
                         <StockMovementForm product={product} type="out" onSubmit={onStockMovement} />
                         <MovementHistory product={product} movements={getProductMovements(product.id)} />

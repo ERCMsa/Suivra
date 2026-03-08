@@ -189,5 +189,6 @@ export const useInventory = () => {
     addDamageReport,
     getTotalStock,
     getTotalSurface,
+    refresh: () => Promise.all([fetchProducts(), fetchMovements(), fetchDamageReports()]),
   };
 };

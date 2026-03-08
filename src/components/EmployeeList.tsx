@@ -6,14 +6,16 @@ import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Employee } from '@/hooks/useEmployees';
+import EditEmployeeForm from './EditEmployeeForm';
 import { useState } from 'react';
 
 interface EmployeeListProps {
   employees: Employee[];
   onDelete: (id: string) => Promise<void>;
+  onRefresh: () => void;
 }
 
-const EmployeeList = ({ employees, onDelete }: EmployeeListProps) => {
+const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
 
@@ -114,12 +116,14 @@ const EmployeeList = ({ employees, onDelete }: EmployeeListProps) => {
                             {emp.position && <p className="text-xs text-muted-foreground">{emp.position}</p>}
                           </div>
                         </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </AlertDialogTrigger>
+                        <div className="flex gap-0.5">
+                          <EditEmployeeForm employee={emp} onUpdated={onRefresh} />
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
                           <AlertDialogContent className="rounded-2xl">
                             <AlertDialogHeader>
                               <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
@@ -133,6 +137,7 @@ const EmployeeList = ({ employees, onDelete }: EmployeeListProps) => {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                        </div>
                       </div>
 
                       <div className="flex flex-wrap gap-1.5">

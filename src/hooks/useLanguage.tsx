@@ -192,6 +192,34 @@ const translations = {
     pdfGeneratedOn: 'تم إنشاء التقرير في',
     pdfPage: 'صفحة',
 
+    // Edit
+    editProduct: 'تعديل المادة',
+    editEmployee: 'تعديل الشخص',
+    editSuccess: 'تم التعديل بنجاح',
+    editFail: 'فشل التعديل',
+    save: 'حفظ',
+    minQuantity: 'الحد الأدنى',
+    lowStockAlert: 'تنبيه مخزون منخفض',
+
+    // Charts
+    chartStockByCategory: 'المخزون حسب الفئة',
+    chartMovementTrend: 'حركة المخزون (7 أيام)',
+    chartDamageBySeverity: 'التلف حسب الخطورة',
+    navDashboard: 'لوحة التحكم',
+
+    // Withdrawal Requests
+    withdrawalRequests: 'طلبات السحب',
+    newRequest: 'طلب جديد',
+    reqRequestedBy: 'مقدم الطلب',
+    reqReason: 'السبب',
+    reqReasonPlaceholder: 'سبب طلب السحب...',
+    reqPending: 'قيد الانتظار',
+    reqApproved: 'موافق عليه',
+    reqRejected: 'مرفوض',
+    reqCreated: 'تم إنشاء الطلب بنجاح',
+    reqCreateFail: 'فشل إنشاء الطلب',
+    noRequests: 'لا توجد طلبات',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
@@ -372,6 +400,31 @@ const translations = {
     pdfAction: 'Action prise',
     pdfGeneratedOn: 'Rapport généré le',
     pdfPage: 'Page',
+
+    editProduct: 'Modifier l\'article',
+    editEmployee: 'Modifier la personne',
+    editSuccess: 'Modification réussie',
+    editFail: 'Échec de la modification',
+    save: 'Enregistrer',
+    minQuantity: 'Quantité min.',
+    lowStockAlert: 'Alerte stock bas',
+
+    chartStockByCategory: 'Stock par catégorie',
+    chartMovementTrend: 'Mouvements (7 jours)',
+    chartDamageBySeverity: 'Dommages par gravité',
+    navDashboard: 'Tableau de bord',
+
+    withdrawalRequests: 'Demandes de retrait',
+    newRequest: 'Nouvelle demande',
+    reqRequestedBy: 'Demandeur',
+    reqReason: 'Motif',
+    reqReasonPlaceholder: 'Motif de la demande...',
+    reqPending: 'En attente',
+    reqApproved: 'Approuvée',
+    reqRejected: 'Refusée',
+    reqCreated: 'Demande créée avec succès',
+    reqCreateFail: 'Échec de la création',
+    noRequests: 'Aucune demande',
 
     footer: 'Suivi du Matériel - ERCM SA',
     loading: 'Chargement...',

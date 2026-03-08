@@ -6,7 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const Employees = () => {
   const { t } = useLanguage();
-  const { employees, isLoading, addEmployee, deleteEmployee } = useEmployees();
+  const { employees, isLoading, addEmployee, deleteEmployee, fetchEmployees } = useEmployees();
 
   if (isLoading) {
     return (
@@ -27,7 +27,7 @@ const Employees = () => {
           <h2 className="text-xl font-bold">{t.employeesSection}</h2>
           <EmployeeForm onSubmit={addEmployee} />
         </div>
-        <EmployeeList employees={employees} onDelete={deleteEmployee} />
+        <EmployeeList employees={employees} onDelete={deleteEmployee} onRefresh={fetchEmployees} />
       </main>
       <footer className="border-t border-border/50 py-5 mt-8">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground/60">
