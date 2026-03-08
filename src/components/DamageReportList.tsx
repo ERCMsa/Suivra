@@ -115,7 +115,7 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
           doc.setFontSize(7);
           doc.setTextColor(150, 150, 150);
           doc.text(
-            `${t.pdfPage} ${doc.internal.getCurrentPageInfo().pageNumber}`,
+            `${t.pdfPage} ${(doc as any).internal.getCurrentPageInfo?.()?.pageNumber || data.pageNumber || ''}`,
             doc.internal.pageSize.getWidth() / 2,
             doc.internal.pageSize.getHeight() - 8,
             { align: 'center' }
