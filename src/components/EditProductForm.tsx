@@ -18,6 +18,7 @@ const PRODUCT_TYPES = [
 ];
 const STATUSES = ['Neuf / جديد', 'Bon état / حالة جيدة', 'Usé / مستعمل', 'En réparation / قيد الإصلاح', 'Hors service / خارج الخدمة'];
 const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
+const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
 
 interface EditProductFormProps {
   product: Product;
