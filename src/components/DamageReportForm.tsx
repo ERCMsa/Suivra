@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Product } from '@/hooks/useInventory';
+import { Employee } from '@/hooks/useEmployees';
 import { toast } from 'sonner';
 
 interface DamageReportFormProps {
   products: Product[];
+  employees: Employee[];
   onSubmit: (data: {
     product_id: string;
     description: string;
@@ -24,8 +26,19 @@ interface DamageReportFormProps {
   }) => Promise<any>;
 }
 
-const DamageReportForm = ({ products, onSubmit }: DamageReportFormProps) => {
+const DamageReportForm = ({ products, employees, onSubmit }: DamageReportFormProps) => {
   const { t } = useLanguage();
+
+  const deptLabel = (d: string) => {
+    const map: Record<string, string> = {
+      production: t.deptProduction,
+      maintenance: t.deptMaintenance,
+      administration: t.deptAdministration,
+      montage: t.deptMontage,
+      civil_engineering: t.deptCivilEngineering,
+    };
+    return map[d] || d;
+  };
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -143,22 +156,35 @@ const DamageReportForm = ({ products, onSubmit }: DamageReportFormProps) => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>{t.responsiblePerson}</Label>
-              <Input
+              <Select
                 value={form.responsible_person}
-                onChange={(e) => setForm({ ...form, responsible_person: e.target.value })}
-                placeholder={t.responsiblePersonPlaceholder}
-                className="rounded-xl mt-1"
-                maxLength={100}
-              />
+                onValueChange={(v) => {
+                  const emp = employees.find((e) => e.full_name === v);
+                  setForm({
+                    ...form,
+                    responsible_person: v,
+                    responsible_team: emp ? deptLabel(emp.department) : form.responsible_team,
+                  });
+                }}
+              >
+                <SelectTrigger className="rounded-xl mt-1">
+                  <SelectValue placeholder={t.responsiblePersonPlaceholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {employees.filter((e) => e.status === 'active').map((e) => (
+                    <SelectItem key={e.id} value={e.full_name}>
+                      {e.full_name} — {deptLabel(e.department)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>{t.responsibleTeam}</Label>
               <Input
                 value={form.responsible_team}
-                onChange={(e) => setForm({ ...form, responsible_team: e.target.value })}
-                placeholder={t.responsibleTeamPlaceholder}
-                className="rounded-xl mt-1"
-                maxLength={100}
+                readOnly
+                className="rounded-xl mt-1 bg-muted"
               />
             </div>
           </div>
