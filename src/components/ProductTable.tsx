@@ -62,12 +62,8 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement }: Produc
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.designation}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.type}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.color}</TableHead>
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.thickness}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.unitCol}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.quantity}</TableHead>
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.length}</TableHead>
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.width}</TableHead>
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.surface}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.actions}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -76,16 +72,16 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement }: Produc
                   <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30">
                     <TableCell className="font-medium text-center text-sm">{product.designation}</TableCell>
                     <TableCell className="text-center text-sm">{product.type}</TableCell>
-                    <TableCell className="text-center text-sm">{product.color || '-'}</TableCell>
-                    <TableCell className="text-center text-sm text-muted-foreground">{product.thickness} {t.mm}</TableCell>
+                    <TableCell className="text-center text-sm">
+                      {product.color ? (
+                        <span className="inline-flex items-center rounded-lg bg-secondary/60 px-2 py-0.5 text-xs">{product.color}</span>
+                      ) : '-'}
+                    </TableCell>
                     <TableCell className="text-center text-sm text-muted-foreground">{product.unit}</TableCell>
                     <TableCell className="text-center">
-                      <span className="inline-flex items-center rounded-lg bg-primary/8 px-2.5 py-0.5 text-sm font-semibold text-primary">{product.quantity.toLocaleString('ar-SA')}</span>
-                    </TableCell>
-                    <TableCell className="text-center text-sm text-muted-foreground">{product.length} {t.m}</TableCell>
-                    <TableCell className="text-center text-sm text-muted-foreground">{product.width} {t.m}</TableCell>
-                    <TableCell className="text-center">
-                      <span className="inline-flex items-center rounded-lg bg-accent/8 px-2.5 py-0.5 text-sm font-semibold text-accent">{product.surface.toLocaleString('ar-SA')} {t.m2}</span>
+                      <span className="inline-flex items-center rounded-lg bg-primary/8 px-2.5 py-0.5 text-sm font-semibold text-primary">
+                        {product.quantity.toLocaleString('ar-SA')}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-0.5">
