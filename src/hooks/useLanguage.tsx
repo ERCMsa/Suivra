@@ -179,6 +179,19 @@ const translations = {
     damageCase: 'حالة',
     unknown: 'غير محدد',
 
+    exportDamagePdf: 'تصدير تقرير PDF',
+    pdfTitle: 'تقرير التلف والأضرار',
+    pdfDate: 'التاريخ',
+    pdfItem: 'المادة',
+    pdfDescription: 'الوصف',
+    pdfSeverity: 'الخطورة',
+    pdfQty: 'الكمية',
+    pdfPerson: 'المتسبب',
+    pdfTeam: 'القسم',
+    pdfAction: 'الإجراء',
+    pdfGeneratedOn: 'تم إنشاء التقرير في',
+    pdfPage: 'صفحة',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
