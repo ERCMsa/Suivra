@@ -47,13 +47,18 @@ export const useInventory = () => {
     if (data) setMovements(data);
   }, []);
 
+  const fetchDamageReports = useCallback(async () => {
+    const { data } = await supabase.from('damage_reports').select('*').order('created_at', { ascending: false });
+    if (data) setDamageReports(data as DamageReport[]);
+  }, []);
+
   useEffect(() => {
     const load = async () => {
-      await Promise.all([fetchProducts(), fetchMovements()]);
+      await Promise.all([fetchProducts(), fetchMovements(), fetchDamageReports()]);
       setIsLoading(false);
     };
     load();
-  }, [fetchProducts, fetchMovements]);
+  }, [fetchProducts, fetchMovements, fetchDamageReports]);
 
   const calculateSurface = (quantity: number, length: number, width: number) =>
     parseFloat((quantity * length * width).toFixed(2));
