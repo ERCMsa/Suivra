@@ -31,8 +31,9 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
           <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
-          <div className="flex justify-start">
+          <div className="flex items-center justify-between">
             <ProductForm onSubmit={addProduct} />
+            <ExportButtons products={products} movements={movements} />
           </div>
           <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
         </div>
