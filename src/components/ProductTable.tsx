@@ -87,6 +87,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-0.5">
+                        <EditProductForm product={product} onUpdated={onRefresh} />
                         <StockMovementForm product={product} type="in" onSubmit={onStockMovement} />
                         <StockMovementForm product={product} type="out" onSubmit={onStockMovement} />
                         <MovementHistory product={product} movements={getProductMovements(product.id)} />
