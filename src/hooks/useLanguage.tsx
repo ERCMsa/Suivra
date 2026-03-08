@@ -170,6 +170,15 @@ const translations = {
     navInventory: 'المخزون',
     navEmployees: 'الأشخاص',
 
+    // Damage Stats
+    totalDamageReports: 'إجمالي التقارير',
+    totalDamagedItems: 'إجمالي المتضرر',
+    personsInvolved: 'أشخاص متورطون',
+    damageByPerson: 'التلف حسب الشخص',
+    damageByTeam: 'التلف حسب القسم',
+    damageCase: 'حالة',
+    unknown: 'غير محدد',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
