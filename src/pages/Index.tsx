@@ -5,6 +5,7 @@ import ProductTable from '@/components/ProductTable';
 import ExportButtons from '@/components/ExportButtons';
 import DamageReportForm from '@/components/DamageReportForm';
 import DamageReportList from '@/components/DamageReportList';
+import DamageStats from '@/components/DamageStats';
 import { useInventory } from '@/hooks/useInventory';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
