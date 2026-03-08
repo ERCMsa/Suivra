@@ -34,6 +34,7 @@ export interface ProductFormData {
 export const useInventory = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
+  const [damageReports, setDamageReports] = useState<DamageReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
