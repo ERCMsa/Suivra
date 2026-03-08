@@ -8,10 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Product } from '@/hooks/useInventory';
+import { Employee } from '@/hooks/useEmployees';
 import { toast } from 'sonner';
 
 interface DamageReportFormProps {
   products: Product[];
+  employees: Employee[];
   onSubmit: (data: {
     product_id: string;
     description: string;
@@ -24,7 +26,7 @@ interface DamageReportFormProps {
   }) => Promise<any>;
 }
 
-const DamageReportForm = ({ products, onSubmit }: DamageReportFormProps) => {
+const DamageReportForm = ({ products, employees, onSubmit }: DamageReportFormProps) => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
