@@ -15,7 +15,7 @@ interface EmployeeListProps {
   onRefresh: () => void;
 }
 
-const EmployeeList = ({ employees, onDelete }: EmployeeListProps) => {
+const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
 
