@@ -1,8 +1,12 @@
-import { AlertTriangle, User, Users, Calendar, FileText } from 'lucide-react';
+import { AlertTriangle, User, Users, Calendar, FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Product } from '@/hooks/useInventory';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
 interface DamageReport {
   id: string;
@@ -25,7 +29,7 @@ interface DamageReportListProps {
 }
 
 const DamageReportList = ({ reports, products }: DamageReportListProps) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const getProductName = (id: string) => products.find((p) => p.id === id)?.designation || '—';
 
@@ -49,6 +53,84 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
     }
   };
 
+  const exportPdf = () => {
+    try {
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+      // Title
+      doc.setFontSize(18);
+      doc.setTextColor(180, 40, 40);
+      doc.text(t.pdfTitle, doc.internal.pageSize.getWidth() / 2, 18, { align: 'center' });
+
+      doc.setFontSize(9);
+      doc.setTextColor(120, 120, 120);
+      doc.text(
+        `${t.pdfGeneratedOn}: ${new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+        doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' }
+      );
+
+      // Summary line
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 60);
+      const totalQty = reports.reduce((s, r) => s + r.quantity_damaged, 0);
+      doc.text(
+        `${t.totalDamageReports}: ${reports.length} | ${t.totalDamagedItems}: ${totalQty}`,
+        doc.internal.pageSize.getWidth() / 2, 32, { align: 'center' }
+      );
+
+      const headers = [
+        [t.pdfDate, t.pdfItem, t.pdfDescription, t.pdfSeverity, t.pdfQty, t.pdfPerson, t.pdfTeam, t.pdfAction]
+      ];
+
+      const rows = reports.map((r) => [
+        new Date(r.damage_date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' }),
+        getProductName(r.product_id),
+        r.description.substring(0, 60) + (r.description.length > 60 ? '...' : ''),
+        severityLabel(r.severity),
+        r.quantity_damaged.toLocaleString('fr-FR'),
+        r.responsible_person || '—',
+        r.responsible_team || '—',
+        (r.action_taken || '—').substring(0, 40) + ((r.action_taken || '').length > 40 ? '...' : ''),
+      ]);
+
+      autoTable(doc, {
+        head: headers,
+        body: rows,
+        startY: 38,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+        headStyles: { fillColor: [180, 40, 40], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: [252, 245, 245] },
+        columnStyles: {
+          0: { cellWidth: 28 },
+          1: { cellWidth: 35 },
+          2: { cellWidth: 55 },
+          3: { cellWidth: 22 },
+          4: { cellWidth: 18 },
+          5: { cellWidth: 30 },
+          6: { cellWidth: 30 },
+          7: { cellWidth: 45 },
+        },
+        didDrawPage: (data: any) => {
+          doc.setFontSize(7);
+          doc.setTextColor(150, 150, 150);
+          doc.text(
+            `${t.pdfPage} ${(doc as any).internal.getCurrentPageInfo?.()?.pageNumber || data.pageNumber || ''}`,
+            doc.internal.pageSize.getWidth() / 2,
+            doc.internal.pageSize.getHeight() - 8,
+            { align: 'center' }
+          );
+          doc.text('ERCM SA', 14, doc.internal.pageSize.getHeight() - 8);
+        },
+      });
+
+      doc.save(`rapport-dommages-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success(t.exportSuccess);
+    } catch {
+      toast.error(t.exportFail);
+    }
+  };
+
   if (reports.length === 0) {
     return (
       <Card className="rounded-2xl border-dashed">
@@ -63,10 +145,16 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
   return (
     <Card className="rounded-2xl">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <AlertTriangle className="h-5 w-5 text-destructive" />
-          {t.damageReports} ({reports.length.toLocaleString('fr-FR')})
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            {t.damageReports} ({reports.length.toLocaleString('fr-FR')})
+          </CardTitle>
+          <Button variant="outline" size="sm" className="gap-2 rounded-xl text-xs" onClick={exportPdf}>
+            <Download className="h-3.5 w-3.5" />
+            {t.exportDamagePdf}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {reports.map((r) => (
