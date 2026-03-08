@@ -339,6 +339,14 @@ const translations = {
     navInventory: 'Inventaire',
     navEmployees: 'Personnel',
 
+    totalDamageReports: 'Total rapports',
+    totalDamagedItems: 'Total endommagés',
+    personsInvolved: 'Personnes impliquées',
+    damageByPerson: 'Dommages par personne',
+    damageByTeam: 'Dommages par département',
+    damageCase: 'cas',
+    unknown: 'Non spécifié',
+
     footer: 'Suivi du Matériel - ERCM SA',
     loading: 'Chargement...',
   },
