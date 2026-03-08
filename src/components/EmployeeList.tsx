@@ -1,4 +1,4 @@
-import { Users, Phone, Mail, Trash2, Building2, User } from 'lucide-react';
+import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Employee } from '@/hooks/useEmployees';
 import EditEmployeeForm from './EditEmployeeForm';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface EmployeeListProps {
   employees: Employee[];
