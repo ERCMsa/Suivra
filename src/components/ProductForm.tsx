@@ -35,6 +35,8 @@ const STATUSES = [
 
 const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
 
+const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
+
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
@@ -42,7 +44,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0,
   });
   const [reference, setReference] = useState('');
-  const [location, setLocation] = useState('');
+  const [storageLocation, setStorageLocation] = useState('Magasin');
   const [supplier, setSupplier] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
