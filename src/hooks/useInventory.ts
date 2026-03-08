@@ -155,17 +155,38 @@ export const useInventory = () => {
     await Promise.all([fetchProducts(), fetchMovements()]);
   };
 
+  const addDamageReport = async (data: {
+    product_id: string;
+    description: string;
+    severity: string;
+    responsible_person: string;
+    responsible_team: string;
+    quantity_damaged: number;
+    action_taken: string;
+    notes: string;
+  }) => {
+    const user = (await supabase.auth.getUser()).data.user;
+    const { error } = await supabase.from('damage_reports').insert({
+      ...data,
+      created_by: user?.id,
+    } as any);
+    if (error) throw error;
+    await fetchDamageReports();
+  };
+
   const getTotalStock = () => products.reduce((acc, p) => acc + p.quantity, 0);
   const getTotalSurface = () => parseFloat(products.reduce((acc, p) => acc + p.surface, 0).toFixed(2));
 
   return {
     products,
     movements,
+    damageReports,
     isLoading,
     addProduct,
     deleteProduct,
     addStockMovement,
     bulkImport,
+    addDamageReport,
     getTotalStock,
     getTotalSurface,
   };

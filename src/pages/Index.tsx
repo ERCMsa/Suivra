@@ -3,14 +3,16 @@ import StatsCards from '@/components/StatsCards';
 import ProductForm from '@/components/ProductForm';
 import ProductTable from '@/components/ProductTable';
 import ExportButtons from '@/components/ExportButtons';
+import DamageReportForm from '@/components/DamageReportForm';
+import DamageReportList from '@/components/DamageReportList';
 import { useInventory } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
   const { t } = useLanguage();
   const {
-    products, movements, isLoading, addProduct, deleteProduct,
-    addStockMovement, bulkImport, getTotalStock, getTotalSurface,
+    products, movements, damageReports, isLoading, addProduct, deleteProduct,
+    addStockMovement, bulkImport, addDamageReport, getTotalStock, getTotalSurface,
   } = useInventory();
 
   if (isLoading) {
@@ -29,11 +31,15 @@ const Index = () => {
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 space-y-6 max-w-7xl">
         <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
-        <div className="flex items-center justify-between gap-3">
-          <ProductForm onSubmit={addProduct} />
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <ProductForm onSubmit={addProduct} />
+            <DamageReportForm products={products} onSubmit={addDamageReport} />
+          </div>
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
+        <DamageReportList reports={damageReports} products={products} />
       </main>
       <footer className="border-t border-border/50 py-5 mt-8">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground/60">
