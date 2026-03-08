@@ -24,13 +24,13 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
     try {
       const XLSX = await import('xlsx');
       const rows = employees.map((e) => ({
-        [t.employeeName]: e.full_name,
-        [t.employeeId]: e.employee_id || '',
-        [t.department]: deptLabel(e.department),
-        [t.position]: e.position || '',
-        [t.phone]: e.phone || '',
-        [t.email]: e.email || '',
-        [t.status]: statusLabel(e.status),
+        [t.empFullName]: e.full_name,
+        [t.empId]: e.employee_id || '',
+        [t.empDepartment]: deptLabel(e.department),
+        [t.empPosition]: e.position || '',
+        [t.empPhone]: e.phone || '',
+        [t.empEmail]: e.email || '',
+        [t.empStatus]: statusLabel(e.status),
         [t.notes]: e.notes || '',
       }));
       const ws = XLSX.utils.json_to_sheet(rows);

@@ -380,6 +380,7 @@ const translations = {
     deptCivilEngineering: 'Ciment et Génie Civil',
     navInventory: 'Inventaire',
     navEmployees: 'Personnel',
+    exportEmployeesExcel: 'Exporter Personnel vers Excel',
 
     totalDamageReports: 'Total rapports',
     totalDamagedItems: 'Total endommagés',
