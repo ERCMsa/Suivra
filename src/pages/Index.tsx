@@ -22,6 +22,11 @@ const Index = () => {
   } = useInventory();
   const { employees } = useEmployees();
   const { requests, createRequest, approveRequest, rejectRequest } = useWithdrawalRequests();
+  
+  const handleApproveRequest = async (id: string) => {
+    await approveRequest(id);
+    await refresh();
+  };
 
   if (isLoading) {
     return (
