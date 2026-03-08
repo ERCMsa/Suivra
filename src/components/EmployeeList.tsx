@@ -6,11 +6,13 @@ import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Employee } from '@/hooks/useEmployees';
+import EditEmployeeForm from './EditEmployeeForm';
 import { useState } from 'react';
 
 interface EmployeeListProps {
   employees: Employee[];
   onDelete: (id: string) => Promise<void>;
+  onRefresh: () => void;
 }
 
 const EmployeeList = ({ employees, onDelete }: EmployeeListProps) => {
