@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import StatsCards from '@/components/StatsCards';
 import ProductForm from '@/components/ProductForm';
 import ProductTable from '@/components/ProductTable';
+import ExportButtons from '@/components/ExportButtons';
 import { useInventory } from '@/hooks/useInventory';
 
 const Index = () => {
