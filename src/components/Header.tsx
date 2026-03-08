@@ -16,6 +16,8 @@ import logo from '@/assets/logo.png';
 const Header = () => {
   const { signOut } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <header className="gradient-header shadow-elevated sticky top-0 z-50">
