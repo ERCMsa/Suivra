@@ -1,4 +1,4 @@
-import { Package, Layers, ArrowUpCircle, ArrowDownCircle, BarChart3, LucideIcon } from 'lucide-react';
+import { Package, Layers, ArrowUpCircle, ArrowDownCircle, ClipboardList, LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Product, StockMovement } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -26,7 +26,7 @@ const GlassIcon = ({ icon: Icon, gradient, glow }: GlassIconProps) => (
   </div>
 );
 
-const StatsCards = ({ products, movements, totalStock, totalSurface }: StatsCardsProps) => {
+const StatsCards = ({ products, movements, totalStock }: StatsCardsProps) => {
   const { t } = useLanguage();
   const inMovements = movements.filter((m) => m.type === 'in').length;
   const outMovements = movements.filter((m) => m.type === 'out').length;
@@ -34,13 +34,12 @@ const StatsCards = ({ products, movements, totalStock, totalSurface }: StatsCard
   const stats = [
     { title: t.totalProducts, value: products.length, unit: t.product, icon: Package, gradient: 'bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600', glow: 'bg-blue-500', cardGradient: 'from-blue-50/80 to-indigo-50/40' },
     { title: t.totalQuantity, value: totalStock, unit: t.unit, icon: Layers, gradient: 'bg-gradient-to-br from-violet-400 via-purple-500 to-purple-600', glow: 'bg-purple-500', cardGradient: 'from-violet-50/80 to-purple-50/40' },
-    { title: t.totalSurface, value: totalSurface, unit: t.m2, icon: BarChart3, gradient: 'bg-gradient-to-br from-cyan-400 via-teal-500 to-emerald-500', glow: 'bg-teal-500', cardGradient: 'from-cyan-50/80 to-emerald-50/40' },
     { title: t.inMovements, value: inMovements, unit: t.operation, icon: ArrowUpCircle, gradient: 'bg-gradient-to-br from-emerald-400 via-green-500 to-green-600', glow: 'bg-green-500', cardGradient: 'from-emerald-50/80 to-green-50/40' },
     { title: t.outMovements, value: outMovements, unit: t.operation, icon: ArrowDownCircle, gradient: 'bg-gradient-to-br from-orange-400 via-red-500 to-rose-600', glow: 'bg-red-500', cardGradient: 'from-orange-50/80 to-rose-50/40' },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {stats.map((stat, index) => (
         <Card key={stat.title} className={`border-0 shadow-card hover:shadow-elevated transition-all duration-300 bg-gradient-to-br ${stat.cardGradient} overflow-hidden group cursor-default`} style={{ animationDelay: `${index * 0.08}s`, animation: 'slideUp 0.4s ease-out backwards' }}>
           <CardContent className="p-4">

@@ -13,16 +13,36 @@ interface ProductFormProps {
   onSubmit: (data: ProductFormData) => void;
 }
 
-const PRODUCT_TYPES = ['PS Couverture', 'PS Bardage', 'Tôle ondulée', 'Tôle nervurée', 'Accessoires'];
-const COLORS = ['B3 (Blanc)', '9016 (Blanc pur)', '7016 (Gris anthracite)', '3000 (Rouge)', '5010 (Bleu)', '6005 (Vert)'];
-const UNITS = ['m²', 'ml', 'unité', 'kg'];
+const PRODUCT_TYPES = [
+  'Équipements / معدات',
+  'Outillage / عدة',
+  'Vêtements / ملابس',
+  'Consommables / مستهلكات',
+  'EPI / معدات الحماية',
+  'Fournitures bureau / لوازم مكتبية',
+  'Pièces détachées / قطع غيار',
+  'Autres / أخرى',
+];
+
+const STATUSES = [
+  'Neuf / جديد',
+  'Bon état / حالة جيدة',
+  'Usé / مستعمل',
+  'En réparation / قيد الإصلاح',
+  'Hors service / خارج الخدمة',
+];
+
+const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
 
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
   const [formData, setFormData] = useState<ProductFormData>({
-    designation: '', type: '', color: '', thickness: 0.4, unit: 'm²', quantity: 0, length: 0, width: 1,
+    designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0,
   });
+  const [reference, setReference] = useState('');
+  const [location, setLocation] = useState('');
+  const [supplier, setSupplier] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +50,19 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       toast.error(t.fillRequired);
       return;
     }
-    onSubmit(formData);
+    // Map new fields into existing DB columns
+    onSubmit({
+      ...formData,
+      thickness: parseFloat(reference) || 0, // reference stored in thickness
+      length: 0, // location info stored as text in notes context
+      width: 0,
+    });
     toast.success(t.productAdded);
     setOpen(false);
-    setFormData({ designation: '', type: '', color: '', thickness: 0.4, unit: 'm²', quantity: 0, length: 0, width: 1 });
+    setFormData({ designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0 });
+    setReference('');
+    setLocation('');
+    setSupplier('');
   };
 
   return (
@@ -63,12 +92,12 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Label htmlFor="color" className="text-xs">{t.colorLabel}</Label>
               <Select value={formData.color} onValueChange={(value) => setFormData({ ...formData, color: value })}>
                 <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder={t.selectColor} /></SelectTrigger>
-                <SelectContent className="rounded-xl">{COLORS.map((color) => (<SelectItem key={color} value={color}>{color}</SelectItem>))}</SelectContent>
+                <SelectContent className="rounded-xl">{STATUSES.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="thickness" className="text-xs">{t.thicknessLabel}</Label>
-              <Input id="thickness" type="number" step="0.1" min="0" value={formData.thickness} onChange={(e) => setFormData({ ...formData, thickness: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+              <Label htmlFor="reference" className="text-xs">{t.thicknessLabel}</Label>
+              <Input id="reference" value={reference} onChange={(e) => setReference(e.target.value)} placeholder="REF-001" className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="unit" className="text-xs">{t.unitLabel}</Label>
@@ -82,16 +111,16 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Input id="quantity" type="number" min="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="length" className="text-xs">{t.lengthLabel}</Label>
-              <Input id="length" type="number" step="0.01" min="0" value={formData.length} onChange={(e) => setFormData({ ...formData, length: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+              <Label htmlFor="location" className="text-xs">{t.lengthLabel}</Label>
+              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Magasin A, Bureau 3..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="width" className="text-xs">{t.widthLabel}</Label>
-              <Input id="width" type="number" step="0.01" min="0" value={formData.width} onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+              <Label htmlFor="supplier" className="text-xs">{t.widthLabel}</Label>
+              <Input id="supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Nom du fournisseur..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
           </div>
           <div className="rounded-xl bg-primary/5 border border-primary/10 p-3">
-            <p className="text-xs text-muted-foreground">{t.calculatedSurface}: <span className="font-bold text-primary">{(formData.quantity * formData.length * formData.width).toFixed(2)} {t.m2}</span></p>
+            <p className="text-xs text-muted-foreground">{t.calculatedSurface}: <span className="font-bold text-primary">{formData.quantity} {formData.unit}</span></p>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl text-sm">{t.cancel}</Button>
