@@ -66,6 +66,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     setReference('');
     setLocation('');
     setSupplier('');
+    setImageUrl('');
   };
 
   return (
