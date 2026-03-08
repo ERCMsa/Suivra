@@ -170,6 +170,15 @@ const translations = {
     navInventory: 'المخزون',
     navEmployees: 'الأشخاص',
 
+    // Damage Stats
+    totalDamageReports: 'إجمالي التقارير',
+    totalDamagedItems: 'إجمالي المتضرر',
+    personsInvolved: 'أشخاص متورطون',
+    damageByPerson: 'التلف حسب الشخص',
+    damageByTeam: 'التلف حسب القسم',
+    damageCase: 'حالة',
+    unknown: 'غير محدد',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
@@ -329,6 +338,14 @@ const translations = {
     deptCivilEngineering: 'Ciment et Génie Civil',
     navInventory: 'Inventaire',
     navEmployees: 'Personnel',
+
+    totalDamageReports: 'Total rapports',
+    totalDamagedItems: 'Total endommagés',
+    personsInvolved: 'Personnes impliquées',
+    damageByPerson: 'Dommages par personne',
+    damageByTeam: 'Dommages par département',
+    damageCase: 'cas',
+    unknown: 'Non spécifié',
 
     footer: 'Suivi du Matériel - ERCM SA',
     loading: 'Chargement...',

@@ -5,6 +5,7 @@ import ProductTable from '@/components/ProductTable';
 import ExportButtons from '@/components/ExportButtons';
 import DamageReportForm from '@/components/DamageReportForm';
 import DamageReportList from '@/components/DamageReportList';
+import DamageStats from '@/components/DamageStats';
 import { useInventory } from '@/hooks/useInventory';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -41,6 +42,7 @@ const Index = () => {
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
+        <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
       </main>
       <footer className="border-t border-border/50 py-5 mt-8">
