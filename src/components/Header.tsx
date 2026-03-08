@@ -1,6 +1,10 @@
-import { Package, BarChart3 } from 'lucide-react';
+import { Package, BarChart3, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 const Header = () => {
+  const { signOut } = useAuth();
+
   return (
     <header className="gradient-primary shadow-elevated">
       <div className="container mx-auto px-4 py-6">
@@ -19,9 +23,14 @@ const Header = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/20 backdrop-blur-sm">
-              <BarChart3 className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-primary-foreground hover:bg-primary-foreground/20"
+              onClick={signOut}
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>

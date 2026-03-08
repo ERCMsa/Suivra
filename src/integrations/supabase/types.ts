@@ -14,7 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          color: string
+          created_at: string
+          created_by: string | null
+          designation: string
+          id: string
+          length: number
+          quantity: number
+          surface: number
+          thickness: number
+          type: string
+          unit: string
+          updated_at: string
+          width: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          designation: string
+          id?: string
+          length?: number
+          quantity?: number
+          surface?: number
+          thickness?: number
+          type: string
+          unit?: string
+          updated_at?: string
+          width?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          designation?: string
+          id?: string
+          length?: number
+          quantity?: number
+          surface?: number
+          thickness?: number
+          type?: string
+          unit?: string
+          updated_at?: string
+          width?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          length: number
+          notes: string | null
+          product_id: string
+          quantity: number
+          surface: number
+          type: string
+          width: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          length?: number
+          notes?: string | null
+          product_id: string
+          quantity: number
+          surface?: number
+          type: string
+          width?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          length?: number
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          surface?: number
+          type?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
