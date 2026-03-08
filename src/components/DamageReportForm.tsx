@@ -28,6 +28,17 @@ interface DamageReportFormProps {
 
 const DamageReportForm = ({ products, employees, onSubmit }: DamageReportFormProps) => {
   const { t } = useLanguage();
+
+  const deptLabel = (d: string) => {
+    const map: Record<string, string> = {
+      production: t.deptProduction,
+      maintenance: t.deptMaintenance,
+      administration: t.deptAdministration,
+      montage: t.deptMontage,
+      civil_engineering: t.deptCivilEngineering,
+    };
+    return map[d] || d;
+  };
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({

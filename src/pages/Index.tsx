@@ -36,7 +36,7 @@ const Index = () => {
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <ProductForm onSubmit={addProduct} />
-            <DamageReportForm products={products} onSubmit={addDamageReport} />
+            <DamageReportForm products={products} employees={employees} onSubmit={addDamageReport} />
           </div>
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
