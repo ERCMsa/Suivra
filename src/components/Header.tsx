@@ -36,6 +36,7 @@ const Header = () => {
               </p>
             </div>
           </div>
+
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
@@ -55,7 +56,7 @@ const Header = () => {
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">{t.navEmployees}</span>
             </Button>
-          </div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
