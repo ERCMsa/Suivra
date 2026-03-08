@@ -5,6 +5,21 @@ import { Tables } from '@/integrations/supabase/types';
 export type Product = Tables<'products'>;
 export type StockMovement = Tables<'stock_movements'>;
 
+export interface DamageReport {
+  id: string;
+  product_id: string;
+  damage_date: string;
+  description: string;
+  severity: string;
+  responsible_person: string | null;
+  responsible_team: string | null;
+  quantity_damaged: number;
+  action_taken: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
 export interface ProductFormData {
   designation: string;
   type: string;
@@ -19,6 +34,7 @@ export interface ProductFormData {
 export const useInventory = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
+  const [damageReports, setDamageReports] = useState<DamageReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
@@ -31,13 +47,18 @@ export const useInventory = () => {
     if (data) setMovements(data);
   }, []);
 
+  const fetchDamageReports = useCallback(async () => {
+    const { data } = await supabase.from('damage_reports').select('*').order('created_at', { ascending: false });
+    if (data) setDamageReports(data as DamageReport[]);
+  }, []);
+
   useEffect(() => {
     const load = async () => {
-      await Promise.all([fetchProducts(), fetchMovements()]);
+      await Promise.all([fetchProducts(), fetchMovements(), fetchDamageReports()]);
       setIsLoading(false);
     };
     load();
-  }, [fetchProducts, fetchMovements]);
+  }, [fetchProducts, fetchMovements, fetchDamageReports]);
 
   const calculateSurface = (quantity: number, length: number, width: number) =>
     parseFloat((quantity * length * width).toFixed(2));
@@ -134,17 +155,38 @@ export const useInventory = () => {
     await Promise.all([fetchProducts(), fetchMovements()]);
   };
 
+  const addDamageReport = async (data: {
+    product_id: string;
+    description: string;
+    severity: string;
+    responsible_person: string;
+    responsible_team: string;
+    quantity_damaged: number;
+    action_taken: string;
+    notes: string;
+  }) => {
+    const user = (await supabase.auth.getUser()).data.user;
+    const { error } = await supabase.from('damage_reports').insert({
+      ...data,
+      created_by: user?.id,
+    } as any);
+    if (error) throw error;
+    await fetchDamageReports();
+  };
+
   const getTotalStock = () => products.reduce((acc, p) => acc + p.quantity, 0);
   const getTotalSurface = () => parseFloat(products.reduce((acc, p) => acc + p.surface, 0).toFixed(2));
 
   return {
     products,
     movements,
+    damageReports,
     isLoading,
     addProduct,
     deleteProduct,
     addStockMovement,
     bulkImport,
+    addDamageReport,
     getTotalStock,
     getTotalSurface,
   };

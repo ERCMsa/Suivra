@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      damage_reports: {
+        Row: {
+          action_taken: string | null
+          created_at: string
+          created_by: string | null
+          damage_date: string
+          description: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity_damaged: number
+          responsible_person: string | null
+          responsible_team: string | null
+          severity: string
+        }
+        Insert: {
+          action_taken?: string | null
+          created_at?: string
+          created_by?: string | null
+          damage_date?: string
+          description: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity_damaged?: number
+          responsible_person?: string | null
+          responsible_team?: string | null
+          severity?: string
+        }
+        Update: {
+          action_taken?: string | null
+          created_at?: string
+          created_by?: string | null
+          damage_date?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity_damaged?: number
+          responsible_person?: string | null
+          responsible_team?: string | null
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "damage_reports_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           color: string
