@@ -104,6 +104,13 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
               <Input type="number" min={0} value={form.min_quantity} onChange={(e) => setForm({ ...form, min_quantity: Number(e.target.value) })} className="rounded-xl mt-1" />
             </div>
           </div>
+          <div>
+            <Label className="text-xs">{t.locationLabel}</Label>
+            <Select value={form.location} onValueChange={(v) => setForm({ ...form, location: v })}>
+              <SelectTrigger className="rounded-xl mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>{LOCATIONS.map((loc) => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
           <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>

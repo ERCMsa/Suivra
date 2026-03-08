@@ -88,6 +88,9 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                         <span className="inline-flex items-center rounded-lg bg-secondary/60 px-2 py-0.5 text-xs">{product.color}</span>
                       ) : '-'}
                     </TableCell>
+                    <TableCell className="text-center text-sm">
+                      <span className="inline-flex items-center rounded-lg bg-accent/60 px-2 py-0.5 text-xs font-medium">{(product as any).location || 'Magasin'}</span>
+                    </TableCell>
                     <TableCell className="text-center text-sm text-muted-foreground">{product.unit}</TableCell>
                     <TableCell className="text-center">
                       <span className="inline-flex items-center rounded-lg bg-primary/8 px-2.5 py-0.5 text-sm font-semibold text-primary">

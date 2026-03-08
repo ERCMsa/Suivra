@@ -118,8 +118,11 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Input id="quantity" type="number" min="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })} className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="location" className="text-xs">{t.lengthLabel}</Label>
-              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Magasin A, Bureau 3..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+              <Label htmlFor="location" className="text-xs">{t.locationLabel}</Label>
+              <Select value={storageLocation} onValueChange={setStorageLocation}>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0"><SelectValue placeholder={t.selectLocation} /></SelectTrigger>
+                <SelectContent className="rounded-xl">{LOCATIONS.map((loc) => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="supplier" className="text-xs">{t.widthLabel}</Label>
