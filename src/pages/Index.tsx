@@ -10,7 +10,7 @@ const Index = () => {
   const { t } = useLanguage();
   const {
     products, movements, isLoading, addProduct, deleteProduct,
-    addStockMovement, getTotalStock, getTotalSurface,
+    addStockMovement, bulkImport, getTotalStock, getTotalSurface,
   } = useInventory();
 
   if (isLoading) {
