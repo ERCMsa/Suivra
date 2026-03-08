@@ -116,12 +116,14 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
                             {emp.position && <p className="text-xs text-muted-foreground">{emp.position}</p>}
                           </div>
                         </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </AlertDialogTrigger>
+                        <div className="flex gap-0.5">
+                          <EditEmployeeForm employee={emp} onUpdated={onRefresh} />
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
                           <AlertDialogContent className="rounded-2xl">
                             <AlertDialogHeader>
                               <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
