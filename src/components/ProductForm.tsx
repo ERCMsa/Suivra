@@ -123,8 +123,11 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Input id="supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Nom du fournisseur..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
           </div>
-          <div className="rounded-xl bg-primary/5 border border-primary/10 p-3">
-            <p className="text-xs text-muted-foreground">{t.calculatedSurface}: <span className="font-bold text-primary">{formData.quantity} {formData.unit}</span></p>
+          <div className="flex items-center gap-4">
+            <ImageUpload currentUrl={imageUrl || null} onUploaded={setImageUrl} folder="products" />
+            <div className="rounded-xl bg-primary/5 border border-primary/10 p-3 flex-1">
+              <p className="text-xs text-muted-foreground">{t.calculatedSurface}: <span className="font-bold text-primary">{formData.quantity} {formData.unit}</span></p>
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl text-sm">{t.cancel}</Button>
