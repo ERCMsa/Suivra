@@ -27,33 +27,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Stats */}
-          <StatsCards
-            products={products}
-            movements={movements}
-            totalStock={getTotalStock()}
-            totalSurface={getTotalSurface()}
-          />
-
-          {/* Actions */}
+          <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
           <div className="flex justify-start">
             <ProductForm onSubmit={addProduct} />
           </div>
-
-          {/* Products Table */}
-          <ProductTable
-            products={products}
-            movements={movements}
-            onDelete={deleteProduct}
-            onStockMovement={addStockMovement}
-          />
+          <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} />
         </div>
       </main>
-
-      {/* Footer */}
       <footer className="border-t border-border bg-card py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           نظام إدارة المخزون © {new Date().getFullYear()}
