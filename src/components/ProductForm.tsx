@@ -67,7 +67,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     setOpen(false);
     setFormData({ designation: '', type: '', color: '', thickness: 0, unit: 'unité / وحدة', quantity: 0, length: 0, width: 0 });
     setReference('');
-    setLocation('');
+    setStorageLocation('Magasin');
     setSupplier('');
     setImageUrl('');
   };
