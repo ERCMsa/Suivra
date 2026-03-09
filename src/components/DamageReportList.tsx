@@ -32,6 +32,7 @@ interface DamageReportListProps {
 
 const DamageReportList = ({ reports, products }: DamageReportListProps) => {
   const { t, lang } = useLanguage();
+  const { getProfileByUserId } = useProfiles();
 
   const getProductName = (id: string) => products.find((p) => p.id === id)?.designation || '—';
 
