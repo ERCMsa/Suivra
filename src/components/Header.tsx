@@ -16,8 +16,9 @@ import {
 import logo from '@/assets/logo.png';
 
 const Header = () => {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const { myProfile } = useProfiles();
   const navigate = useNavigate();
   const location = useLocation();
 
