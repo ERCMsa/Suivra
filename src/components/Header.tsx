@@ -1,7 +1,9 @@
-import { LogOut, Settings, Globe, Package, Users } from 'lucide-react';
+import { LogOut, Settings, Globe, Package, Users, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useProfiles } from '@/hooks/useProfiles';
+import UserAvatar from '@/components/UserAvatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
