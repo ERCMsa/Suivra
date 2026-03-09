@@ -134,7 +134,9 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
             <p className="text-sm">{t.noRequests}</p>
           </div>
         ) : (
-          requests.map((r) => (
+          requests.map((r) => {
+            const creatorProfile = r.created_by ? getProfileByUserId(r.created_by) : null;
+            return (
             <div key={r.id} className="rounded-xl border p-3 bg-card hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 space-y-1">
