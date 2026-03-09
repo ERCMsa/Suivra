@@ -27,6 +27,7 @@ interface WithdrawalRequestsProps {
 
 const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, onApprove, onReject }: WithdrawalRequestsProps) => {
   const { t } = useLanguage();
+  const { getProfileByUserId } = useProfiles();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ product_id: '', requested_by: '', department: '', quantity: 1, reason: '' });
 
