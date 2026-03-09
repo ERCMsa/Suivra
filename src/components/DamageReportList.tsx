@@ -209,8 +209,16 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
             {r.notes && (
               <p className="text-xs text-muted-foreground italic">{r.notes}</p>
             )}
+
+            {creatorProfile && (
+              <div className="flex items-center gap-1.5 pt-1 border-t border-border/30">
+                <UserAvatar name={creatorProfile.display_name} avatarUrl={creatorProfile.avatar_url} size="sm" />
+                <span className="text-[11px] text-muted-foreground">{t.operatedBy}: {creatorProfile.display_name}</span>
+              </div>
+            )}
           </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );

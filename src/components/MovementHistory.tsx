@@ -53,7 +53,9 @@ const MovementHistory = ({ product, movements }: MovementHistoryProps) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedMovements.map((movement) => (
+                  {sortedMovements.map((movement) => {
+                    const profile = movement.created_by ? getProfileByUserId(movement.created_by) : null;
+                    return (
                     <TableRow key={movement.id} className="hover:bg-secondary/20 transition-colors border-border/30">
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-1">
@@ -71,9 +73,16 @@ const MovementHistory = ({ product, movements }: MovementHistoryProps) => {
                       <TableCell className="text-center text-xs text-muted-foreground">
                         {format(new Date(movement.created_at), 'dd/MM/yyyy HH:mm', { locale: lang === 'ar' ? ar : fr })}
                       </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <UserAvatar name={profile?.display_name} avatarUrl={profile?.avatar_url} size="sm" />
+                          <span className="text-xs text-muted-foreground">{profile?.display_name || '—'}</span>
+                        </div>
+                      </TableCell>
                       <TableCell className="max-w-32 truncate text-center text-xs">{movement.notes || '-'}</TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
