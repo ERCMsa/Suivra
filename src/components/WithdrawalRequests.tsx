@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ClipboardList, Check, X, Clock, Package, User, Calendar } from 'lucide-react';
+import UserAvatar from '@/components/UserAvatar';
+import { useProfiles } from '@/hooks/useProfiles';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
