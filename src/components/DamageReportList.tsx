@@ -160,7 +160,9 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        {reports.map((r) => (
+        {reports.map((r) => {
+          const creatorProfile = r.created_by ? getProfileByUserId(r.created_by) : null;
+          return (
           <div key={r.id} className="rounded-xl border p-4 space-y-2 bg-card hover:shadow-sm transition-shadow">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
