@@ -145,7 +145,12 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
                     <span className="font-semibold text-sm">{getProductName(r.product_id)}</span>
                     <Badge variant="outline" className="text-xs">{r.quantity.toLocaleString('fr-FR')} {t.unit}</Badge>
                   </div>
-                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground items-center">
+                    {creatorProfile && (
+                      <span className="flex items-center gap-1">
+                        <UserAvatar name={creatorProfile.display_name} avatarUrl={creatorProfile.avatar_url} size="sm" />
+                      </span>
+                    )}
                     <span className="flex items-center gap-1"><User className="h-3 w-3" />{r.requested_by}</span>
                     {r.department && <span>{r.department}</span>}
                     <span className="flex items-center gap-1">
