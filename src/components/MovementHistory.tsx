@@ -6,6 +6,8 @@ import { Product, StockMovement } from '@/hooks/useInventory';
 import { format } from 'date-fns';
 import { ar, fr } from 'date-fns/locale';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useProfiles } from '@/hooks/useProfiles';
+import UserAvatar from '@/components/UserAvatar';
 
 interface MovementHistoryProps {
   product: Product;
