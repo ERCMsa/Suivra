@@ -48,6 +48,7 @@ const MovementHistory = ({ product, movements }: MovementHistoryProps) => {
                     <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.width}</TableHead>
                     <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.surface}</TableHead>
                     <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.date}</TableHead>
+                    <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.operatedBy}</TableHead>
                     <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.notes}</TableHead>
                   </TableRow>
                 </TableHeader>
