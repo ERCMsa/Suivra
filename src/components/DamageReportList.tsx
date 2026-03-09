@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useProfiles } from '@/hooks/useProfiles';
+import UserAvatar from '@/components/UserAvatar';
 import { Product } from '@/hooks/useInventory';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -30,6 +32,7 @@ interface DamageReportListProps {
 
 const DamageReportList = ({ reports, products }: DamageReportListProps) => {
   const { t, lang } = useLanguage();
+  const { getProfileByUserId } = useProfiles();
 
   const getProductName = (id: string) => products.find((p) => p.id === id)?.designation || '—';
 
@@ -157,7 +160,9 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        {reports.map((r) => (
+        {reports.map((r) => {
+          const creatorProfile = r.created_by ? getProfileByUserId(r.created_by) : null;
+          return (
           <div key={r.id} className="rounded-xl border p-4 space-y-2 bg-card hover:shadow-sm transition-shadow">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
@@ -204,8 +209,16 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
             {r.notes && (
               <p className="text-xs text-muted-foreground italic">{r.notes}</p>
             )}
+
+            {creatorProfile && (
+              <div className="flex items-center gap-1.5 pt-1 border-t border-border/30">
+                <UserAvatar name={creatorProfile.display_name} avatarUrl={creatorProfile.avatar_url} size="sm" />
+                <span className="text-[11px] text-muted-foreground">{t.operatedBy}: {creatorProfile.display_name}</span>
+              </div>
+            )}
           </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );

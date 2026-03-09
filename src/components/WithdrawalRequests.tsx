@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ClipboardList, Check, X, Clock, Package, User, Calendar } from 'lucide-react';
+import UserAvatar from '@/components/UserAvatar';
+import { useProfiles } from '@/hooks/useProfiles';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +27,7 @@ interface WithdrawalRequestsProps {
 
 const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, onApprove, onReject }: WithdrawalRequestsProps) => {
   const { t } = useLanguage();
+  const { getProfileByUserId } = useProfiles();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ product_id: '', requested_by: '', department: '', quantity: 1, reason: '' });
 
@@ -131,7 +134,9 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
             <p className="text-sm">{t.noRequests}</p>
           </div>
         ) : (
-          requests.map((r) => (
+          requests.map((r) => {
+            const creatorProfile = r.created_by ? getProfileByUserId(r.created_by) : null;
+            return (
             <div key={r.id} className="rounded-xl border p-3 bg-card hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 space-y-1">
@@ -140,7 +145,12 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
                     <span className="font-semibold text-sm">{getProductName(r.product_id)}</span>
                     <Badge variant="outline" className="text-xs">{r.quantity.toLocaleString('fr-FR')} {t.unit}</Badge>
                   </div>
-                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap gap-3 text-xs text-muted-foreground items-center">
+                    {creatorProfile && (
+                      <span className="flex items-center gap-1">
+                        <UserAvatar name={creatorProfile.display_name} avatarUrl={creatorProfile.avatar_url} size="sm" />
+                      </span>
+                    )}
                     <span className="flex items-center gap-1"><User className="h-3 w-3" />{r.requested_by}</span>
                     {r.department && <span>{r.department}</span>}
                     <span className="flex items-center gap-1">
@@ -165,7 +175,8 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </CardContent>
     </Card>

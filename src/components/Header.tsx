@@ -1,7 +1,9 @@
-import { LogOut, Settings, Globe, Package, Users } from 'lucide-react';
+import { LogOut, Settings, Globe, Package, Users, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useProfiles } from '@/hooks/useProfiles';
+import UserAvatar from '@/components/UserAvatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -14,8 +16,9 @@ import {
 import logo from '@/assets/logo.png';
 
 const Header = () => {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const { myProfile } = useProfiles();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,6 +59,15 @@ const Header = () => {
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">{t.navEmployees}</span>
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/team' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/team')}
+            >
+              <UserCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navTeam}</span>
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -89,6 +101,9 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <div className="cursor-pointer" onClick={() => navigate('/team')}>
+              <UserAvatar name={myProfile?.display_name} avatarUrl={myProfile?.avatar_url} size="sm" />
+            </div>
             <Button
               variant="ghost"
               size="sm"
