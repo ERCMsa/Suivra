@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useProfiles } from '@/hooks/useProfiles';
+import UserAvatar from '@/components/UserAvatar';
 import { Product } from '@/hooks/useInventory';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
