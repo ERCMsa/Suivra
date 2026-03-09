@@ -175,8 +175,8 @@ const WithdrawalRequests = ({ requests, products, employees, onCreateRequest, on
                 </div>
               </div>
             </div>
-          ))
-        )}
+            );
+          })
       </CardContent>
     </Card>
   );
