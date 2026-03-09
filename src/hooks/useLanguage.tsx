@@ -224,6 +224,16 @@ const translations = {
     reqCreateFail: 'فشل إنشاء الطلب',
     noRequests: 'لا توجد طلبات',
 
+    // Team / Profiles
+    teamSection: 'فريق العمل',
+    teamMyProfile: 'ملفي الشخصي',
+    teamRoleAdmin: 'مدير',
+    teamRoleWorker: 'عامل',
+    teamAssignRole: 'تعيين الدور',
+    teamYou: 'أنت',
+    navTeam: 'الفريق',
+    operatedBy: 'بواسطة',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
