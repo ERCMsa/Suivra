@@ -16,6 +16,7 @@ interface MovementHistoryProps {
 
 const MovementHistory = ({ product, movements }: MovementHistoryProps) => {
   const { t, lang } = useLanguage();
+  const { getProfileByUserId } = useProfiles();
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
