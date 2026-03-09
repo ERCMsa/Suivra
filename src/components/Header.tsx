@@ -101,6 +101,9 @@ const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <div className="cursor-pointer" onClick={() => navigate('/team')}>
+              <UserAvatar name={myProfile?.display_name} avatarUrl={myProfile?.avatar_url} size="sm" />
+            </div>
             <Button
               variant="ghost"
               size="sm"

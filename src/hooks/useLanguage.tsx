@@ -444,6 +444,15 @@ const translations = {
     reqCreateFail: 'Échec de la création',
     noRequests: 'Aucune demande',
 
+    teamSection: 'Équipe',
+    teamMyProfile: 'Mon profil',
+    teamRoleAdmin: 'Administrateur',
+    teamRoleWorker: 'Ouvrier',
+    teamAssignRole: 'Attribuer rôle',
+    teamYou: 'Vous',
+    navTeam: 'Équipe',
+    operatedBy: 'Par',
+
     footer: 'Suivi du Matériel - ERCM SA',
     loading: 'Chargement...',
   },
