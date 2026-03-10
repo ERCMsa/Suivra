@@ -70,6 +70,66 @@ export type Database = {
           },
         ]
       }
+      discharges: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          date_out: string
+          date_returned: string | null
+          employee_id: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          reference: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          date_out?: string
+          date_returned?: string | null
+          employee_id: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity?: number
+          reference: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          date_out?: string
+          date_returned?: string | null
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          reference?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharges_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharges_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           created_at: string
