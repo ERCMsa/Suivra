@@ -55,5 +55,16 @@ export const useEmployees = () => {
     await fetchEmployees();
   };
 
-  return { employees, isLoading, addEmployee, deleteEmployee, fetchEmployees };
+  const bulkImportEmployees = async (items: EmployeeFormData[]) => {
+    const user = (await supabase.auth.getUser()).data.user;
+    for (const data of items) {
+      await supabase.from('employees').insert({
+        ...data,
+        created_by: user?.id,
+      } as any);
+    }
+    await fetchEmployees();
+  };
+
+  return { employees, isLoading, addEmployee, deleteEmployee, bulkImportEmployees, fetchEmployees };
 };

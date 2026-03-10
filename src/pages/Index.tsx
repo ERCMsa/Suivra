@@ -9,9 +9,12 @@ import DamageStats from '@/components/DamageStats';
 import DashboardCharts from '@/components/DashboardCharts';
 import LowStockAlerts from '@/components/LowStockAlerts';
 import WithdrawalRequests from '@/components/WithdrawalRequests';
+import DischargeForm from '@/components/DischargeForm';
+import DischargeList from '@/components/DischargeList';
 import { useInventory } from '@/hooks/useInventory';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
+import { useDischarges } from '@/hooks/useDischarges';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
@@ -22,10 +25,28 @@ const Index = () => {
   } = useInventory();
   const { employees } = useEmployees();
   const { requests, createRequest, approveRequest, rejectRequest } = useWithdrawalRequests();
+  const { discharges, createDischarge, markReturned, fetchDischarges } = useDischarges();
   
   const handleApproveRequest = async (id: string) => {
     await approveRequest(id);
     await refresh();
+  };
+
+  const handleMarkReturned = async (id: string, productId: string, quantity: number) => {
+    await markReturned(id);
+    // Return stock
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      await addStockMovement(productId, 'in', quantity, product.length, product.width, 'إرجاع بعد ديشارج');
+    }
+    await refresh();
+    await fetchDischarges();
+  };
+
+  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string }) => {
+    const discharge = await createDischarge(data);
+    await refresh();
+    return discharge;
   };
 
   if (isLoading) {
@@ -47,13 +68,15 @@ const Index = () => {
         <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
         <DashboardCharts products={products} movements={movements} damageReports={damageReports} />
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <ProductForm onSubmit={addProduct} />
             <DamageReportForm products={products} employees={employees} onSubmit={addDamageReport} />
+            <DischargeForm products={products} employees={employees} onSubmit={handleDischargeSubmit} onStockOut={addStockMovement} />
           </div>
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} />
+        <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
