@@ -1,12 +1,13 @@
 import Header from '@/components/Header';
 import EmployeeForm from '@/components/EmployeeForm';
 import EmployeeList from '@/components/EmployeeList';
+import EmployeeImport from '@/components/EmployeeImport';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Employees = () => {
   const { t } = useLanguage();
-  const { employees, isLoading, addEmployee, deleteEmployee, fetchEmployees } = useEmployees();
+  const { employees, isLoading, addEmployee, deleteEmployee, bulkImportEmployees, fetchEmployees } = useEmployees();
 
   if (isLoading) {
     return (
@@ -23,9 +24,12 @@ const Employees = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 space-y-6 max-w-7xl">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <h2 className="text-xl font-bold">{t.employeesSection}</h2>
-          <EmployeeForm onSubmit={addEmployee} />
+          <div className="flex items-center gap-2">
+            <EmployeeImport onImport={bulkImportEmployees} />
+            <EmployeeForm onSubmit={addEmployee} />
+          </div>
         </div>
         <EmployeeList employees={employees} onDelete={deleteEmployee} onRefresh={fetchEmployees} />
       </main>
