@@ -234,6 +234,37 @@ const translations = {
     navTeam: 'الفريق',
     operatedBy: 'بواسطة',
 
+    // Discharge
+    newDischarge: 'إنشاء ديشارج',
+    dischargeList: 'قائمة الديشارج',
+    dischargeRef: 'المرجع',
+    dischargeEmployee: 'العامل',
+    dischargeProduct: 'المادة',
+    selectEmployee: 'اختر العامل',
+    dischargeCreated: 'تم إنشاء الديشارج بنجاح',
+    dischargeFail: 'فشل العملية',
+    dischargeReturned: 'تم تسجيل الإرجاع بنجاح',
+    dischargeActive: 'لم يُرجع',
+    dischargeReturnedStatus: 'تم الإرجاع',
+    dischargeAfter: 'بعد السحب',
+    markReturned: 'تسجيل الإرجاع',
+    confirmReturn: 'تأكيد الإرجاع',
+    confirmReturnDesc: 'سيتم إرجاع هذه المادة إلى المخزون.',
+    createDischarge: 'إنشاء الديشارج',
+    searchDischarge: 'بحث في الديشارج...',
+    noDischarges: 'لا توجد ديشارج',
+
+    // Import
+    importEmployeesExcel: 'استيراد من Excel',
+    importEmployees: 'استيراد',
+    previewEmployees: 'معاينة الأشخاص',
+    downloadTemplate: 'تحميل نموذج',
+    importSuccess: 'تم الاستيراد بنجاح',
+    importFail: 'فشل الاستيراد',
+    emptyFile: 'الملف فارغ',
+    noValidData: 'لم يتم العثور على بيانات صالحة',
+    fileReadError: 'خطأ في قراءة الملف',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
