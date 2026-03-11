@@ -178,9 +178,14 @@ const EmployeeProfile = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 space-y-6 max-w-7xl">
-        <Button variant="ghost" className="gap-2 rounded-xl" onClick={() => navigate('/employees')}>
-          <ArrowLeft className="h-4 w-4" /> {t.navEmployees}
-        </Button>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <Button variant="ghost" className="gap-2 rounded-xl" onClick={() => navigate('/employees')}>
+            <ArrowLeft className="h-4 w-4" /> {t.navEmployees}
+          </Button>
+          <Button variant="outline" className="gap-2 rounded-xl" onClick={generateProfilePDF}>
+            <FileDown className="h-4 w-4" /> {t.exportProfilePDF}
+          </Button>
+        </div>
 
         {/* Employee Info Card */}
         <Card className="rounded-2xl">

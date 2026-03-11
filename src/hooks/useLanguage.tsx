@@ -530,6 +530,7 @@ const translations = {
     returnedEquipment: 'Équipement retourné',
     dischargeHistory: 'Historique des décharges',
     viewProfile: 'Voir le profil',
+    exportProfilePDF: 'Exporter fiche PDF',
 
     // Import
     importEmployeesExcel: 'Importer depuis Excel',
