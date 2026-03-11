@@ -11,6 +11,7 @@ import LowStockAlerts from '@/components/LowStockAlerts';
 import WithdrawalRequests from '@/components/WithdrawalRequests';
 import DischargeForm from '@/components/DischargeForm';
 import DischargeList from '@/components/DischargeList';
+import EquipmentHistory from '@/components/EquipmentHistory';
 import { useInventory } from '@/hooks/useInventory';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
