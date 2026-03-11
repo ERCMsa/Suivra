@@ -266,6 +266,7 @@ const translations = {
     returnedEquipment: 'المعدات المرجعة',
     dischargeHistory: 'سجل الديشارج',
     viewProfile: 'عرض الملف',
+    exportProfilePDF: 'تصدير الملف PDF',
 
     // Import
     importEmployeesExcel: 'استيراد من Excel',
