@@ -78,6 +78,7 @@ const Index = () => {
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} />
         <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} />
+        <EquipmentHistory discharges={discharges} products={products} employees={employees} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
