@@ -101,10 +101,18 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned }: Disc
       doc.text((emp.position || emp.department).toUpperCase(), 140, 70);
 
       // Items table
+      // Items table - show all items
+      const allItems = d.items && d.items.length > 0 
+        ? d.items.map((item, idx) => {
+            const itemProd = products.find(p => p.id === item.product_id);
+            return [idx + 1, itemProd?.designation || '-', item.quantity];
+          })
+        : [[1, prod.designation, d.quantity]];
+
       (doc as any).autoTable({
         startY: 85,
         head: [['N', 'Designation', 'Quantite']],
-        body: [[1, prod.designation, d.quantity]],
+        body: allItems,
         styles: { font: 'helvetica', halign: 'center', fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.3, lineColor: [0, 0, 0], fontStyle: 'bold' },
         bodyStyles: { lineWidth: 0.3, lineColor: [0, 0, 0] },
