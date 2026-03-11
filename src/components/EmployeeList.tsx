@@ -19,6 +19,7 @@ interface EmployeeListProps {
 
 const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
   const exportEmployeesExcel = async () => {
