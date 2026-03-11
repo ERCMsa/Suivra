@@ -207,8 +207,18 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned }: Disc
                     <TableRow key={d.id} className="hover:bg-secondary/20">
                       <TableCell className="text-center text-xs font-mono">{d.reference}</TableCell>
                       <TableCell className="text-center text-sm font-medium">{emp?.full_name || '-'}</TableCell>
-                      <TableCell className="text-center text-sm">{prod?.designation || '-'}</TableCell>
-                      <TableCell className="text-center text-sm font-semibold">{d.quantity}</TableCell>
+                      <TableCell className="text-center text-sm">
+                        {d.items && d.items.length > 1 
+                          ? d.items.map(i => products.find(p => p.id === i.product_id)?.designation || '-').join(', ')
+                          : prod?.designation || '-'
+                        }
+                      </TableCell>
+                      <TableCell className="text-center text-sm font-semibold">
+                        {d.items && d.items.length > 1 
+                          ? d.items.map(i => i.quantity).join(' + ')
+                          : d.quantity
+                        }
+                      </TableCell>
                       <TableCell className="text-center text-xs">{new Date(d.date_out).toLocaleDateString('fr-FR')}</TableCell>
                       <TableCell className="text-center">
                         <Badge className={isActive ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}>
