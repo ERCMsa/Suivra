@@ -1,4 +1,5 @@
-import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet, Eye } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
