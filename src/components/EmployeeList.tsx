@@ -192,6 +192,9 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
                       </div>
 
                       {emp.notes && <p className="text-xs text-muted-foreground italic">{emp.notes}</p>}
+                      <Button variant="ghost" size="sm" className="w-full rounded-xl text-xs gap-1 h-7 text-primary" onClick={() => navigate(`/employee/${emp.id}`)}>
+                        <Eye className="h-3 w-3" /> {t.viewProfile}
+                      </Button>
                     </div>
                   ))}
                 </div>
