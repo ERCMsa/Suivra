@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Phone, Mail, Building2, Briefcase, FileCheck, Package, Calendar } from 'lucide-react';
+import { ArrowLeft, User, Phone, Mail, Building2, Briefcase, FileCheck, Package, Calendar, FileDown } from 'lucide-react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
