@@ -70,6 +70,45 @@ export type Database = {
           },
         ]
       }
+      discharge_items: {
+        Row: {
+          created_at: string
+          discharge_id: string
+          id: string
+          product_id: string
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          discharge_id: string
+          id?: string
+          product_id: string
+          quantity?: number
+        }
+        Update: {
+          created_at?: string
+          discharge_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_items_discharge_id_fkey"
+            columns: ["discharge_id"]
+            isOneToOne: false
+            referencedRelation: "discharges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discharges: {
         Row: {
           created_at: string

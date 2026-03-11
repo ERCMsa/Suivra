@@ -1,6 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+export interface DischargeItem {
+  id: string;
+  discharge_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: string;
+}
+
 export interface Discharge {
   id: string;
   reference: string;
@@ -14,6 +22,7 @@ export interface Discharge {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  items?: DischargeItem[];
 }
 
 export const useDischarges = () => {
@@ -22,7 +31,18 @@ export const useDischarges = () => {
 
   const fetchDischarges = useCallback(async () => {
     const { data } = await supabase.from('discharges').select('*').order('created_at', { ascending: false });
-    if (data) setDischarges(data as Discharge[]);
+    if (!data) return;
+    
+    // Fetch items for all discharges
+    const ids = data.map(d => d.id);
+    const { data: items } = await supabase.from('discharge_items').select('*').in('discharge_id', ids.length > 0 ? ids : ['none']);
+    
+    const dischargesWithItems = (data as Discharge[]).map(d => ({
+      ...d,
+      items: (items as DischargeItem[] || []).filter(i => i.discharge_id === d.id),
+    }));
+    
+    setDischarges(dischargesWithItems);
   }, []);
 
   useEffect(() => {
@@ -40,17 +60,42 @@ export const useDischarges = () => {
     product_id: string;
     quantity: number;
     notes?: string;
+    additional_items?: { product_id: string; quantity: number }[];
   }) => {
     const user = (await supabase.auth.getUser()).data.user;
     const reference = generateReference(data.employee_id);
     
     const { data: newDischarge, error } = await supabase.from('discharges').insert({
-      ...data,
+      employee_id: data.employee_id,
+      product_id: data.product_id,
+      quantity: data.quantity,
+      notes: data.notes,
       reference,
       created_by: user?.id,
     } as any).select().single();
 
     if (error) throw error;
+
+    // Insert additional items
+    if (data.additional_items && data.additional_items.length > 0 && newDischarge) {
+      const allItems = [
+        { discharge_id: (newDischarge as any).id, product_id: data.product_id, quantity: data.quantity },
+        ...data.additional_items.map(item => ({
+          discharge_id: (newDischarge as any).id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+        })),
+      ];
+      await supabase.from('discharge_items').insert(allItems as any);
+    } else if (newDischarge) {
+      // Single item - still store in discharge_items for consistency
+      await supabase.from('discharge_items').insert({
+        discharge_id: (newDischarge as any).id,
+        product_id: data.product_id,
+        quantity: data.quantity,
+      } as any);
+    }
+
     await fetchDischarges();
     return newDischarge as Discharge;
   };

@@ -11,6 +11,7 @@ import LowStockAlerts from '@/components/LowStockAlerts';
 import WithdrawalRequests from '@/components/WithdrawalRequests';
 import DischargeForm from '@/components/DischargeForm';
 import DischargeList from '@/components/DischargeList';
+import EquipmentHistory from '@/components/EquipmentHistory';
 import { useInventory } from '@/hooks/useInventory';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
@@ -43,7 +44,7 @@ const Index = () => {
     await fetchDischarges();
   };
 
-  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string }) => {
+  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
     const discharge = await createDischarge(data);
     await refresh();
     return discharge;
@@ -77,6 +78,7 @@ const Index = () => {
         </div>
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} />
         <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} />
+        <EquipmentHistory discharges={discharges} products={products} employees={employees} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />

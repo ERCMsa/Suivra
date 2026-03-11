@@ -1,4 +1,5 @@
-import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Phone, Mail, Trash2, Building2, User, FileSpreadsheet, Eye } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ interface EmployeeListProps {
 
 const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
   const exportEmployeesExcel = async () => {
@@ -190,6 +192,9 @@ const EmployeeList = ({ employees, onDelete, onRefresh }: EmployeeListProps) => 
                       </div>
 
                       {emp.notes && <p className="text-xs text-muted-foreground italic">{emp.notes}</p>}
+                      <Button variant="ghost" size="sm" className="w-full rounded-xl text-xs gap-1 h-7 text-primary" onClick={() => navigate(`/employee/${emp.id}`)}>
+                        <Eye className="h-3 w-3" /> {t.viewProfile}
+                      </Button>
                     </div>
                   ))}
                 </div>
