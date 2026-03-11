@@ -266,6 +266,7 @@ const translations = {
     returnedEquipment: 'المعدات المرجعة',
     dischargeHistory: 'سجل الديشارج',
     viewProfile: 'عرض الملف',
+    exportProfilePDF: 'تصدير الملف PDF',
 
     // Import
     importEmployeesExcel: 'استيراد من Excel',
@@ -529,6 +530,7 @@ const translations = {
     returnedEquipment: 'Équipement retourné',
     dischargeHistory: 'Historique des décharges',
     viewProfile: 'Voir le profil',
+    exportProfilePDF: 'Exporter fiche PDF',
 
     // Import
     importEmployeesExcel: 'Importer depuis Excel',
