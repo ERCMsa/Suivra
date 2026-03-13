@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Employees from "./pages/Employees";
 import Team from "./pages/Team";
 import EmployeeProfile from "./pages/EmployeeProfile";
+import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/employees" element={<ProtectedRoute><Employees /></ProtectedRoute>} />
               <Route path="/team" element={<ProtectedRoute><Team /></ProtectedRoute>} />
               <Route path="/employee/:id" element={<ProtectedRoute><EmployeeProfile /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>

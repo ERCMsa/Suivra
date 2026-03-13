@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import StatsCards from '@/components/StatsCards';
+import DischargeStats from '@/components/DischargeStats';
 import ProductForm from '@/components/ProductForm';
 import ProductTable from '@/components/ProductTable';
 import ExportButtons from '@/components/ExportButtons';
@@ -67,6 +68,7 @@ const Index = () => {
       <main className="container mx-auto px-4 sm:px-6 py-6 space-y-6 max-w-7xl">
         <LowStockAlerts products={products} />
         <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
+        <DischargeStats discharges={discharges} products={products} employees={employees} />
         <DashboardCharts products={products} movements={movements} damageReports={damageReports} />
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">

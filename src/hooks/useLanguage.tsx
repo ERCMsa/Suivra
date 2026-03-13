@@ -268,6 +268,19 @@ const translations = {
     viewProfile: 'عرض الملف',
     exportProfilePDF: 'تصدير الملف PDF',
 
+    // Discharge Stats
+    dischargeActiveCount: 'ديشارج نشط',
+    equipmentOutCount: 'معدات خارج المخزن',
+    workersWithEquipment: 'عمال بمعدات',
+    topWorkersByUsage: 'أكثر العمال استعمالاً للمعدات',
+
+    // Settings
+    settingsUsers: 'المستخدمون',
+    settingsGeneral: 'عام',
+    navSettings: 'الإعدادات',
+    deleteUserConfirm: 'سيتم حذف هذا المستخدم نهائياً.',
+    editUser: 'تعديل المستخدم',
+
     // Import
     importEmployeesExcel: 'استيراد من Excel',
     importEmployees: 'استيراد',
@@ -531,6 +544,19 @@ const translations = {
     dischargeHistory: 'Historique des décharges',
     viewProfile: 'Voir le profil',
     exportProfilePDF: 'Exporter fiche PDF',
+
+    // Discharge Stats
+    dischargeActiveCount: 'Décharges actives',
+    equipmentOutCount: 'Équipements sortis',
+    workersWithEquipment: 'Ouvriers équipés',
+    topWorkersByUsage: 'Ouvriers les plus utilisateurs',
+
+    // Settings
+    settingsUsers: 'Utilisateurs',
+    settingsGeneral: 'Général',
+    navSettings: 'Paramètres',
+    deleteUserConfirm: 'Cet utilisateur sera supprimé définitivement.',
+    editUser: 'Modifier l\'utilisateur',
 
     // Import
     importEmployeesExcel: 'Importer depuis Excel',
