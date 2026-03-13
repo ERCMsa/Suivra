@@ -268,6 +268,19 @@ const translations = {
     viewProfile: 'عرض الملف',
     exportProfilePDF: 'تصدير الملف PDF',
 
+    // Discharge Stats
+    dischargeActiveCount: 'ديشارج نشط',
+    equipmentOutCount: 'معدات خارج المخزن',
+    workersWithEquipment: 'عمال بمعدات',
+    topWorkersByUsage: 'أكثر العمال استعمالاً للمعدات',
+
+    // Settings
+    settingsUsers: 'المستخدمون',
+    settingsGeneral: 'عام',
+    navSettings: 'الإعدادات',
+    deleteUserConfirm: 'سيتم حذف هذا المستخدم نهائياً.',
+    editUser: 'تعديل المستخدم',
+
     // Import
     importEmployeesExcel: 'استيراد من Excel',
     importEmployees: 'استيراد',
