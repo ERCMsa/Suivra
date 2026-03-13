@@ -545,6 +545,19 @@ const translations = {
     viewProfile: 'Voir le profil',
     exportProfilePDF: 'Exporter fiche PDF',
 
+    // Discharge Stats
+    dischargeActiveCount: 'Décharges actives',
+    equipmentOutCount: 'Équipements sortis',
+    workersWithEquipment: 'Ouvriers équipés',
+    topWorkersByUsage: 'Ouvriers les plus utilisateurs',
+
+    // Settings
+    settingsUsers: 'Utilisateurs',
+    settingsGeneral: 'Général',
+    navSettings: 'Paramètres',
+    deleteUserConfirm: 'Cet utilisateur sera supprimé définitivement.',
+    editUser: 'Modifier l\'utilisateur',
+
     // Import
     importEmployeesExcel: 'Importer depuis Excel',
     importEmployees: 'Importer',
