@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import StatsCards from '@/components/StatsCards';
+import DischargeStats from '@/components/DischargeStats';
 import ProductForm from '@/components/ProductForm';
 import ProductTable from '@/components/ProductTable';
 import ExportButtons from '@/components/ExportButtons';
