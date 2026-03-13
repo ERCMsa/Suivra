@@ -69,38 +69,15 @@ const Header = () => {
               <span className="hidden sm:inline">{t.navTeam}</span>
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 rounded-xl h-9 w-9"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align={lang === 'ar' ? 'start' : 'end'} className="w-48 rounded-xl">
-                <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-                  <Globe className="h-3.5 w-3.5" />
-                  {t.language}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setLang('ar')}
-                  className={`rounded-lg cursor-pointer ${lang === 'ar' ? 'bg-primary/10 text-primary font-medium' : ''}`}
-                >
-                  <span className="ml-2">🇸🇦</span>
-                  {t.arabic}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setLang('fr')}
-                  className={`rounded-lg cursor-pointer ${lang === 'fr' ? 'bg-primary/10 text-primary font-medium' : ''}`}
-                >
-                  <span className="ml-2">🇫🇷</span>
-                  {t.french}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/settings' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/settings')}
+            >
+              <Cog className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.navSettings}</span>
+            </Button>
             <div className="cursor-pointer" onClick={() => navigate('/team')}>
               <UserAvatar name={myProfile?.display_name} avatarUrl={myProfile?.avatar_url} size="sm" />
             </div>
