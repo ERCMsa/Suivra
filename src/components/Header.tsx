@@ -1,4 +1,4 @@
-import { LogOut, Settings, Globe, Package, Users, UserCircle } from 'lucide-react';
+import { LogOut, Settings, Globe, Package, Users, UserCircle, Cog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
