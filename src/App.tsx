@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Employees from "./pages/Employees";
 import Team from "./pages/Team";
 import EmployeeProfile from "./pages/EmployeeProfile";
+import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
