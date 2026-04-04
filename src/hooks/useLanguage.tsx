@@ -452,7 +452,7 @@ const translations = {
     deptAdministration: 'Administration',
     deptMontage: 'Montage et Installation',
     deptCivilEngineering: 'Ciment et Génie Civil',
-    navInventory: 'Inventaire',
+    navInventory: 'Accueil',
     navEmployees: 'Personnel',
     exportEmployeesExcel: 'Exporter Personnel vers Excel',
 
