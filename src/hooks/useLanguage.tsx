@@ -170,7 +170,7 @@ const translations = {
     deptAdministration: 'الإدارة',
     deptMontage: 'فرق المونتاج والتركيب',
     deptCivilEngineering: 'فرق الإسمنت والهندسة المدنية',
-    navInventory: 'المخزون',
+    navInventory: 'الرئيسية',
     navEmployees: 'الأشخاص',
     exportEmployeesExcel: 'تصدير الأشخاص إلى Excel',
 
