@@ -83,6 +83,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       width: 0,
       image_url: imageUrl || undefined,
       location: storageLocation,
+      brand,
     } as any);
     toast.success(t.productAdded);
     setOpen(false);
@@ -90,6 +91,8 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     setReference('');
     setStorageLocation('Magasin');
     setSupplier('');
+    setImageUrl('');
+    setBrand('');
     setImageUrl('');
   };
 
