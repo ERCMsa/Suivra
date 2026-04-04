@@ -152,6 +152,24 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
               <Label htmlFor="supplier" className="text-xs">{t.widthLabel}</Label>
               <Input id="supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Nom du fournisseur..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{t.brandLabel}</Label>
+              <Select value={brand} onValueChange={setBrand}>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0">
+                  <SelectValue placeholder={t.selectBrand} />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {BRANDS.map((b) => (
+                    <SelectItem key={b.name} value={b.name}>
+                      <span className="flex items-center gap-2">
+                        {b.logo && <img src={b.logo} alt={b.name} className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                        {b.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <ImageUpload currentUrl={imageUrl || null} onUploaded={setImageUrl} folder="products" />
