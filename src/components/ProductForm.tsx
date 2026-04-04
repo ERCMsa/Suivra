@@ -37,6 +37,25 @@ const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot 
 
 const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
 
+const BRANDS = [
+  { name: 'Bosch', logo: 'https://logo.clearbit.com/bosch.com' },
+  { name: 'DeWalt', logo: 'https://logo.clearbit.com/dewalt.com' },
+  { name: 'Makita', logo: 'https://logo.clearbit.com/makita.com' },
+  { name: 'Milwaukee', logo: 'https://logo.clearbit.com/milwaukee.com' },
+  { name: 'Stanley', logo: 'https://logo.clearbit.com/stanley.com' },
+  { name: 'Hilti', logo: 'https://logo.clearbit.com/hilti.com' },
+  { name: 'Caterpillar', logo: 'https://logo.clearbit.com/caterpillar.com' },
+  { name: 'Schneider Electric', logo: 'https://logo.clearbit.com/se.com' },
+  { name: 'Legrand', logo: 'https://logo.clearbit.com/legrand.com' },
+  { name: 'Würth', logo: 'https://logo.clearbit.com/wurth.com' },
+  { name: 'Facom', logo: 'https://logo.clearbit.com/facom.com' },
+  { name: '3M', logo: 'https://logo.clearbit.com/3m.com' },
+  { name: 'Stihl', logo: 'https://logo.clearbit.com/stihl.com' },
+  { name: 'Husqvarna', logo: 'https://logo.clearbit.com/husqvarna.com' },
+  { name: 'Metabo', logo: 'https://logo.clearbit.com/metabo.com' },
+  { name: 'Autre / أخرى', logo: '' },
+];
+
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
