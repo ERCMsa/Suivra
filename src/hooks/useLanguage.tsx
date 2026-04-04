@@ -170,7 +170,7 @@ const translations = {
     deptAdministration: 'الإدارة',
     deptMontage: 'فرق المونتاج والتركيب',
     deptCivilEngineering: 'فرق الإسمنت والهندسة المدنية',
-    navInventory: 'المخزون',
+    navInventory: 'الرئيسية',
     navEmployees: 'الأشخاص',
     exportEmployeesExcel: 'تصدير الأشخاص إلى Excel',
 
@@ -452,7 +452,7 @@ const translations = {
     deptAdministration: 'Administration',
     deptMontage: 'Montage et Installation',
     deptCivilEngineering: 'Ciment et Génie Civil',
-    navInventory: 'Inventaire',
+    navInventory: 'Accueil',
     navEmployees: 'Personnel',
     exportEmployeesExcel: 'Exporter Personnel vers Excel',
 

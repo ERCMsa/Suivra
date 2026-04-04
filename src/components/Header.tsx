@@ -59,15 +59,6 @@ const Header = () => {
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">{t.navEmployees}</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/team' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/team')}
-            >
-              <UserCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.navTeam}</span>
-            </Button>
 
             <Button
               variant="ghost"

@@ -93,7 +93,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut }: DischargeF
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-2 rounded-xl text-xs h-9 border-border/60 hover:bg-amber-50 text-amber-700 hover:text-amber-800">
+        <Button size="sm" className="gap-2 rounded-xl h-9 text-sm shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white">
           <FileCheck className="h-3.5 w-3.5" />
           {t.newDischarge}
         </Button>
@@ -183,7 +183,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut }: DischargeF
 
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>
-            <Button className="flex-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
+            <Button className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? t.loading : t.createDischarge}
             </Button>
           </div>
