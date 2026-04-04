@@ -69,6 +69,7 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
       min_quantity: form.min_quantity,
       image_url: form.image_url || null,
       location: form.location,
+      brand: form.brand,
     } as any).eq('id', product.id);
     if (error) { toast.error(t.editFail); return; }
     toast.success(t.editSuccess);
