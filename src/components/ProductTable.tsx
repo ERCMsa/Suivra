@@ -28,7 +28,8 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
     (product) =>
       product.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.color.toLowerCase().includes(searchTerm.toLowerCase())
+      product.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ((product as any).brand || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDelete = (id: string) => {
@@ -63,6 +64,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                  <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-0">
                    <TableHead className="text-center text-xs font-semibold text-muted-foreground w-12"></TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.designation}</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.brandLabel}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.type}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.color}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.locationLabel}</TableHead>
@@ -82,6 +84,14 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                       )}
                     </TableCell>
                     <TableCell className="font-medium text-center text-sm">{product.designation}</TableCell>
+                    <TableCell className="text-center text-sm">
+                      {(product as any).brand ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-secondary/60 px-2 py-0.5 text-xs">
+                          <img src={`https://logo.clearbit.com/${(product as any).brand.toLowerCase().replace(/\s+/g, '')}.com`} alt="" className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          {(product as any).brand}
+                        </span>
+                      ) : '-'}
+                    </TableCell>
                     <TableCell className="text-center text-sm">{product.type}</TableCell>
                     <TableCell className="text-center text-sm">
                       {product.color ? (

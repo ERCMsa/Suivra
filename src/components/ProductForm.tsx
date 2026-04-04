@@ -37,6 +37,25 @@ const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot 
 
 const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
 
+const BRANDS = [
+  { name: 'Bosch', logo: 'https://logo.clearbit.com/bosch.com' },
+  { name: 'DeWalt', logo: 'https://logo.clearbit.com/dewalt.com' },
+  { name: 'Makita', logo: 'https://logo.clearbit.com/makita.com' },
+  { name: 'Milwaukee', logo: 'https://logo.clearbit.com/milwaukee.com' },
+  { name: 'Stanley', logo: 'https://logo.clearbit.com/stanley.com' },
+  { name: 'Hilti', logo: 'https://logo.clearbit.com/hilti.com' },
+  { name: 'Caterpillar', logo: 'https://logo.clearbit.com/caterpillar.com' },
+  { name: 'Schneider Electric', logo: 'https://logo.clearbit.com/se.com' },
+  { name: 'Legrand', logo: 'https://logo.clearbit.com/legrand.com' },
+  { name: 'Würth', logo: 'https://logo.clearbit.com/wurth.com' },
+  { name: 'Facom', logo: 'https://logo.clearbit.com/facom.com' },
+  { name: '3M', logo: 'https://logo.clearbit.com/3m.com' },
+  { name: 'Stihl', logo: 'https://logo.clearbit.com/stihl.com' },
+  { name: 'Husqvarna', logo: 'https://logo.clearbit.com/husqvarna.com' },
+  { name: 'Metabo', logo: 'https://logo.clearbit.com/metabo.com' },
+  { name: 'Autre / أخرى', logo: '' },
+];
+
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
@@ -47,6 +66,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [storageLocation, setStorageLocation] = useState('Magasin');
   const [supplier, setSupplier] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [brand, setBrand] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +82,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       width: 0,
       image_url: imageUrl || undefined,
       location: storageLocation,
+      brand,
     } as any);
     toast.success(t.productAdded);
     setOpen(false);
@@ -69,6 +90,8 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     setReference('');
     setStorageLocation('Magasin');
     setSupplier('');
+    setImageUrl('');
+    setBrand('');
     setImageUrl('');
   };
 
@@ -127,6 +150,24 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
             <div className="space-y-1.5">
               <Label htmlFor="supplier" className="text-xs">{t.widthLabel}</Label>
               <Input id="supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Nom du fournisseur..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{t.brandLabel}</Label>
+              <Select value={brand} onValueChange={setBrand}>
+                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0">
+                  <SelectValue placeholder={t.selectBrand} />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {BRANDS.map((b) => (
+                    <SelectItem key={b.name} value={b.name}>
+                      <span className="flex items-center gap-2">
+                        {b.logo && <img src={b.logo} alt={b.name} className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                        {b.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex items-center gap-4">

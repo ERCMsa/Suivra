@@ -66,6 +66,8 @@ const translations = {
     fillRequired: 'يرجى ملء جميع الحقول المطلوبة',
     productAdded: 'تمت إضافة المادة بنجاح',
     productDeleted: 'تم حذف المادة بنجاح',
+    brandLabel: 'العلامة التجارية',
+    selectBrand: 'اختر العلامة التجارية',
 
     // Stock Movement
     addQuantity: 'إدخال كمية',
@@ -355,6 +357,8 @@ const translations = {
     fillRequired: 'Veuillez remplir tous les champs obligatoires',
     productAdded: 'Article ajouté avec succès',
     productDeleted: 'Article supprimé avec succès',
+    brandLabel: 'Marque',
+    selectBrand: 'Sélectionner la marque',
 
     addQuantity: 'Entrée de stock',
     removeQuantity: 'Sortie de stock',
