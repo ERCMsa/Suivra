@@ -131,6 +131,22 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
               <SelectContent>{LOCATIONS.map((loc) => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
             </Select>
           </div>
+          <div>
+            <Label className="text-xs">{t.brandLabel}</Label>
+            <Select value={form.brand} onValueChange={(v) => setForm({ ...form, brand: v })}>
+              <SelectTrigger className="rounded-xl mt-1"><SelectValue placeholder={t.selectBrand} /></SelectTrigger>
+              <SelectContent>
+                {BRANDS.map((b) => (
+                  <SelectItem key={b.name} value={b.name}>
+                    <span className="flex items-center gap-2">
+                      {b.logo && <img src={b.logo} alt={b.name} className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                      {b.name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>

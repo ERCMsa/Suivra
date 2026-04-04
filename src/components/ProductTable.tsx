@@ -84,6 +84,14 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                       )}
                     </TableCell>
                     <TableCell className="font-medium text-center text-sm">{product.designation}</TableCell>
+                    <TableCell className="text-center text-sm">
+                      {(product as any).brand ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-secondary/60 px-2 py-0.5 text-xs">
+                          <img src={`https://logo.clearbit.com/${(product as any).brand.toLowerCase().replace(/\s+/g, '')}.com`} alt="" className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          {(product as any).brand}
+                        </span>
+                      ) : '-'}
+                    </TableCell>
                     <TableCell className="text-center text-sm">{product.type}</TableCell>
                     <TableCell className="text-center text-sm">
                       {product.color ? (
