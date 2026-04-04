@@ -56,104 +56,107 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned }: Disc
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      // Header border
+      // Header box with company info
       doc.setDrawColor(0);
       doc.setLineWidth(0.5);
-      doc.rect(10, 10, 190, 25);
+      doc.rect(10, 10, 190, 30);
 
-      // Company info
-      doc.setFontSize(11);
+      // Company info - left side
+      doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('ERCMsa', 14, 18);
+      doc.text('ERCMSA', 14, 18);
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.text('Etude et Realisation de Constructions Metalliques Salhi Adel', 14, 22);
-      doc.text('Sidi Salem Nord 08 n° 02 Ouled Moussa BOUMEDRES ALGERIE', 14, 26);
-      doc.text('contact@ercmsalhi.com', 14, 30);
+      doc.text('Etude Realisation Constructions Metaliques  Salhi ADEL', 14, 23);
+      doc.text('SIDI SALEM NORD LOT 08 N° Q2 OULED MOUSSA BOUMERDES', 14, 27);
+      doc.text('ercmsalhisteel@Email.com', 14, 31);
+      doc.setFontSize(6);
+      doc.text('N° RC : 35/00-3674152  A 17    N° Art : 35204129121', 14, 35);
+      doc.text('N° IF : 191163800093114         N° Art : 35204129121', 14, 38);
 
-      // Reference & Date
-      doc.setFontSize(9);
-      doc.text(`Reference: ${d.reference}`, 14, 45);
-
-      // Title
-      doc.setFontSize(18);
+      // Title - DÉCHARGE
+      doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.text('DECHARGE', 105, 45, { align: 'center' });
-
       const dateStr = new Date(d.date_out).toLocaleDateString('fr-FR');
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Ouled Moussa: ${dateStr}`, 196, 45, { align: 'right' });
-
-      // Employee info box
-      doc.setLineWidth(0.3);
-      doc.rect(14, 55, 182, 20);
-
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Matricule', 50, 62);
-      doc.text('NOM ET PRENOM', 90, 62);
-      doc.text('FONCTION', 140, 62);
-
-      doc.setFontSize(10);
-      doc.text(emp.employee_id || '-', 50, 70);
-      doc.text(emp.full_name.toUpperCase(), 90, 70);
-      doc.text((emp.position || emp.department).toUpperCase(), 140, 70);
+      doc.text('DÉCHARGE', 80, 55);
+      doc.setFontSize(11);
+      doc.text(`DATE : ${dateStr}`, 150, 55);
 
       // Items table
-      // Items table - show all items
       const allItems = d.items && d.items.length > 0 
         ? d.items.map((item, idx) => {
             const itemProd = products.find(p => p.id === item.product_id);
-            return [idx + 1, itemProd?.designation || '-', item.quantity];
+            return [idx + 1, itemProd?.designation?.toUpperCase() || '-', item.quantity];
           })
-        : [[1, prod.designation, d.quantity]];
+        : [[1, prod.designation.toUpperCase(), d.quantity]];
 
       (doc as any).autoTable({
-        startY: 85,
-        head: [['N', 'Designation', 'Quantite']],
+        startY: 65,
+        head: [['N°', 'DESIGNATION', 'QUANTITÉ']],
         body: allItems,
-        styles: { font: 'helvetica', halign: 'center', fontSize: 10, cellPadding: 4 },
-        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.3, lineColor: [0, 0, 0], fontStyle: 'bold' },
-        bodyStyles: { lineWidth: 0.3, lineColor: [0, 0, 0] },
+        styles: { font: 'helvetica', halign: 'center', fontSize: 10, cellPadding: 5 },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.4, lineColor: [0, 0, 0], fontStyle: 'bold' },
+        bodyStyles: { lineWidth: 0.4, lineColor: [0, 0, 0], fontStyle: 'bold' },
+        columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 130, halign: 'left' }, 2: { cellWidth: 30 } },
         margin: { left: 14, right: 14 },
       });
 
-      const finalY = (doc as any).lastAutoTable.finalY + 10;
+      let finalY = (doc as any).lastAutoTable.finalY + 5;
 
-      // Regulatory text box
-      doc.setLineWidth(0.3);
-      doc.rect(14, finalY, 182, 55);
-
+      // Arabic regulatory text
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
-      doc.text('Avis important :', 18, finalY + 8);
-
+      doc.text('Avis important :', 14, finalY + 5);
+      
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
-      const notice = "Le receptionnaire reconnait avoir recu les materiaux ou equipements ci-dessus et assume l'entiere responsabilite de leur conservation et de leur bonne utilisation. Il est interdit de transferer le materiel recu a un tiers sans autorisation prealable du responsable du stock ou de la direction. Le receptionnaire est tenu de restituer les equipements recuperables des la fin des travaux ou sur demande de la direction. En cas de perte ou de deterioration non justifiee, il supportera les frais de reparation ou de remplacement conformement aux reglements internes de l'entreprise. Cette decharge constitue une preuve officielle de reception et sera conservee dans un dossier dedie au receptionnaire. La signature de ce document vaut acceptation pleine et entiere de ces conditions.";
-      const lines = doc.splitTextToSize(notice, 174);
-      doc.text(lines, 18, finalY + 16);
+      const notices = [
+        "Le réceptionnaire reconnaît avoir reçu les matériaux ou équipements mentionnés ci-dessus et assume l'entière responsabilité de leur conservation et de leur bonne utilisation.",
+        "Il est interdit de transférer le matériel reçu à un tiers sans autorisation préalable du responsable du stock ou de la direction.",
+        "Le réceptionnaire est tenu de restituer les équipements récupérables dès la fin des travaux ou sur demande de la direction.",
+        "En cas de perte ou de détérioration non justifiée, le réceptionnaire supportera les frais de réparation ou de remplacement conformément aux règlements internes de l'entreprise.",
+        "Cette décharge constitue une preuve officielle de réception et sera conservée dans un dossier dédié au réceptionnaire.",
+        "- La signature de ce document vaut acceptation pleine et entière de ces conditions."
+      ];
+      
+      let textY = finalY + 12;
+      notices.forEach(notice => {
+        const lines = doc.splitTextToSize(notice, 180);
+        doc.text(lines, 14, textY);
+        textY += lines.length * 3.5 + 1;
+      });
 
-      // Signature boxes
-      const sigY = finalY + 65;
-      doc.setLineWidth(0.3);
-      doc.rect(14, sigY, 88, 30);
-      doc.rect(108, sigY, 88, 30);
+      // Employee info + signature boxes
+      const sigY = textY + 8;
+      
+      // Left box - Employee info & signature
+      doc.setLineWidth(0.4);
+      doc.rect(14, sigY, 88, 40);
+      
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`NOM ET PRENOM :  ${emp.full_name.toUpperCase()}`, 18, sigY + 10);
+      doc.text(`FONCTION : ${(emp.position || emp.department).toUpperCase()}`, 18, sigY + 20);
+      
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Signature et empreinte', 58, sigY + 35, { align: 'center' });
 
+      // Right box - Stock manager signature
+      doc.rect(108, sigY, 88, 40);
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
-      doc.text('SIGNATURE DE CONCERNE', 58, sigY + 8, { align: 'center' });
-      doc.text("L'ACCUSE DE RESPONSABLE DE STOCK / MAGASINIER", 152, sigY + 8, { align: 'center' });
-
+      doc.text("L'ACCUSÉ DE RESPONSABLE DE STOCK / MAGASINIER", 110, sigY + 10);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      doc.text('Signature et empreinte', 58, sigY + 25, { align: 'center' });
-      doc.text('Signature et Cachet', 152, sigY + 25, { align: 'center' });
+      doc.text('Signature et Cachet', 152, sigY + 35, { align: 'center' });
 
       // Footer
-      doc.setFontSize(7);
-      doc.text('Document genere automatiquement - A conserver', 105, 285, { align: 'center' });
+      const footerY = sigY + 50;
+      doc.setLineWidth(0.3);
+      doc.line(14, footerY, 196, footerY);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Document généré automatiquement - A conserver', 105, footerY + 5, { align: 'center' });
 
       doc.save(`decharge_${d.reference}.pdf`);
       toast.success(t.exportSuccess);
