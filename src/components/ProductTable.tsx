@@ -28,7 +28,8 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
     (product) =>
       product.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.color.toLowerCase().includes(searchTerm.toLowerCase())
+      product.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ((product as any).brand || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDelete = (id: string) => {
