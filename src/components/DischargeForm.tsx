@@ -183,7 +183,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut }: DischargeF
 
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>
-            <Button className="flex-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
+            <Button className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? t.loading : t.createDischarge}
             </Button>
           </div>
