@@ -357,6 +357,8 @@ const translations = {
     fillRequired: 'Veuillez remplir tous les champs obligatoires',
     productAdded: 'Article ajouté avec succès',
     productDeleted: 'Article supprimé avec succès',
+    brandLabel: 'Marque',
+    selectBrand: 'Sélectionner la marque',
 
     addQuantity: 'Entrée de stock',
     removeQuantity: 'Sortie de stock',
