@@ -317,6 +317,7 @@ export type Database = {
           product_id: string
           quantity: number
           surface: number
+          taken_by: string | null
           type: string
           width: number
         }
@@ -329,6 +330,7 @@ export type Database = {
           product_id: string
           quantity: number
           surface?: number
+          taken_by?: string | null
           type: string
           width?: number
         }
@@ -341,6 +343,7 @@ export type Database = {
           product_id?: string
           quantity?: number
           surface?: number
+          taken_by?: string | null
           type?: string
           width?: number
         }

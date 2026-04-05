@@ -1,0 +1,1 @@
+ALTER TABLE public.stock_movements ADD COLUMN taken_by text DEFAULT NULL;
