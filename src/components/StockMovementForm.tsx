@@ -3,6 +3,7 @@ import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -54,9 +55,10 @@ const StockMovementForm = ({ product, type, onSubmit, employees = [] }: StockMov
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button size="icon" variant="ghost" className={`h-7 w-7 rounded-lg ${isIn ? 'text-success hover:bg-success/10' : 'text-destructive hover:bg-destructive/10'}`}>
+          <DropdownMenuItem onSelect={e => e.preventDefault()} className={`gap-2 ${isIn ? 'text-success' : 'text-destructive'}`}>
             {isIn ? <ArrowUpCircle className="h-3.5 w-3.5" /> : <ArrowDownCircle className="h-3.5 w-3.5" />}
-          </Button>
+            {isIn ? t.addQuantity : t.removeQuantity}
+          </DropdownMenuItem>
         </DialogTrigger>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
