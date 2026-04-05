@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Search, Trash2, PackageOpen } from 'lucide-react';
+import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Product, StockMovement } from '@/hooks/useInventory';
+import { Employee } from '@/hooks/useEmployees';
 import StockMovementForm from './StockMovementForm';
 import MovementHistory from './MovementHistory';
 import EditProductForm from './EditProductForm';
@@ -16,11 +18,12 @@ interface ProductTableProps {
   products: Product[];
   movements: StockMovement[];
   onDelete: (id: string) => void;
-  onStockMovement: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string) => void;
+  onStockMovement: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string, takenBy?: string) => void;
   onRefresh: () => void;
+  employees?: Employee[];
 }
 
-const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh }: ProductTableProps) => {
+const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [] }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { t } = useLanguage();
 
@@ -70,7 +73,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.locationLabel}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.unitCol}</TableHead>
                   <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.quantity}</TableHead>
-                  <TableHead className="text-center text-xs font-semibold text-muted-foreground">{t.actions}</TableHead>
+                  <TableHead className="text-center text-xs font-semibold text-muted-foreground w-14">{t.actions}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,26 +111,44 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center gap-0.5">
-                        <EditProductForm product={product} onUpdated={onRefresh} />
-                        <StockMovementForm product={product} type="in" onSubmit={onStockMovement} />
-                        <StockMovementForm product={product} type="out" onSubmit={onStockMovement} />
-                        <MovementHistory product={product} movements={getProductMovements(product.id)} />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"><Trash2 className="h-3.5 w-3.5" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="rounded-2xl">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
-                              <AlertDialogDescription>{t.deleteConfirm}</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="rounded-xl">{t.cancel}</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(product.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">{t.delete}</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                      <div className="flex items-center justify-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                            {/* Edit */}
+                            <EditProductForm product={product} onUpdated={onRefresh} asMenuItem />
+                            {/* Stock In */}
+                            <StockMovementForm product={product} type="in" onSubmit={onStockMovement} employees={employees} />
+                            {/* Stock Out */}
+                            <StockMovementForm product={product} type="out" onSubmit={onStockMovement} employees={employees} />
+                            {/* History */}
+                            <MovementHistory product={product} movements={getProductMovements(product.id)} />
+                            <DropdownMenuSeparator />
+                            {/* Delete */}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={e => e.preventDefault()} className="text-destructive focus:text-destructive gap-2">
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  {t.delete}
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="rounded-2xl">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
+                                  <AlertDialogDescription>{t.deleteConfirm}</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="rounded-xl">{t.cancel}</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(product.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">{t.delete}</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>
