@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Pencil } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import { Button } from '@/components/ui/button';
@@ -41,9 +42,10 @@ const BRANDS = [
 interface EditProductFormProps {
   product: Product;
   onUpdated: () => void;
+  asMenuItem?: boolean;
 }
 
-const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
+const EditProductForm = ({ product, onUpdated, asMenuItem = false }: EditProductFormProps) => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
@@ -80,9 +82,16 @@ const EditProductForm = ({ product, onUpdated }: EditProductFormProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg">
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
+        {asMenuItem ? (
+          <DropdownMenuItem onSelect={e => e.preventDefault()} className="gap-2">
+            <Pencil className="h-3.5 w-3.5" />
+            {t.editProduct}
+          </DropdownMenuItem>
+        ) : (
+          <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg">
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader><DialogTitle>{t.editProduct}</DialogTitle></DialogHeader>

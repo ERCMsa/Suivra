@@ -102,7 +102,8 @@ export const useInventory = () => {
     quantity: number,
     length: number,
     width: number,
-    notes?: string
+    notes?: string,
+    takenBy?: string
   ) => {
     const product = products.find((p) => p.id === productId);
     if (!product) return null;
@@ -119,7 +120,8 @@ export const useInventory = () => {
       surface: movementSurface,
       notes,
       created_by: user?.id,
-    });
+      taken_by: takenBy || null,
+    } as any);
 
     const newQuantity = type === 'in' ? product.quantity + quantity : product.quantity - quantity;
     const safeQuantity = Math.max(0, newQuantity);

@@ -294,6 +294,16 @@ const translations = {
     noValidData: 'لم يتم العثور على بيانات صالحة',
     fileReadError: 'خطأ في قراءة الملف',
 
+    // Taken By
+    takenBy: 'أخذها',
+    takenByRequired: 'يجب تحديد الشخص المسؤول',
+    takenByPlaceholder: 'اسم الشخص المسؤول',
+    selectResponsible: 'اختر الشخص المسؤول',
+    confirmAction: 'تأكيد العملية',
+    confirmTakenBy: 'هل أنت متأكد أن {name} أخذ {qty} من {item}؟',
+    confirm: 'تأكيد',
+    searchByPerson: 'بحث بالشخص المسؤول...',
+
     // Footer
     footer: 'نظام تتبع المواد - ERCM SA',
     loading: 'جارٍ التحميل...',
@@ -572,6 +582,16 @@ const translations = {
     emptyFile: 'Fichier vide',
     noValidData: 'Aucune donnée valide trouvée',
     fileReadError: 'Erreur de lecture du fichier',
+
+    // Taken By
+    takenBy: 'Pris par',
+    takenByRequired: 'Le responsable est obligatoire',
+    takenByPlaceholder: 'Nom du responsable',
+    selectResponsible: 'Choisir le responsable',
+    confirmAction: 'Confirmer l\'action',
+    confirmTakenBy: 'Confirmez-vous que {name} a pris {qty} de {item} ?',
+    confirm: 'Confirmer',
+    searchByPerson: 'Rechercher par responsable...',
 
     footer: 'Suivi du Matériel - ERCM SA',
     loading: 'Chargement...',

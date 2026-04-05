@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FileCheck, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +29,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut }: DischargeF
   const [employeeId, setEmployeeId] = useState('');
   const [items, setItems] = useState<DischargeItem[]>([{ product_id: '', quantity: 1 }]);
   const [notes, setNotes] = useState('');
+  const [productSearch, setProductSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addItem = () => setItems([...items, { product_id: '', quantity: 1 }]);
@@ -135,8 +136,20 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut }: DischargeF
                     <div className="flex-1">
                       <Select value={item.product_id} onValueChange={v => updateItem(idx, 'product_id', v)}>
                         <SelectTrigger className="rounded-xl text-sm"><SelectValue placeholder={t.selectItem} /></SelectTrigger>
-                        <SelectContent>
-                          {products.filter(p => p.quantity > 0 && (!usedProductIds.includes(p.id) || p.id === item.product_id)).map(p => (
+                        <SelectContent className="max-h-60">
+                          <div className="p-2 sticky top-0 bg-popover">
+                            <Input
+                              placeholder={t.searchProduct}
+                              value={productSearch}
+                              onChange={e => setProductSearch(e.target.value)}
+                              className="h-8 text-xs rounded-lg"
+                              onClick={e => e.stopPropagation()}
+                            />
+                          </div>
+                          {products
+                            .filter(p => p.quantity > 0 && (!usedProductIds.includes(p.id) || p.id === item.product_id))
+                            .filter(p => !productSearch || p.designation.toLowerCase().includes(productSearch.toLowerCase()) || p.type.toLowerCase().includes(productSearch.toLowerCase()))
+                            .map(p => (
                             <SelectItem key={p.id} value={p.id}>
                               {p.designation} ({t.currentStock}: {p.quantity})
                             </SelectItem>
