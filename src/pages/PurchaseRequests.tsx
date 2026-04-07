@@ -78,6 +78,11 @@ const PurchaseRequests = () => {
     receivedCount: 'Reçus',
     urgentItems: 'Articles urgents',
     searchPlaceholder: 'Rechercher...',
+    exportPdf: 'Exporter PDF',
+    purchaseList: 'Liste des achats',
+    date: 'Date',
+    supplier: 'Fournisseur',
+    signature: 'Signature',
   } : {
     title: 'طلبات الشراء',
     subtitle: 'نظام إعادة الطلب التلقائي',
@@ -114,6 +119,11 @@ const PurchaseRequests = () => {
     receivedCount: 'تم استلامها',
     urgentItems: 'مواد عاجلة',
     searchPlaceholder: 'بحث...',
+    exportPdf: 'تصدير PDF',
+    purchaseList: 'قائمة المشتريات',
+    date: 'التاريخ',
+    supplier: 'المورد',
+    signature: 'التوقيع',
   };
 
   const handleScan = async () => {
