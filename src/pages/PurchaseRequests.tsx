@@ -290,6 +290,10 @@ const PurchaseRequests = () => {
               <RefreshCw className={`h-4 w-4 ${scanning ? 'animate-spin' : ''}`} />
               {scanning ? labels.scanning : labels.scanNow}
             </Button>
+            <Button variant="outline" onClick={exportPurchasePDF} className="gap-2">
+              <FileText className="h-4 w-4" />
+              {labels.exportPdf}
+            </Button>
             <Dialog open={forceOpen} onOpenChange={setForceOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2">
