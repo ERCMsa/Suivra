@@ -433,6 +433,53 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_requests: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          current_stock: number
+          id: string
+          min_threshold: number
+          notes: string | null
+          product_id: string
+          status: string
+          suggested_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          current_stock?: number
+          id?: string
+          min_threshold?: number
+          notes?: string | null
+          product_id: string
+          status?: string
+          suggested_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          current_stock?: number
+          id?: string
+          min_threshold?: number
+          notes?: string | null
+          product_id?: string
+          status?: string
+          suggested_quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_movements: {
         Row: {
           created_at: string
