@@ -68,6 +68,15 @@ const Header = () => {
               <Box className="h-4 w-4" />
               <span className="hidden sm:inline">{lang === 'fr' ? 'Caisses' : 'الصناديق'}</span>
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/purchase-requests' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+              onClick={() => navigate('/purchase-requests')}
+            >
+              <ShoppingCart className="h-4 w-4" />
+              <span className="hidden sm:inline">{lang === 'fr' ? 'Achats' : 'المشتريات'}</span>
+            </Button>
 
             <Button
               variant="ghost"
