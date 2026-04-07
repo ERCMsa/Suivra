@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/table';
 import {
   ShoppingCart, RefreshCw, Plus, Trash2, Edit2, AlertTriangle,
-  CheckCircle2, Package, Clock, Truck,
+  CheckCircle2, Package, Clock, Truck, FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
