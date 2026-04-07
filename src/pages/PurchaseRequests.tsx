@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/table';
 import {
   ShoppingCart, RefreshCw, Plus, Trash2, Edit2, AlertTriangle,
-  CheckCircle2, Package, Clock, Truck,
+  CheckCircle2, Package, Clock, Truck, FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -78,6 +78,11 @@ const PurchaseRequests = () => {
     receivedCount: 'Reçus',
     urgentItems: 'Articles urgents',
     searchPlaceholder: 'Rechercher...',
+    exportPdf: 'Exporter PDF',
+    purchaseList: 'Liste des achats',
+    date: 'Date',
+    supplier: 'Fournisseur',
+    signature: 'Signature',
   } : {
     title: 'طلبات الشراء',
     subtitle: 'نظام إعادة الطلب التلقائي',
@@ -114,6 +119,11 @@ const PurchaseRequests = () => {
     receivedCount: 'تم استلامها',
     urgentItems: 'مواد عاجلة',
     searchPlaceholder: 'بحث...',
+    exportPdf: 'تصدير PDF',
+    purchaseList: 'قائمة المشتريات',
+    date: 'التاريخ',
+    supplier: 'المورد',
+    signature: 'التوقيع',
   };
 
   const handleScan = async () => {
@@ -141,6 +151,84 @@ const PurchaseRequests = () => {
     await updateRequest(editingId, { suggested_quantity: editQty, notes: editNotes });
     setEditingId(null);
     toast.success(lang === 'fr' ? 'Modification enregistrée' : 'تم الحفظ');
+  };
+
+  const exportPurchasePDF = async () => {
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+
+      const pendingAndOrdered = requests.filter(r => r.status === 'pending' || r.status === 'ordered');
+      if (pendingAndOrdered.length === 0) {
+        toast.error(lang === 'fr' ? 'Aucun article à exporter' : 'لا توجد مواد للتصدير');
+        return;
+      }
+
+      const doc = new jsPDF({ orientation: 'portrait' });
+      const today = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'ar-DZ');
+
+      // Header
+      doc.setFontSize(18);
+      doc.setTextColor(66, 99, 235);
+      doc.text(labels.purchaseList, 105, 20, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`${labels.date}: ${today}`, 14, 32);
+
+      doc.setDrawColor(66, 99, 235);
+      doc.setLineWidth(0.5);
+      doc.line(14, 36, 196, 36);
+
+      // Table
+      const headers = ['#', labels.item, labels.currentStock, labels.minThreshold, labels.suggestedQty, labels.status, labels.notes];
+      const rows = pendingAndOrdered.map((req, i) => {
+        const product = products.find(p => p.id === req.product_id);
+        const statusLabel = req.status === 'pending' ? labels.pending : labels.ordered;
+        return [
+          String(i + 1),
+          product?.designation || '—',
+          String(req.current_stock),
+          String(req.min_threshold),
+          String(req.suggested_quantity),
+          statusLabel,
+          req.notes || '—',
+        ];
+      });
+
+      (doc as any).autoTable({
+        head: [headers],
+        body: rows,
+        startY: 42,
+        styles: { font: 'helvetica', halign: 'center', fontSize: 9, cellPadding: 4 },
+        headStyles: { fillColor: [66, 99, 235], halign: 'center', fontSize: 9 },
+        alternateRowStyles: { fillColor: [245, 247, 255] },
+        columnStyles: {
+          0: { cellWidth: 10 },
+          1: { halign: 'left', cellWidth: 50 },
+          6: { halign: 'left', cellWidth: 35 },
+        },
+      });
+
+      const finalY = (doc as any).lastAutoTable?.finalY || 180;
+
+      // Supplier & Signature area
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 60);
+      doc.text(`${labels.supplier}: ______________________________`, 14, finalY + 20);
+      doc.text(`${labels.signature}: ______________________________`, 14, finalY + 35);
+      doc.text(`${labels.date}: ______________________________`, 120, finalY + 35);
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`${pendingAndOrdered.length} ${lang === 'fr' ? 'articles' : 'مادة'} — ${today}`, 105, 285, { align: 'center' });
+
+      doc.save(`purchase_requests_${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success(lang === 'fr' ? 'PDF exporté avec succès' : 'تم تصدير PDF بنجاح');
+    } catch {
+      toast.error(lang === 'fr' ? 'Erreur lors de l\'export' : 'خطأ في التصدير');
+    }
   };
 
   const getProductName = (id: string) => products.find(p => p.id === id)?.designation || '—';
@@ -201,6 +289,10 @@ const PurchaseRequests = () => {
             <Button onClick={handleScan} disabled={scanning} className="gap-2">
               <RefreshCw className={`h-4 w-4 ${scanning ? 'animate-spin' : ''}`} />
               {scanning ? labels.scanning : labels.scanNow}
+            </Button>
+            <Button variant="outline" onClick={exportPurchasePDF} className="gap-2">
+              <FileText className="h-4 w-4" />
+              {labels.exportPdf}
             </Button>
             <Dialog open={forceOpen} onOpenChange={setForceOpen}>
               <DialogTrigger asChild>
