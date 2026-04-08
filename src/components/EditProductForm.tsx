@@ -20,24 +20,6 @@ const PRODUCT_TYPES = [
 const STATUSES = ['Neuf / جديد', 'Bon état / حالة جيدة', 'Usé / مستعمل', 'En réparation / قيد الإصلاح', 'Hors service / خارج الخدمة'];
 const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot / مجموعة', 'kg', 'litre / لتر', 'mètre / متر', 'rouleau / لفة'];
 const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
-const BRANDS = [
-  { name: 'Bosch', logo: 'https://logo.clearbit.com/bosch.com' },
-  { name: 'DeWalt', logo: 'https://logo.clearbit.com/dewalt.com' },
-  { name: 'Makita', logo: 'https://logo.clearbit.com/makita.com' },
-  { name: 'Milwaukee', logo: 'https://logo.clearbit.com/milwaukee.com' },
-  { name: 'Stanley', logo: 'https://logo.clearbit.com/stanley.com' },
-  { name: 'Hilti', logo: 'https://logo.clearbit.com/hilti.com' },
-  { name: 'Caterpillar', logo: 'https://logo.clearbit.com/caterpillar.com' },
-  { name: 'Schneider Electric', logo: 'https://logo.clearbit.com/se.com' },
-  { name: 'Legrand', logo: 'https://logo.clearbit.com/legrand.com' },
-  { name: 'Würth', logo: 'https://logo.clearbit.com/wurth.com' },
-  { name: 'Facom', logo: 'https://logo.clearbit.com/facom.com' },
-  { name: '3M', logo: 'https://logo.clearbit.com/3m.com' },
-  { name: 'Stihl', logo: 'https://logo.clearbit.com/stihl.com' },
-  { name: 'Husqvarna', logo: 'https://logo.clearbit.com/husqvarna.com' },
-  { name: 'Metabo', logo: 'https://logo.clearbit.com/metabo.com' },
-  { name: 'Autre / أخرى', logo: '' },
-];
 
 interface EditProductFormProps {
   product: Product;
@@ -58,6 +40,7 @@ const EditProductForm = ({ product, onUpdated, asMenuItem = false }: EditProduct
     image_url: (product as any).image_url || '',
     location: (product as any).location || 'Magasin',
     brand: (product as any).brand || '',
+    brand_logo: (product as any).brand_logo || '',
   });
 
   const handleSubmit = async () => {
@@ -72,6 +55,7 @@ const EditProductForm = ({ product, onUpdated, asMenuItem = false }: EditProduct
       image_url: form.image_url || null,
       location: form.location,
       brand: form.brand,
+      brand_logo: form.brand_logo || '',
     } as any).eq('id', product.id);
     if (error) { toast.error(t.editFail); return; }
     toast.success(t.editSuccess);
@@ -142,19 +126,14 @@ const EditProductForm = ({ product, onUpdated, asMenuItem = false }: EditProduct
           </div>
           <div>
             <Label className="text-xs">{t.brandLabel}</Label>
-            <Select value={form.brand} onValueChange={(v) => setForm({ ...form, brand: v })}>
-              <SelectTrigger className="rounded-xl mt-1"><SelectValue placeholder={t.selectBrand} /></SelectTrigger>
-              <SelectContent>
-                {BRANDS.map((b) => (
-                  <SelectItem key={b.name} value={b.name}>
-                    <span className="flex items-center gap-2">
-                      {b.logo && <img src={b.logo} alt={b.name} className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
-                      {b.name}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} placeholder="Bosch, Makita..." className="rounded-xl mt-1" />
+          </div>
+          <div>
+            <Label className="text-xs">Logo de la marque / شعار العلامة</Label>
+            <div className="flex items-center gap-3 mt-1">
+              {form.brand_logo && <img src={form.brand_logo} alt={form.brand} className="w-8 h-8 rounded-lg object-contain border" />}
+              <ImageUpload currentUrl={form.brand_logo || null} onUploaded={(url) => setForm({ ...form, brand_logo: url })} folder="brands" />
+            </div>
           </div>
           <ImageUpload currentUrl={form.image_url} onUploaded={(url) => setForm({ ...form, image_url: url })} folder="products" />
           <div className="flex gap-2 pt-2">

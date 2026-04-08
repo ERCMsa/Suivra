@@ -37,24 +37,6 @@ const UNITS = ['unité / وحدة', 'paire / زوج', 'boîte / علبة', 'lot 
 
 const LOCATIONS = ['Magasin', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Box 5', 'Box 6', 'Box 7', 'Box 8'];
 
-const BRANDS = [
-  { name: 'Bosch', logo: 'https://logo.clearbit.com/bosch.com' },
-  { name: 'DeWalt', logo: 'https://logo.clearbit.com/dewalt.com' },
-  { name: 'Makita', logo: 'https://logo.clearbit.com/makita.com' },
-  { name: 'Milwaukee', logo: 'https://logo.clearbit.com/milwaukee.com' },
-  { name: 'Stanley', logo: 'https://logo.clearbit.com/stanley.com' },
-  { name: 'Hilti', logo: 'https://logo.clearbit.com/hilti.com' },
-  { name: 'Caterpillar', logo: 'https://logo.clearbit.com/caterpillar.com' },
-  { name: 'Schneider Electric', logo: 'https://logo.clearbit.com/se.com' },
-  { name: 'Legrand', logo: 'https://logo.clearbit.com/legrand.com' },
-  { name: 'Würth', logo: 'https://logo.clearbit.com/wurth.com' },
-  { name: 'Facom', logo: 'https://logo.clearbit.com/facom.com' },
-  { name: '3M', logo: 'https://logo.clearbit.com/3m.com' },
-  { name: 'Stihl', logo: 'https://logo.clearbit.com/stihl.com' },
-  { name: 'Husqvarna', logo: 'https://logo.clearbit.com/husqvarna.com' },
-  { name: 'Metabo', logo: 'https://logo.clearbit.com/metabo.com' },
-  { name: 'Autre / أخرى', logo: '' },
-];
 
 const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [open, setOpen] = useState(false);
@@ -67,6 +49,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
   const [supplier, setSupplier] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [brand, setBrand] = useState('');
+  const [brandLogo, setBrandLogo] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +57,6 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       toast.error(t.fillRequired);
       return;
     }
-    // Map new fields into existing DB columns
     onSubmit({
       ...formData,
       thickness: parseFloat(reference) || 0,
@@ -83,6 +65,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
       image_url: imageUrl || undefined,
       location: storageLocation,
       brand,
+      brand_logo: brandLogo || undefined,
     } as any);
     toast.success(t.productAdded);
     setOpen(false);
@@ -92,6 +75,7 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
     setSupplier('');
     setImageUrl('');
     setBrand('');
+    setBrandLogo('');
     setImageUrl('');
   };
 
@@ -153,21 +137,14 @@ const ProductForm = ({ onSubmit }: ProductFormProps) => {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">{t.brandLabel}</Label>
-              <Select value={brand} onValueChange={setBrand}>
-                <SelectTrigger className="h-10 rounded-xl text-sm bg-secondary/30 border-0">
-                  <SelectValue placeholder={t.selectBrand} />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {BRANDS.map((b) => (
-                    <SelectItem key={b.name} value={b.name}>
-                      <span className="flex items-center gap-2">
-                        {b.logo && <img src={b.logo} alt={b.name} className="w-4 h-4 rounded object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
-                        {b.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Bosch, Makita, DeWalt..." className="h-10 rounded-xl text-sm bg-secondary/30 border-0 focus-visible:ring-1" />
+            </div>
+            <div className="space-y-1.5 col-span-2">
+              <Label className="text-xs">Logo de la marque / شعار العلامة</Label>
+              <div className="flex items-center gap-3">
+                {brandLogo && <img src={brandLogo} alt={brand} className="w-8 h-8 rounded-lg object-contain border" />}
+                <ImageUpload currentUrl={brandLogo || null} onUploaded={setBrandLogo} folder="brands" />
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
