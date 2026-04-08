@@ -23,8 +23,11 @@ interface ProductTableProps {
   employees?: Employee[];
 }
 
+const INITIAL_DISPLAY_COUNT = 10;
+
 const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [] }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const { t } = useLanguage();
 
   const filteredProducts = products.filter(
@@ -34,6 +37,9 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
       product.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ((product as any).brand || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMore = filteredProducts.length > INITIAL_DISPLAY_COUNT;
 
   const handleDelete = (id: string) => {
     onDelete(id);
