@@ -23,8 +23,11 @@ interface ProductTableProps {
   employees?: Employee[];
 }
 
+const INITIAL_DISPLAY_COUNT = 10;
+
 const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [] }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const { t } = useLanguage();
 
   const filteredProducts = products.filter(
@@ -34,6 +37,9 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
       product.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ((product as any).brand || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMore = filteredProducts.length > INITIAL_DISPLAY_COUNT;
 
   const handleDelete = (id: string) => {
     onDelete(id);
@@ -77,7 +83,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.map((product) => (
+                {displayedProducts.map((product) => (
                   <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30">
                     <TableCell className="text-center">
                       {(product as any).image_url ? (
@@ -119,16 +125,11 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48 rounded-xl">
-                            {/* Edit */}
                             <EditProductForm product={product} onUpdated={onRefresh} asMenuItem />
-                            {/* Stock In */}
                             <StockMovementForm product={product} type="in" onSubmit={onStockMovement} employees={employees} />
-                            {/* Stock Out */}
                             <StockMovementForm product={product} type="out" onSubmit={onStockMovement} employees={employees} />
-                            {/* History */}
                             <MovementHistory product={product} movements={getProductMovements(product.id)} />
                             <DropdownMenuSeparator />
-                            {/* Delete */}
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <DropdownMenuItem onSelect={e => e.preventDefault()} className="text-destructive focus:text-destructive gap-2">
@@ -155,6 +156,13 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                 ))}
               </TableBody>
             </Table>
+            {hasMore && (
+              <div className="flex justify-center py-3 border-t border-border/30">
+                <Button variant="ghost" size="sm" className="rounded-xl text-xs gap-1.5" onClick={() => setShowAll(!showAll)}>
+                  {showAll ? `إخفاء / Réduire` : `عرض الكل (${filteredProducts.length}) / Voir tout`}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
