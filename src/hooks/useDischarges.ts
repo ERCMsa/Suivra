@@ -49,10 +49,17 @@ export const useDischarges = () => {
     fetchDischarges().then(() => setIsLoading(false));
   }, [fetchDischarges]);
 
-  const generateReference = (employeeId: string) => {
+  const generateReference = async () => {
     const now = new Date();
-    const count = discharges.filter(d => d.employee_id === employeeId).length + 1;
-    return `dch_${count.toString().padStart(3, '0')}_${now.getFullYear()}`;
+    const year = now.getFullYear();
+    // Get the actual count from the database for the current year
+    const { count } = await supabase
+      .from('discharges')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', `${year}-01-01`)
+      .lte('created_at', `${year}-12-31T23:59:59`);
+    const nextNum = (count || 0) + 1;
+    return `DCH-${nextNum.toString().padStart(4, '0')}-${year}`;
   };
 
   const createDischarge = async (data: {
