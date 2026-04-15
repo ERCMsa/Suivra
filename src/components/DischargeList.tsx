@@ -87,17 +87,32 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.setLineWidth(0.5);
       doc.rect(10, 10, 190, 30);
 
+      // Add company logo
+      try {
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          logoImg.onload = () => resolve();
+          logoImg.onerror = () => reject();
+          logoImg.src = '/images/ercm-logo.png';
+        });
+        doc.addImage(logoImg, 'PNG', 14, 12, 22, 22);
+      } catch {
+        // If logo fails to load, continue without it
+      }
+
+      const textStartX = 38;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('ERCMSA', 14, 18);
+      doc.text('ERCMSA', textStartX, 18);
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.text('Etude Realisation Constructions Metaliques  Salhi ADEL', 14, 23);
-      doc.text('SIDI SALEM NORD LOT 08 N° Q2 OULED MOUSSA BOUMERDES', 14, 27);
-      doc.text('ercmsalhisteel@Email.com', 14, 31);
+      doc.text('Etude Realisation Constructions Metaliques  Salhi ADEL', textStartX, 23);
+      doc.text('SIDI SALEM NORD LOT 08 N° Q2 OULED MOUSSA BOUMERDES', textStartX, 27);
+      doc.text('ercmsalhisteel@Email.com', textStartX, 31);
       doc.setFontSize(6);
-      doc.text('N° RC : 35/00-3674152  A 17    N° Art : 35204129121', 14, 35);
-      doc.text('N° IF : 191163800093114         N° Art : 35204129121', 14, 38);
+      doc.text('N° RC : 35/00-3674152  A 17    N° Art : 35204129121', textStartX, 35);
+      doc.text('N° IF : 191163800093114         N° Art : 35204129121', textStartX, 38);
 
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
