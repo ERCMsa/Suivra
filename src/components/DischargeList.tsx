@@ -87,7 +87,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.setLineWidth(0.5);
       doc.rect(10, 10, 190, 30);
 
-      // Add company logo
+      // Add company logo on the right side (rectangular)
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
@@ -96,12 +96,12 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
           logoImg.onerror = () => reject();
           logoImg.src = '/images/ercm-logo.png';
         });
-        doc.addImage(logoImg, 'PNG', 14, 12, 22, 22);
+        doc.addImage(logoImg, 'PNG', 170, 12, 28, 18);
       } catch {
         // If logo fails to load, continue without it
       }
 
-      const textStartX = 38;
+      const textStartX = 14;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.text('ERCMSA', textStartX, 18);
