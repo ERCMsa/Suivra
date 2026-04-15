@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useProfiles } from '@/hooks/useProfiles';
 
-export type AppRole = 'admin' | 'magasinier' | 'chef_chantier';
+export type AppRole = 'admin' | 'magasinier' | 'chef_chantier' | 'viewer';
 
 export const usePermissions = () => {
   const { user } = useAuth();
@@ -12,12 +12,14 @@ export const usePermissions = () => {
   const isAdmin = role === 'admin';
   const isMagasinier = role === 'magasinier';
   const isChefChantier = role === 'chef_chantier';
+  const isViewer = role === 'viewer';
 
   return {
     role,
     isAdmin,
     isMagasinier,
     isChefChantier,
+    isViewer,
 
     // Navigation
     canViewSettings: isAdmin,

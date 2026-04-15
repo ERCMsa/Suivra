@@ -133,9 +133,9 @@ const Team = () => {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{myProfile?.display_name || '—'}</h3>
                     {myRole && (
-                      <Badge className={myRole === 'admin' ? 'bg-amber-100 text-amber-800' : myRole === 'magasinier' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}>
+                      <Badge className={myRole === 'admin' ? 'bg-amber-100 text-amber-800' : myRole === 'magasinier' ? 'bg-blue-100 text-blue-800' : myRole === 'viewer' ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'}>
                         <Shield className="h-3 w-3 mr-1" />
-                        {myRole === 'admin' ? t.teamRoleAdmin : myRole === 'magasinier' ? t.teamRoleMagasinier : t.teamRoleChefChantier}
+                        {myRole === 'admin' ? t.teamRoleAdmin : myRole === 'magasinier' ? t.teamRoleMagasinier : myRole === 'viewer' ? t.teamRoleViewer : t.teamRoleChefChantier}
                       </Badge>
                     )}
                   </div>
@@ -184,12 +184,13 @@ const Team = () => {
                             <SelectItem value="admin">{t.teamRoleAdmin}</SelectItem>
                             <SelectItem value="magasinier">{t.teamRoleMagasinier}</SelectItem>
                             <SelectItem value="chef_chantier">{t.teamRoleChefChantier}</SelectItem>
+                            <SelectItem value="viewer">{t.teamRoleViewer}</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : role ? (
-                        <Badge className={`mt-2 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : role === 'magasinier' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
+                        <Badge className={`mt-2 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : role === 'magasinier' ? 'bg-blue-100 text-blue-800' : role === 'viewer' ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'}`}>
                           <Shield className="h-2.5 w-2.5 mr-0.5" />
-                          {role === 'admin' ? t.teamRoleAdmin : role === 'magasinier' ? t.teamRoleMagasinier : t.teamRoleChefChantier}
+                          {role === 'admin' ? t.teamRoleAdmin : role === 'magasinier' ? t.teamRoleMagasinier : role === 'viewer' ? t.teamRoleViewer : t.teamRoleChefChantier}
                         </Badge>
                       ) : null}
                     </div>
