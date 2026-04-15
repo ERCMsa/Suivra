@@ -70,7 +70,7 @@ export const useDischarges = () => {
     additional_items?: { product_id: string; quantity: number }[];
   }) => {
     const user = (await supabase.auth.getUser()).data.user;
-    const reference = generateReference(data.employee_id);
+    const reference = await generateReference();
     
     const { data: newDischarge, error } = await supabase.from('discharges').insert({
       employee_id: data.employee_id,
