@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useProfiles } from '@/hooks/useProfiles';
+import { usePermissions } from '@/hooks/usePermissions';
 import UserAvatar from '@/components/UserAvatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -19,6 +20,7 @@ const Header = () => {
   const { signOut, user } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const { myProfile } = useProfiles();
+  const { canViewInventory, canViewEmployees, canViewCaisses, canViewPurchases, canViewSettings } = usePermissions();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,52 +43,62 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/')}
-            >
-              <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.navInventory}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/employees' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/employees')}
-            >
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.navEmployees}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/caisses' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/caisses')}
-            >
-              <Box className="h-4 w-4" />
-              <span className="hidden sm:inline">{lang === 'fr' ? 'Caisses' : 'الصناديق'}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/purchase-requests' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/purchase-requests')}
-            >
-              <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline">{lang === 'fr' ? 'Achats' : 'المشتريات'}</span>
-            </Button>
+            {canViewInventory && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/')}
+              >
+                <Package className="h-4 w-4" />
+                <span className="hidden sm:inline">{t.navInventory}</span>
+              </Button>
+            )}
+            {canViewEmployees && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/employees' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/employees')}
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">{t.navEmployees}</span>
+              </Button>
+            )}
+            {canViewCaisses && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/caisses' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/caisses')}
+              >
+                <Box className="h-4 w-4" />
+                <span className="hidden sm:inline">{lang === 'fr' ? 'Caisses' : 'الصناديق'}</span>
+              </Button>
+            )}
+            {canViewPurchases && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/purchase-requests' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/purchase-requests')}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="hidden sm:inline">{lang === 'fr' ? 'Achats' : 'المشتريات'}</span>
+              </Button>
+            )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/settings' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
-              onClick={() => navigate('/settings')}
-            >
-              <Cog className="h-4 w-4" />
-              <span className="hidden sm:inline">{t.navSettings}</span>
-            </Button>
+            {canViewSettings && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/settings' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/settings')}
+              >
+                <Cog className="h-4 w-4" />
+                <span className="hidden sm:inline">{t.navSettings}</span>
+              </Button>
+            )}
             <div className="cursor-pointer" onClick={() => navigate('/team')}>
               <UserAvatar name={myProfile?.display_name} avatarUrl={myProfile?.avatar_url} size="sm" />
             </div>

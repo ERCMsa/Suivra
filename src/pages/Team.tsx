@@ -62,7 +62,7 @@ const Team = () => {
     } catch { toast.error(t.editFail); }
   };
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'worker') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier') => {
     try {
       await assignRole(userId, role);
       toast.success(t.editSuccess);
@@ -133,9 +133,9 @@ const Team = () => {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{myProfile?.display_name || '—'}</h3>
                     {myRole && (
-                      <Badge className={myRole === 'admin' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}>
+                      <Badge className={myRole === 'admin' ? 'bg-amber-100 text-amber-800' : myRole === 'magasinier' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}>
                         <Shield className="h-3 w-3 mr-1" />
-                        {myRole === 'admin' ? t.teamRoleAdmin : t.teamRoleWorker}
+                        {myRole === 'admin' ? t.teamRoleAdmin : myRole === 'magasinier' ? t.teamRoleMagasinier : t.teamRoleChefChantier}
                       </Badge>
                     )}
                   </div>
@@ -176,19 +176,20 @@ const Team = () => {
                       </div>
                       <p className="text-xs text-muted-foreground truncate">{getDeptLabel(profile.department)} {profile.position ? `• ${profile.position}` : ''}</p>
                       {isAdmin && !isMe ? (
-                        <Select value={role || ''} onValueChange={(v) => handleRoleChange(profile.user_id, v as 'admin' | 'worker')}>
-                          <SelectTrigger className="rounded-lg mt-2 h-7 text-xs w-32">
+                        <Select value={role || ''} onValueChange={(v) => handleRoleChange(profile.user_id, v as 'admin' | 'magasinier' | 'chef_chantier')}>
+                          <SelectTrigger className="rounded-lg mt-2 h-7 text-xs w-36">
                             <SelectValue placeholder={t.teamAssignRole} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="admin">{t.teamRoleAdmin}</SelectItem>
-                            <SelectItem value="worker">{t.teamRoleWorker}</SelectItem>
+                            <SelectItem value="magasinier">{t.teamRoleMagasinier}</SelectItem>
+                            <SelectItem value="chef_chantier">{t.teamRoleChefChantier}</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : role ? (
-                        <Badge className={`mt-2 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+                        <Badge className={`mt-2 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : role === 'magasinier' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
                           <Shield className="h-2.5 w-2.5 mr-0.5" />
-                          {role === 'admin' ? t.teamRoleAdmin : t.teamRoleWorker}
+                          {role === 'admin' ? t.teamRoleAdmin : role === 'magasinier' ? t.teamRoleMagasinier : t.teamRoleChefChantier}
                         </Badge>
                       ) : null}
                     </div>

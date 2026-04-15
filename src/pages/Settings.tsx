@@ -37,7 +37,7 @@ const Settings = () => {
 
   const getDeptLabel = (d: string | null) => departments.find(dep => dep.value === d)?.label || d || '—';
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'worker') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier') => {
     try {
       await assignRole(userId, role);
       toast.success(t.editSuccess);
@@ -119,23 +119,24 @@ const Settings = () => {
                           <p className="text-xs text-muted-foreground truncate">
                             {getDeptLabel(profile.department)} {profile.position ? `• ${profile.position}` : ''}
                           </p>
-                          {role && (
-                            <Badge className={`mt-1 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+                        {role && (
+                            <Badge className={`mt-1 text-[10px] ${role === 'admin' ? 'bg-amber-100 text-amber-800' : role === 'magasinier' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
                               <Shield className="h-2.5 w-2.5 mr-0.5" />
-                              {role === 'admin' ? t.teamRoleAdmin : t.teamRoleWorker}
+                              {role === 'admin' ? t.teamRoleAdmin : role === 'magasinier' ? t.teamRoleMagasinier : t.teamRoleChefChantier}
                             </Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-1">
                           {isAdmin && !isMe && (
                             <>
-                              <Select value={role || ''} onValueChange={(v) => handleRoleChange(profile.user_id, v as 'admin' | 'worker')}>
-                                <SelectTrigger className="rounded-lg h-8 text-xs w-28">
+                              <Select value={role || ''} onValueChange={(v) => handleRoleChange(profile.user_id, v as 'admin' | 'magasinier' | 'chef_chantier')}>
+                                <SelectTrigger className="rounded-lg h-8 text-xs w-32">
                                   <SelectValue placeholder={t.teamAssignRole} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="admin">{t.teamRoleAdmin}</SelectItem>
-                                  <SelectItem value="worker">{t.teamRoleWorker}</SelectItem>
+                                  <SelectItem value="magasinier">{t.teamRoleMagasinier}</SelectItem>
+                                  <SelectItem value="chef_chantier">{t.teamRoleChefChantier}</SelectItem>
                                 </SelectContent>
                               </Select>
                               <EditProfileDialog profile={profile} departments={departments} onSave={handleUpdateProfile} t={t} />
