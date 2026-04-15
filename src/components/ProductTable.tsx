@@ -52,7 +52,15 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
     <Card className="shadow-card border-0 overflow-hidden" style={{ animation: 'slideUp 0.5s ease-out backwards', animationDelay: '0.2s' }}>
       <CardHeader className="pb-3 border-b border-border/50">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base font-semibold">{t.productList}</CardTitle>
+          <div className="flex items-center gap-3">
+            <CardTitle className="text-base font-semibold">{t.productList} ({filteredProducts.length})</CardTitle>
+            {hasMore && (
+              <Button variant="outline" size="sm" className="rounded-xl gap-2" onClick={() => setShowAll(!showAll)}>
+                <Eye className="h-4 w-4" />
+                {showAll ? `Réduire` : `Voir tout`}
+              </Button>
+            )}
+          </div>
           <div className="relative w-full sm:w-64">
             <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground rtl:right-3 ltr:left-3 ltr:right-auto" />
             <Input placeholder={t.searchProduct} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-9 ltr:pl-9 ltr:pr-3 h-9 text-sm rounded-xl bg-secondary/50 border-0 focus-visible:ring-1" />
