@@ -16,7 +16,7 @@ export interface Profile {
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'magasinier' | 'chef_chantier';
+  role: 'admin' | 'magasinier' | 'chef_chantier' | 'viewer';
 }
 
 export const useProfiles = () => {
