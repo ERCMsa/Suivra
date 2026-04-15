@@ -607,24 +607,115 @@ const PurchaseRequests = () => {
                   <CardTitle className="text-base flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-primary" />
                     {labels.suppliers}
+                    {showAllSuppliers && (
+                      <Badge variant="secondary" className="text-[10px]">{suppliers.length}</Badge>
+                    )}
                   </CardTitle>
-                  {selectedProductId && (
-                    <Button size="sm" variant="ghost" onClick={() => setSelectedProductId(null)}>
-                      <X className="h-4 w-4" />
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant={showAllSuppliers ? 'default' : 'outline'}
+                      className="h-7 text-xs gap-1"
+                      onClick={() => { setShowAllSuppliers(!showAllSuppliers); if (!showAllSuppliers) setSelectedProductId(null); }}
+                    >
+                      <Building2 className="h-3 w-3" />
+                      {lang === 'fr' ? 'Tous' : 'الكل'}
                     </Button>
-                  )}
+                    {(selectedProductId || showAllSuppliers) && (
+                      <Button size="sm" variant="ghost" onClick={() => { setSelectedProductId(null); setShowAllSuppliers(false); }}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                {selectedProduct && (
+                {selectedProduct && !showAllSuppliers && (
                   <p className="text-sm text-muted-foreground mt-1">
                     {selectedProduct.designation}
                   </p>
                 )}
+                {showAllSuppliers && (
+                  <Input
+                    placeholder={labels.searchPlaceholder}
+                    value={supplierSearch}
+                    onChange={e => setSupplierSearch(e.target.value)}
+                    className="mt-2 h-8 text-sm"
+                  />
+                )}
               </CardHeader>
-              <CardContent className="space-y-3">
-                {!selectedProductId ? (
+              <CardContent className="space-y-3 max-h-[60vh] overflow-y-auto">
+                {showAllSuppliers ? (
+                  /* Full Supplier List View */
+                  suppliers.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Building2 className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                      <p className="text-sm">{labels.noSuppliers}</p>
+                      <Button size="sm" variant="outline" className="mt-3 gap-2" onClick={() => setAddSupplierOpen(true)}>
+                        <Plus className="h-4 w-4" />
+                        {labels.addSupplier}
+                      </Button>
+                    </div>
+                  ) : (
+                    suppliers
+                      .filter(s => !supplierSearch || s.name.toLowerCase().includes(supplierSearch.toLowerCase()) || s.category.toLowerCase().includes(supplierSearch.toLowerCase()))
+                      .map(supplier => (
+                        <Card key={supplier.id} className="rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-sm">{supplier.name}</span>
+                                  {supplier.is_recommended && (
+                                    <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                                      <Star className="h-3 w-3 fill-amber-400" />
+                                      {labels.recommended}
+                                    </Badge>
+                                  )}
+                                </div>
+                                {supplier.category && (
+                                  <span className="text-xs text-muted-foreground">{supplier.category}</span>
+                                )}
+                                {supplier.email && (
+                                  <span className="text-xs text-muted-foreground block">{supplier.email}</span>
+                                )}
+                                {supplier.address && (
+                                  <span className="text-xs text-muted-foreground block">{supplier.address}</span>
+                                )}
+                              </div>
+                            </div>
+                            {supplier.phone && (
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 flex-1 gap-2 text-xs"
+                                  onClick={() => handleCall(supplier.phone!)}
+                                >
+                                  <Phone className="h-3.5 w-3.5 text-blue-500" />
+                                  {supplier.phone}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
+                                  onClick={() => handleWhatsApp(supplier.phone!, '')}
+                                >
+                                  <MessageCircle className="h-3.5 w-3.5" />
+                                  {labels.whatsapp}
+                                </Button>
+                              </div>
+                            )}
+                            {!supplier.phone && (
+                              <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))
+                  )
+                ) : !selectedProductId ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Building2 className="h-10 w-10 mx-auto mb-3 opacity-20" />
                     <p className="text-sm">{lang === 'fr' ? 'Sélectionnez un article pour voir les fournisseurs' : 'اختر مادة لعرض الموردين'}</p>
+                    <p className="text-xs mt-2">{lang === 'fr' ? 'ou cliquez "Tous" pour la liste complète' : 'أو اضغط "الكل" لعرض القائمة الكاملة'}</p>
                   </div>
                 ) : productSuppliers.length === 0 && suppliers.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
@@ -637,7 +728,6 @@ const PurchaseRequests = () => {
                   </div>
                 ) : (
                   <>
-                    {/* Linked suppliers first, then all suppliers */}
                     {productSuppliers.map(supplier => {
                       const lastUsed = getLastUsed(supplier.id, selectedProductId!);
                       const linked = isLinked(supplier.id, selectedProductId!);
@@ -689,7 +779,6 @@ const PurchaseRequests = () => {
                               )}
                             </div>
 
-                            {/* Contact Actions */}
                             {supplier.phone && (
                               <div className="flex gap-2">
                                 <Button
