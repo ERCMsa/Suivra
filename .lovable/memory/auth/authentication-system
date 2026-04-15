@@ -1,0 +1,17 @@
+---
+name: Authentication & RBAC System
+description: 3-role system (admin, magasinier, chef_chantier) with RLS-backed permissions
+type: feature
+---
+## Roles
+- **admin**: Full access, user management, delete discharges/products
+- **magasinier**: Stock operations, create/edit discharges, manage articles, returns
+- **chef_chantier**: View own discharges, request materials, limited access
+
+## Implementation
+- app_role enum: admin | magasinier | chef_chantier (was admin | worker)
+- `has_any_role()` function for multi-role checks
+- `usePermissions` hook provides boolean flags for all actions
+- RLS policies enforce backend security per role
+- Header nav items hidden based on role
+- profiles table has `assigned_project` column for future project filtering
