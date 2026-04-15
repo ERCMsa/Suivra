@@ -141,6 +141,7 @@ const translations = {
     damageReportAdded: 'تم تسجيل تقرير التلف بنجاح',
     damageReportFail: 'فشل تسجيل تقرير التلف',
     noDamageReports: 'لا توجد تقارير تلف',
+    topMaterials: 'المواد الأكثر استعمالاً',
 
     // Employees
     employeesSection: 'إدارة الأشخاص',
@@ -451,6 +452,7 @@ const translations = {
     damageReportAdded: 'Rapport de dommage enregistré avec succès',
     damageReportFail: 'Échec de l\'enregistrement du rapport',
     noDamageReports: 'Aucun rapport de dommage',
+    topMaterials: 'Matériaux les plus utilisés',
 
     employeesSection: 'Gestion du Personnel',
     employeeList: 'Liste du Personnel',
