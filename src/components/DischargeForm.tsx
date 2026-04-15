@@ -27,7 +27,7 @@ interface DischargeFormProps {
   employees: Employee[];
   onSubmit: (data: { employee_id: string; product_id: string; quantity: number; notes?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => Promise<any>;
   onStockOut: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string) => void;
-  onAddProduct?: (data: ProductFormData) => Promise<void>;
+  onAddProduct?: (data: ProductFormData) => Promise<any>;
 }
 
 const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct }: DischargeFormProps) => {
