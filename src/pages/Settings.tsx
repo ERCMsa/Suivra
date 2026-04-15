@@ -37,7 +37,7 @@ const Settings = () => {
 
   const getDeptLabel = (d: string | null) => departments.find(dep => dep.value === d)?.label || d || '—';
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'worker') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier') => {
     try {
       await assignRole(userId, role);
       toast.success(t.editSuccess);

@@ -62,7 +62,7 @@ const Team = () => {
     } catch { toast.error(t.editFail); }
   };
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'worker') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier') => {
     try {
       await assignRole(userId, role);
       toast.success(t.editSuccess);
