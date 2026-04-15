@@ -46,6 +46,8 @@ const PurchaseRequests = () => {
   const [scanning, setScanning] = useState(false);
   const [addSupplierOpen, setAddSupplierOpen] = useState(false);
   const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '' });
+  const [showAllSuppliers, setShowAllSuppliers] = useState(false);
+  const [supplierSearch, setSupplierSearch] = useState('');
 
   const labels = lang === 'fr' ? {
     title: 'Fenêtre d\'Achat',
