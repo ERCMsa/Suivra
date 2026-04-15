@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import { usePurchaseRequests } from '@/hooks/usePurchaseRequests';
 import { useInventory } from '@/hooks/useInventory';
+import LowStockAlerts from '@/components/LowStockAlerts';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -329,6 +330,9 @@ const PurchaseRequests = () => {
             </Dialog>
           </div>
         </div>
+
+        {/* Low Stock Alerts */}
+        <LowStockAlerts products={products} />
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

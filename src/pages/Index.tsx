@@ -8,7 +8,7 @@ import DamageReportForm from '@/components/DamageReportForm';
 import DamageReportList from '@/components/DamageReportList';
 import DamageStats from '@/components/DamageStats';
 import DashboardCharts from '@/components/DashboardCharts';
-import LowStockAlerts from '@/components/LowStockAlerts';
+
 import WithdrawalRequests from '@/components/WithdrawalRequests';
 import DischargeForm from '@/components/DischargeForm';
 import DischargeList from '@/components/DischargeList';
@@ -83,7 +83,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 space-y-6 max-w-7xl">
-        <LowStockAlerts products={products} />
+        
         <StatsCards products={products} movements={movements} totalStock={getTotalStock()} totalSurface={getTotalSurface()} />
         <DischargeStats discharges={discharges} products={products} employees={employees} />
         <DashboardCharts products={products} movements={movements} damageReports={damageReports} />
