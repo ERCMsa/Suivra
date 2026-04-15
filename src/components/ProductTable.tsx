@@ -164,13 +164,6 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                 ))}
               </TableBody>
             </Table>
-            {hasMore && (
-              <div className="flex justify-center py-3 border-t border-border/30">
-                <Button variant="ghost" size="sm" className="rounded-xl text-xs gap-1.5" onClick={() => setShowAll(!showAll)}>
-                  {showAll ? `إخفاء / Réduire` : `عرض الكل (${filteredProducts.length}) / Voir tout`}
-                </Button>
-              </div>
-            )}
           </div>
         )}
       </CardContent>
