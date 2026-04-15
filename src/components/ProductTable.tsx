@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil } from 'lucide-react';
+import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
