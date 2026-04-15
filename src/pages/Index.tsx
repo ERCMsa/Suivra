@@ -91,11 +91,11 @@ const Index = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <ProductForm onSubmit={addProduct} />
             <DamageReportForm products={products} employees={employees} onSubmit={addDamageReport} />
-            <DischargeForm products={products} employees={employees} onSubmit={handleDischargeSubmit} onStockOut={addStockMovement} />
+            <DischargeForm products={products} employees={employees} onSubmit={handleDischargeSubmit} onStockOut={addStockMovement} onAddProduct={addProduct} />
           </div>
           <ExportButtons products={products} movements={movements} onImport={bulkImport} />
         </div>
-        <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} />
+        <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} onCancel={handleCancelDischarge} />
         <EquipmentHistory discharges={discharges} products={products} employees={employees} />
         <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} employees={employees} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
