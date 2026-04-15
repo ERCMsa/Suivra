@@ -36,7 +36,6 @@ const Index = () => {
 
   const handleMarkReturned = async (id: string, productId: string, quantity: number) => {
     await markReturned(id);
-    // Return stock
     const product = products.find(p => p.id === productId);
     if (product) {
       await addStockMovement(productId, 'in', quantity, product.length, product.width, 'إرجاع بعد ديشارج');
@@ -45,7 +44,25 @@ const Index = () => {
     await fetchDischarges();
   };
 
-  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
+  const handleCancelDischarge = async (id: string) => {
+    const discharge = discharges.find(d => d.id === id);
+    if (!discharge) return;
+    // Restore stock for all items
+    const items = discharge.items && discharge.items.length > 0 ? discharge.items : [{ product_id: discharge.product_id, quantity: discharge.quantity }];
+    for (const item of items) {
+      const product = products.find(p => p.id === item.product_id);
+      if (product) {
+        await addStockMovement(item.product_id, 'in', item.quantity, product.length, product.width, 'إلغاء ديشارج');
+      }
+    }
+    // Mark as cancelled
+    const { supabase } = await import('@/integrations/supabase/client');
+    await supabase.from('discharges').update({ status: 'cancelled' } as any).eq('id', id);
+    await refresh();
+    await fetchDischarges();
+  };
+
+  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
     const discharge = await createDischarge(data);
     await refresh();
     return discharge;
