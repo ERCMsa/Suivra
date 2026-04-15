@@ -536,6 +536,87 @@ export type Database = {
           },
         ]
       }
+      supplier_products: {
+        Row: {
+          created_at: string
+          id: string
+          last_used_at: string | null
+          product_id: string
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          product_id: string
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          product_id?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          is_recommended: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_recommended?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_recommended?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
