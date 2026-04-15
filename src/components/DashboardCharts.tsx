@@ -73,15 +73,33 @@ const DashboardCharts = ({ products, movements, damageReports }: DashboardCharts
     movementCount[m.product_id] = (movementCount[m.product_id] || 0) + m.quantity;
   });
 
-  const topProducts = [...products]
-    .filter((p) => p.image_url)
-    .sort((a, b) => {
-      const aCount = movementCount[a.id] || 0;
-      const bCount = movementCount[b.id] || 0;
-      if (bCount !== aCount) return bCount - aCount;
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    })
-    .slice(0, 9);
+  // Group products by type, pick top from each type for diversity
+  const productsWithImages = products.filter((p) => p.image_url);
+  const byType: Record<string, Product[]> = {};
+  productsWithImages.forEach((p) => {
+    const cat = p.type.split('/')[0].trim();
+    if (!byType[cat]) byType[cat] = [];
+    byType[cat].push(p);
+  });
+  // Sort each type by movement count
+  Object.values(byType).forEach((arr) =>
+    arr.sort((a, b) => (movementCount[b.id] || 0) - (movementCount[a.id] || 0))
+  );
+  // Round-robin pick from each type to ensure diversity
+  const topProducts: Product[] = [];
+  const types = Object.keys(byType);
+  let idx = 0;
+  while (topProducts.length < 9 && idx < productsWithImages.length) {
+    for (const type of types) {
+      const pointer = Math.floor(idx / types.length);
+      if (byType[type][pointer] && topProducts.length < 9) {
+        if (!topProducts.find((p) => p.id === byType[type][pointer].id)) {
+          topProducts.push(byType[type][pointer]);
+        }
+      }
+    }
+    idx += types.length;
+  }
 
   return (
     <>
