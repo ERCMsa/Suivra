@@ -18,9 +18,11 @@ import { useEmployees } from '@/hooks/useEmployees';
 import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
 import { useDischarges } from '@/hooks/useDischarges';
 import { useLanguage } from '@/hooks/useLanguage';
+import { usePermissions } from '@/hooks/usePermissions';
 
 const Index = () => {
   const { t } = useLanguage();
+  const { canAddProduct, canCreateDischarge, canCreateDamageReport, canModifyStock, canExport, canDeleteDischarge, canCancelDischarge, canApproveWithdrawal } = usePermissions();
   const {
     products, movements, damageReports, isLoading, addProduct, deleteProduct,
     addStockMovement, bulkImport, addDamageReport, getTotalStock, getTotalSurface, refresh,
@@ -89,16 +91,16 @@ const Index = () => {
         <DashboardCharts products={products} movements={movements} damageReports={damageReports} />
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <ProductForm onSubmit={addProduct} />
-            <DamageReportForm products={products} employees={employees} onSubmit={addDamageReport} />
-            <DischargeForm products={products} employees={employees} onSubmit={handleDischargeSubmit} onStockOut={addStockMovement} onAddProduct={addProduct} />
+            {canAddProduct && <ProductForm onSubmit={addProduct} />}
+            {canCreateDamageReport && <DamageReportForm products={products} employees={employees} onSubmit={addDamageReport} />}
+            {canCreateDischarge && <DischargeForm products={products} employees={employees} onSubmit={handleDischargeSubmit} onStockOut={addStockMovement} onAddProduct={addProduct} />}
           </div>
-          <ExportButtons products={products} movements={movements} onImport={bulkImport} />
+          {canExport && <ExportButtons products={products} movements={movements} onImport={bulkImport} />}
         </div>
-        <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} onCancel={handleCancelDischarge} />
+        <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} onCancel={canCancelDischarge ? handleCancelDischarge : undefined} />
         <EquipmentHistory discharges={discharges} products={products} employees={employees} />
-        <ProductTable products={products} movements={movements} onDelete={deleteProduct} onStockMovement={addStockMovement} onRefresh={refresh} employees={employees} />
-        <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={handleApproveRequest} onReject={rejectRequest} />
+        <ProductTable products={products} movements={movements} onDelete={canDeleteDischarge ? deleteProduct : undefined} onStockMovement={canModifyStock ? addStockMovement : undefined} onRefresh={refresh} employees={employees} />
+        <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={canApproveWithdrawal ? handleApproveRequest : undefined} onReject={canApproveWithdrawal ? rejectRequest : undefined} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
       </main>
