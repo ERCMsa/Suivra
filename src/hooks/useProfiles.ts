@@ -50,7 +50,7 @@ export const useProfiles = () => {
     return profiles.find(p => p.user_id === userId) || null;
   }, [profiles]);
 
-  const getUserRole = useCallback((userId: string): 'admin' | 'magasinier' | 'chef_chantier' | null => {
+  const getUserRole = useCallback((userId: string): 'admin' | 'magasinier' | 'chef_chantier' | 'viewer' | null => {
     const role = roles.find(r => r.user_id === userId);
     return role?.role || null;
   }, [roles]);
@@ -74,7 +74,7 @@ export const useProfiles = () => {
     await updateMyProfile({ avatar_url: urlData.publicUrl + '?t=' + Date.now() });
   };
 
-  const assignRole = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier') => {
+  const assignRole = async (userId: string, role: 'admin' | 'magasinier' | 'chef_chantier' | 'viewer') => {
     await supabase.from('user_roles').delete().eq('user_id', userId);
     const { error } = await supabase.from('user_roles').insert({ user_id: userId, role } as any);
     if (error) throw error;
