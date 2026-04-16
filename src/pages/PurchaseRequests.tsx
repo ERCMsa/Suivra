@@ -249,6 +249,8 @@ const PurchaseRequests = () => {
       toast.success(lang === 'fr' ? 'Fournisseur supprimé' : 'تم حذف المورد');
     }
   };
+
+  const handleAddSupplier = async () => {
     if (!newSupplier.name) return;
     const success = await addSupplier(newSupplier);
     if (success) {
