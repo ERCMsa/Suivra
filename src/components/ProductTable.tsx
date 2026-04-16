@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil, Eye } from 'lucide-react';
+import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil, Eye, Building2, Phone, MessageCircle, Star, Clock, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Product, StockMovement } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
+import { Supplier } from '@/hooks/useSuppliers';
 import StockMovementForm from './StockMovementForm';
 import MovementHistory from './MovementHistory';
 import EditProductForm from './EditProductForm';
@@ -21,6 +24,8 @@ interface ProductTableProps {
   onStockMovement: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string, takenBy?: string) => void;
   onRefresh: () => void;
   employees?: Employee[];
+  suppliers?: Supplier[];
+  supplierProducts?: { supplier_id: string; product_id: string }[];
 }
 
 const INITIAL_DISPLAY_COUNT = 10;
