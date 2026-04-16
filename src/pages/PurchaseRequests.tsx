@@ -32,7 +32,7 @@ const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
   const { requests, isLoading, autoDetectLowStock, updateStatus, updateRequest, deleteRequest, forceAdd } = usePurchaseRequests();
   const { products } = useInventory();
-  const { suppliers, supplierProducts, getSuppliersForProduct, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
+  const { suppliers, supplierProducts, getSuppliersForProduct, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
 
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
