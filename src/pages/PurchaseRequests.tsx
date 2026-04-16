@@ -51,6 +51,9 @@ const PurchaseRequests = () => {
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
   const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
+  const [editingProductStock, setEditingProductStock] = useState<string | null>(null);
+  const [stockEditQty, setStockEditQty] = useState(0);
+  const [stockEditType, setStockEditType] = useState<'in' | 'out'>('in');
 
   const labels = lang === 'fr' ? {
     title: 'Fenêtre d\'Achat',
