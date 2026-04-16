@@ -51,6 +51,8 @@ const PurchaseRequests = () => {
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
   const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
+  const [assigningSupplierId, setAssigningSupplierId] = useState<string | null>(null);
+  const [assignProductId, setAssignProductId] = useState('');
   const [editingProductStock, setEditingProductStock] = useState<string | null>(null);
   const [stockEditQty, setStockEditQty] = useState(0);
   const [stockEditType, setStockEditType] = useState<'in' | 'out'>('in');
@@ -115,6 +117,10 @@ const PurchaseRequests = () => {
     supplierSelected: 'Fournisseur sélectionné',
     requestCreated: 'Demande créée avec succès',
     linkSupplier: 'Lier à ce produit',
+    assignItem: 'Ajouter un article',
+    chooseItem: 'Choisir un article',
+    itemAddedToSupplier: 'Article ajouté au fournisseur',
+    itemAlreadyLinked: 'Article déjà lié à ce fournisseur',
   } : {
     title: 'نافذة الشراء',
     subtitle: 'نظام إعادة الطلب الذكي',
@@ -175,6 +181,10 @@ const PurchaseRequests = () => {
     supplierSelected: 'تم اختيار المورد',
     requestCreated: 'تم إنشاء الطلب بنجاح',
     linkSupplier: 'ربط بهذا المنتج',
+    assignItem: 'إضافة مادة',
+    chooseItem: 'اختر مادة',
+    itemAddedToSupplier: 'تمت إضافة المادة إلى المورد',
+    itemAlreadyLinked: 'هذه المادة مرتبطة بهذا المورد مسبقاً',
   };
 
   const getUrgencyLevel = (currentStock: number, minThreshold: number) => {
@@ -270,9 +280,23 @@ const PurchaseRequests = () => {
   };
 
   const handleLinkAndSelect = async (supplierId: string, productId: string) => {
-    await linkSupplierToProduct(supplierId, productId);
+    const alreadyLinked = isLinked(supplierId, productId);
+    const success = alreadyLinked ? true : await linkSupplierToProduct(supplierId, productId);
+    if (!success) return;
     await markSupplierUsed(supplierId, productId);
-    toast.success(labels.supplierSelected);
+    toast.success(alreadyLinked ? labels.itemAlreadyLinked : labels.supplierSelected);
+  };
+
+  const handleAssignItemToSupplier = async (supplierId: string) => {
+    if (!assignProductId) return;
+    const alreadyLinked = isLinked(supplierId, assignProductId);
+    const success = alreadyLinked ? true : await linkSupplierToProduct(supplierId, assignProductId);
+    if (!success) return;
+    await markSupplierUsed(supplierId, assignProductId);
+    toast.success(alreadyLinked ? labels.itemAlreadyLinked : labels.itemAddedToSupplier);
+    setAssigningSupplierId(null);
+    setAssignProductId('');
+    setExpandedSupplierId(supplierId);
   };
 
   const handleStockEdit = async (productId: string) => {
@@ -782,17 +806,54 @@ const PurchaseRequests = () => {
                                 {!supplier.phone && (
                                   <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
                                 )}
-                                {/* Expandable: Supplier's linked items */}
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="w-full h-7 text-xs gap-1 mt-1"
-                                  onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
-                                >
-                                  <Package className="h-3 w-3" />
-                                  {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
-                                  <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-full h-7 text-xs gap-1 mt-1"
+                                    onClick={() => {
+                                      setAssigningSupplierId(assigningSupplierId === supplier.id ? null : supplier.id);
+                                      setAssignProductId('');
+                                    }}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                    {labels.assignItem}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="w-full h-7 text-xs gap-1 mt-1"
+                                    onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                                  >
+                                    <Package className="h-3 w-3" />
+                                    {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                    <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                                  </Button>
+                                </div>
+                                {assigningSupplierId === supplier.id && (
+                                  <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
+                                    <Select value={assignProductId} onValueChange={setAssignProductId}>
+                                      <SelectTrigger className="h-8 text-xs">
+                                        <SelectValue placeholder={labels.chooseItem} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {products.map((product) => (
+                                          <SelectItem key={product.id} value={product.id}>
+                                            {product.designation} · {product.type}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" className="h-8 flex-1 text-xs" onClick={() => handleAssignItemToSupplier(supplier.id)}>
+                                        {labels.add}
+                                      </Button>
+                                      <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningSupplierId(null); setAssignProductId(''); }}>
+                                        {labels.cancel}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
                                 {expandedSupplierId === supplier.id && (
                                   <div className="mt-2 space-y-1.5 border-t pt-2">
                                     {getSupplierItems(supplier.id).length === 0 ? (
@@ -949,17 +1010,54 @@ const PurchaseRequests = () => {
                               </div>
                             )}
 
-                            {/* Expandable: Supplier's linked items */}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="w-full h-7 text-xs gap-1 mt-1"
-                              onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
-                            >
-                              <Package className="h-3 w-3" />
-                              {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
-                              <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full h-7 text-xs gap-1 mt-1"
+                                onClick={() => {
+                                  setAssigningSupplierId(assigningSupplierId === supplier.id ? null : supplier.id);
+                                  setAssignProductId(selectedProductId ?? '');
+                                }}
+                              >
+                                <Plus className="h-3 w-3" />
+                                {labels.assignItem}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="w-full h-7 text-xs gap-1 mt-1"
+                                onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                              >
+                                <Package className="h-3 w-3" />
+                                {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                              </Button>
+                            </div>
+                            {assigningSupplierId === supplier.id && (
+                              <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
+                                <Select value={assignProductId} onValueChange={setAssignProductId}>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder={labels.chooseItem} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {products.map((product) => (
+                                      <SelectItem key={product.id} value={product.id}>
+                                        {product.designation} · {product.type}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <div className="flex gap-2">
+                                  <Button size="sm" className="h-8 flex-1 text-xs" onClick={() => handleAssignItemToSupplier(supplier.id)}>
+                                    {labels.add}
+                                  </Button>
+                                  <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningSupplierId(null); setAssignProductId(''); }}>
+                                    {labels.cancel}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
                             {expandedSupplierId === supplier.id && (
                               <div className="mt-2 space-y-1.5 border-t pt-2">
                                 {getSupplierItems(supplier.id).length === 0 ? (
