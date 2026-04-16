@@ -801,19 +801,42 @@ const PurchaseRequests = () => {
                                       </p>
                                     ) : (
                                       getSupplierItems(supplier.id).map(product => (
-                                        <div key={product.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40">
-                                          {(product as any).image_url ? (
-                                            <img src={(product as any).image_url} alt="" className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
-                                          ) : (
-                                            <div className="w-8 h-8 rounded-md bg-muted flex-shrink-0" />
-                                          )}
-                                          <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-1.5">
-                                              {(product as any).brand_logo && <img src={(product as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
-                                              <span className="text-xs font-medium truncate">{product.designation}</span>
+                                        <div key={product.id} className="p-2 rounded-lg bg-muted/40 space-y-2">
+                                          <div className="flex items-center gap-2">
+                                            {(product as any).image_url ? (
+                                              <img src={(product as any).image_url} alt="" className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                                            ) : (
+                                              <div className="w-8 h-8 rounded-md bg-muted flex-shrink-0" />
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-center gap-1.5">
+                                                {(product as any).brand_logo && <img src={(product as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
+                                                <span className="text-xs font-medium truncate">{product.designation}</span>
+                                              </div>
+                                              <span className="text-[10px] text-muted-foreground">{product.type} · {lang === 'fr' ? 'Stock' : 'المخزون'}: {product.quantity}</span>
                                             </div>
-                                            <span className="text-[10px] text-muted-foreground">{product.type} · {lang === 'fr' ? 'Stock' : 'المخزون'}: {product.quantity}</span>
+                                            <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => { setEditingProductStock(editingProductStock === product.id ? null : product.id); setStockEditQty(0); setStockEditType('in'); }}>
+                                              <Edit2 className="h-3 w-3" />
+                                            </Button>
                                           </div>
+                                          {editingProductStock === product.id && (
+                                            <div className="flex items-center gap-1.5 pt-1 border-t">
+                                              <Select value={stockEditType} onValueChange={(v: 'in' | 'out') => setStockEditType(v)}>
+                                                <SelectTrigger className="h-7 w-20 text-[10px]"><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value="in">{lang === 'fr' ? 'Entrée' : 'إدخال'}</SelectItem>
+                                                  <SelectItem value="out">{lang === 'fr' ? 'Sortie' : 'إخراج'}</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                              <Input type="number" min="1" value={stockEditQty} onChange={e => setStockEditQty(Number(e.target.value))} className="h-7 w-16 text-xs" />
+                                              <Button size="sm" className="h-7 text-[10px] px-2" onClick={() => handleStockEdit(product.id)}>
+                                                <CheckCircle2 className="h-3 w-3" />
+                                              </Button>
+                                              <Button size="sm" variant="ghost" className="h-7 text-[10px] px-1" onClick={() => setEditingProductStock(null)}>
+                                                <X className="h-3 w-3" />
+                                              </Button>
+                                            </div>
+                                          )}
                                         </div>
                                       ))
                                     )}
