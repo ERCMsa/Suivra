@@ -792,17 +792,54 @@ const PurchaseRequests = () => {
                                 {!supplier.phone && (
                                   <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
                                 )}
-                                {/* Expandable: Supplier's linked items */}
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="w-full h-7 text-xs gap-1 mt-1"
-                                  onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
-                                >
-                                  <Package className="h-3 w-3" />
-                                  {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
-                                  <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-full h-7 text-xs gap-1 mt-1"
+                                    onClick={() => {
+                                      setAssigningSupplierId(assigningSupplierId === supplier.id ? null : supplier.id);
+                                      setAssignProductId('');
+                                    }}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                    {labels.assignItem}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="w-full h-7 text-xs gap-1 mt-1"
+                                    onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                                  >
+                                    <Package className="h-3 w-3" />
+                                    {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                    <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                                  </Button>
+                                </div>
+                                {assigningSupplierId === supplier.id && (
+                                  <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
+                                    <Select value={assignProductId} onValueChange={setAssignProductId}>
+                                      <SelectTrigger className="h-8 text-xs">
+                                        <SelectValue placeholder={labels.chooseItem} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {products.map((product) => (
+                                          <SelectItem key={product.id} value={product.id}>
+                                            {product.designation} · {product.type}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <div className="flex gap-2">
+                                      <Button size="sm" className="h-8 flex-1 text-xs" onClick={() => handleAssignItemToSupplier(supplier.id)}>
+                                        {labels.add}
+                                      </Button>
+                                      <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningSupplierId(null); setAssignProductId(''); }}>
+                                        {labels.cancel}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
                                 {expandedSupplierId === supplier.id && (
                                   <div className="mt-2 space-y-1.5 border-t pt-2">
                                     {getSupplierItems(supplier.id).length === 0 ? (
@@ -959,17 +996,54 @@ const PurchaseRequests = () => {
                               </div>
                             )}
 
-                            {/* Expandable: Supplier's linked items */}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="w-full h-7 text-xs gap-1 mt-1"
-                              onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
-                            >
-                              <Package className="h-3 w-3" />
-                              {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
-                              <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full h-7 text-xs gap-1 mt-1"
+                                onClick={() => {
+                                  setAssigningSupplierId(assigningSupplierId === supplier.id ? null : supplier.id);
+                                  setAssignProductId(selectedProductId ?? '');
+                                }}
+                              >
+                                <Plus className="h-3 w-3" />
+                                {labels.assignItem}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="w-full h-7 text-xs gap-1 mt-1"
+                                onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                              >
+                                <Package className="h-3 w-3" />
+                                {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                              </Button>
+                            </div>
+                            {assigningSupplierId === supplier.id && (
+                              <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
+                                <Select value={assignProductId} onValueChange={setAssignProductId}>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder={labels.chooseItem} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {products.map((product) => (
+                                      <SelectItem key={product.id} value={product.id}>
+                                        {product.designation} · {product.type}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <div className="flex gap-2">
+                                  <Button size="sm" className="h-8 flex-1 text-xs" onClick={() => handleAssignItemToSupplier(supplier.id)}>
+                                    {labels.add}
+                                  </Button>
+                                  <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningSupplierId(null); setAssignProductId(''); }}>
+                                    {labels.cancel}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
                             {expandedSupplierId === supplier.id && (
                               <div className="mt-2 space-y-1.5 border-t pt-2">
                                 {getSupplierItems(supplier.id).length === 0 ? (
