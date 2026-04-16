@@ -108,6 +108,7 @@ export const useSuppliers = () => {
     isLoading,
     fetchSuppliers,
     getSuppliersForProduct,
+    getProductsForSupplier,
     addSupplier,
     updateSupplier,
     deleteSupplier,
