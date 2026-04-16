@@ -32,7 +32,7 @@ const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
   const { requests, isLoading, autoDetectLowStock, updateStatus, updateRequest, deleteRequest, forceAdd } = usePurchaseRequests();
   const { products } = useInventory();
-  const { suppliers, supplierProducts, getSuppliersForProduct, addSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
+  const { suppliers, supplierProducts, getSuppliersForProduct, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
 
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -48,6 +48,8 @@ const PurchaseRequests = () => {
   const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
+  const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
+  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
 
   const labels = lang === 'fr' ? {
     title: 'Fenêtre d\'Achat',
@@ -220,7 +222,33 @@ const PurchaseRequests = () => {
     window.open(`tel:${phone}`, '_self');
   };
 
-  const handleAddSupplier = async () => {
+  const handleEditSupplier = (supplier: any) => {
+    setEditingSupplierId(supplier.id);
+    setEditSupplierData({
+      name: supplier.name,
+      category: supplier.category || '',
+      phone: supplier.phone || '',
+      email: supplier.email || '',
+      address: supplier.address || '',
+      notes: supplier.notes || '',
+    });
+  };
+
+  const handleSaveSupplier = async () => {
+    if (!editingSupplierId) return;
+    const success = await updateSupplier(editingSupplierId, editSupplierData);
+    if (success) {
+      toast.success(lang === 'fr' ? 'Fournisseur modifié' : 'تم تعديل المورد');
+      setEditingSupplierId(null);
+    }
+  };
+
+  const handleDeleteSupplier = async (id: string) => {
+    const success = await deleteSupplier(id);
+    if (success) {
+      toast.success(lang === 'fr' ? 'Fournisseur supprimé' : 'تم حذف المورد');
+    }
+  };
     if (!newSupplier.name) return;
     const success = await addSupplier(newSupplier);
     if (success) {
@@ -660,52 +688,73 @@ const PurchaseRequests = () => {
                       .map(supplier => (
                         <Card key={supplier.id} className="rounded-xl border shadow-sm hover:shadow-md transition-shadow">
                           <CardContent className="p-4 space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-sm">{supplier.name}</span>
-                                  {supplier.is_recommended && (
-                                    <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
-                                      <Star className="h-3 w-3 fill-amber-400" />
-                                      {labels.recommended}
-                                    </Badge>
-                                  )}
+                            {editingSupplierId === supplier.id ? (
+                              /* Inline Edit Form */
+                              <div className="space-y-2">
+                                <Input placeholder={labels.supplierName} value={editSupplierData.name} onChange={e => setEditSupplierData({ ...editSupplierData, name: e.target.value })} className="h-8 text-sm" />
+                                <Input placeholder={labels.category} value={editSupplierData.category} onChange={e => setEditSupplierData({ ...editSupplierData, category: e.target.value })} className="h-8 text-sm" />
+                                <Input placeholder={labels.phone} value={editSupplierData.phone} onChange={e => setEditSupplierData({ ...editSupplierData, phone: e.target.value })} className="h-8 text-sm" />
+                                <Input placeholder={labels.email} value={editSupplierData.email} onChange={e => setEditSupplierData({ ...editSupplierData, email: e.target.value })} className="h-8 text-sm" />
+                                <Input placeholder={lang === 'fr' ? 'Adresse' : 'العنوان'} value={editSupplierData.address} onChange={e => setEditSupplierData({ ...editSupplierData, address: e.target.value })} className="h-8 text-sm" />
+                                <div className="flex gap-2">
+                                  <Button size="sm" className="h-7 flex-1 text-xs" onClick={handleSaveSupplier}>{labels.save}</Button>
+                                  <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingSupplierId(null)}>{labels.cancel}</Button>
                                 </div>
-                                {supplier.category && (
-                                  <span className="text-xs text-muted-foreground">{supplier.category}</span>
-                                )}
-                                {supplier.email && (
-                                  <span className="text-xs text-muted-foreground block">{supplier.email}</span>
-                                )}
-                                {supplier.address && (
-                                  <span className="text-xs text-muted-foreground block">{supplier.address}</span>
-                                )}
                               </div>
-                            </div>
-                            {supplier.phone && (
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 flex-1 gap-2 text-xs"
-                                  onClick={() => handleCall(supplier.phone!)}
-                                >
-                                  <Phone className="h-3.5 w-3.5 text-blue-500" />
-                                  {supplier.phone}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
-                                  onClick={() => handleWhatsApp(supplier.phone!, '')}
-                                >
-                                  <MessageCircle className="h-3.5 w-3.5" />
-                                  {labels.whatsapp}
-                                </Button>
-                              </div>
-                            )}
-                            {!supplier.phone && (
-                              <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
+                            ) : (
+                              <>
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-semibold text-sm">{supplier.name}</span>
+                                      {supplier.is_recommended && (
+                                        <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                                          <Star className="h-3 w-3 fill-amber-400" />
+                                          {labels.recommended}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                                    {supplier.email && <span className="text-xs text-muted-foreground block">{supplier.email}</span>}
+                                    {supplier.address && <span className="text-xs text-muted-foreground block">{supplier.address}</span>}
+                                  </div>
+                                  <div className="flex gap-1">
+                                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
+                                      <Edit2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
+                                          <AlertDialogDescription>{lang === 'fr' ? `Supprimer le fournisseur "${supplier.name}" ?` : `حذف المورد "${supplier.name}"؟`}</AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDeleteSupplier(supplier.id)}>{labels.delete}</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </div>
+                                {supplier.phone && (
+                                  <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" className="h-8 flex-1 gap-2 text-xs" onClick={() => handleCall(supplier.phone!)}>
+                                      <Phone className="h-3.5 w-3.5 text-blue-500" />
+                                      {supplier.phone}
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200" onClick={() => handleWhatsApp(supplier.phone!, '')}>
+                                      <MessageCircle className="h-3.5 w-3.5" />
+                                      {labels.whatsapp}
+                                    </Button>
+                                  </div>
+                                )}
+                                {!supplier.phone && (
+                                  <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
+                                )}
+                              </>
                             )}
                           </CardContent>
                         </Card>
@@ -756,27 +805,36 @@ const PurchaseRequests = () => {
                                   <span className="text-xs text-muted-foreground">{supplier.category}</span>
                                 )}
                               </div>
-                              {!linked ? (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs gap-1"
-                                  onClick={() => handleLinkAndSelect(supplier.id, selectedProductId!)}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                  {labels.linkSupplier}
+                              <div className="flex items-center gap-1">
+                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
+                                  <Edit2 className="h-3.5 w-3.5" />
                                 </Button>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="default"
-                                  className="h-7 text-xs gap-1"
-                                  onClick={() => handleSelectSupplier(supplier.id, selectedProductId!)}
-                                >
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  {labels.selectSupplier}
-                                </Button>
-                              )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
+                                      <AlertDialogDescription>{lang === 'fr' ? `Supprimer "${supplier.name}" ?` : `حذف "${supplier.name}"؟`}</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDeleteSupplier(supplier.id)}>{labels.delete}</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                {!linked ? (
+                                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleLinkAndSelect(supplier.id, selectedProductId!)}>
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="default" className="h-7 text-xs gap-1" onClick={() => handleSelectSupplier(supplier.id, selectedProductId!)}>
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    {labels.selectSupplier}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
 
                             {supplier.phone && (
