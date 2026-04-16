@@ -51,6 +51,8 @@ const PurchaseRequests = () => {
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
   const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
+  const [assigningSupplierId, setAssigningSupplierId] = useState<string | null>(null);
+  const [assignProductId, setAssignProductId] = useState('');
   const [editingProductStock, setEditingProductStock] = useState<string | null>(null);
   const [stockEditQty, setStockEditQty] = useState(0);
   const [stockEditType, setStockEditType] = useState<'in' | 'out'>('in');
@@ -115,6 +117,10 @@ const PurchaseRequests = () => {
     supplierSelected: 'Fournisseur sélectionné',
     requestCreated: 'Demande créée avec succès',
     linkSupplier: 'Lier à ce produit',
+    assignItem: 'Ajouter un article',
+    chooseItem: 'Choisir un article',
+    itemAddedToSupplier: 'Article ajouté au fournisseur',
+    itemAlreadyLinked: 'Article déjà lié à ce fournisseur',
   } : {
     title: 'نافذة الشراء',
     subtitle: 'نظام إعادة الطلب الذكي',
@@ -175,6 +181,10 @@ const PurchaseRequests = () => {
     supplierSelected: 'تم اختيار المورد',
     requestCreated: 'تم إنشاء الطلب بنجاح',
     linkSupplier: 'ربط بهذا المنتج',
+    assignItem: 'إضافة مادة',
+    chooseItem: 'اختر مادة',
+    itemAddedToSupplier: 'تمت إضافة المادة إلى المورد',
+    itemAlreadyLinked: 'هذه المادة مرتبطة بهذا المورد مسبقاً',
   };
 
   const getUrgencyLevel = (currentStock: number, minThreshold: number) => {

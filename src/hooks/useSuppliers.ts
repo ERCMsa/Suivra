@@ -83,7 +83,18 @@ export const useSuppliers = () => {
   };
 
   const linkSupplierToProduct = async (supplierId: string, productId: string) => {
-    const { error } = await supabase.from('supplier_products').insert({ supplier_id: supplierId, product_id: productId } as any);
+    const alreadyLinked = supplierProducts.some(
+      (item) => item.supplier_id === supplierId && item.product_id === productId,
+    );
+
+    if (alreadyLinked) {
+      return true;
+    }
+
+    const { error } = await supabase
+      .from('supplier_products')
+      .insert({ supplier_id: supplierId, product_id: productId } as any);
+
     if (!error) await fetchSuppliers();
     return !error;
   };
