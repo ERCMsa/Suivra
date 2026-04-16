@@ -331,7 +331,13 @@ const PurchaseRequests = () => {
 
   const selectedProduct = selectedProductId ? products.find(p => p.id === selectedProductId) : null;
   const selectedRequest = selectedProductId ? requests.find(r => r.product_id === selectedProductId) : null;
-  const productSuppliers = selectedProductId ? getSuppliersForProduct(selectedProductId) : [];
+  const productSuppliers = selectedProductId ? getSuppliersForProduct(selectedProductId, true) : [];
+
+  // Get products linked to a supplier
+  const getSupplierItems = (supplierId: string) => {
+    const productIds = getProductsForSupplier(supplierId);
+    return productIds.map(pid => products.find(p => p.id === pid)).filter(Boolean) as typeof products;
+  };
 
   // Get last_used_at for a supplier-product pair
   const getLastUsed = (supplierId: string, productId: string) => {
