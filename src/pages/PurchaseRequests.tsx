@@ -812,13 +812,14 @@ const PurchaseRequests = () => {
                     <p className="text-sm">{lang === 'fr' ? 'Sélectionnez un article pour voir les fournisseurs' : 'اختر مادة لعرض الموردين'}</p>
                     <p className="text-xs mt-2">{lang === 'fr' ? 'ou cliquez "Tous" pour la liste complète' : 'أو اضغط "الكل" لعرض القائمة الكاملة'}</p>
                   </div>
-                ) : productSuppliers.length === 0 && suppliers.length === 0 ? (
+                ) : productSuppliers.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <User className="h-10 w-10 mx-auto mb-3 opacity-20" />
-                    <p className="text-sm">{labels.noSuppliers}</p>
-                    <Button size="sm" variant="outline" className="mt-3 gap-2" onClick={() => setAddSupplierOpen(true)}>
-                      <Plus className="h-4 w-4" />
-                      {labels.addSupplier}
+                    <p className="text-sm">{lang === 'fr' ? 'Aucun fournisseur associé' : 'لا يوجد مورد مرتبط'}</p>
+                    <p className="text-xs mt-1">{lang === 'fr' ? 'Liez un fournisseur depuis la liste complète' : 'اربط مورداً من القائمة الكاملة'}</p>
+                    <Button size="sm" variant="outline" className="mt-3 gap-2" onClick={() => { setShowAllSuppliers(true); }}>
+                      <Building2 className="h-4 w-4" />
+                      {lang === 'fr' ? 'Voir tous les fournisseurs' : 'عرض جميع الموردين'}
                     </Button>
                   </div>
                 ) : (
