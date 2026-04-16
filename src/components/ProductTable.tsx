@@ -30,10 +30,16 @@ interface ProductTableProps {
 
 const INITIAL_DISPLAY_COUNT = 10;
 
-const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [] }: ProductTableProps) => {
+const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [], suppliers = [], supplierProducts = [] }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAll, setShowAll] = useState(false);
-  const { t } = useLanguage();
+  const [supplierModalProduct, setSupplierModalProduct] = useState<Product | null>(null);
+  const { t, lang } = useLanguage();
+
+  const getLinkedSuppliers = (productId: string) => {
+    const linkedIds = supplierProducts.filter(sp => sp.product_id === productId).map(sp => sp.supplier_id);
+    return suppliers.filter(s => linkedIds.includes(s.id));
+  };
 
   const filteredProducts = products.filter(
     (product) =>
