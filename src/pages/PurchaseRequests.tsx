@@ -275,6 +275,22 @@ const PurchaseRequests = () => {
     toast.success(labels.supplierSelected);
   };
 
+  const handleStockEdit = async (productId: string) => {
+    if (stockEditQty <= 0) return;
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    if (stockEditType === 'out' && stockEditQty > product.quantity) {
+      toast.error(lang === 'fr' ? 'Stock insuffisant' : 'المخزون غير كافٍ');
+      return;
+    }
+    await addStockMovement(productId, stockEditType, stockEditQty, product.length, product.width, lang === 'fr' ? 'Depuis fenêtre d\'achat' : 'من نافذة الشراء');
+    toast.success(stockEditType === 'in'
+      ? (lang === 'fr' ? 'Quantité ajoutée' : 'تمت إضافة الكمية')
+      : (lang === 'fr' ? 'Quantité retirée' : 'تم سحب الكمية'));
+    setEditingProductStock(null);
+    setStockEditQty(0);
+  };
+
   const exportPurchasePDF = async () => {
     try {
       const { default: jsPDF } = await import('jspdf');
