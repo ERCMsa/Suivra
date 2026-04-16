@@ -101,7 +101,7 @@ const Index = () => {
         </div>
         <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} onCancel={canCancelDischarge ? handleCancelDischarge : undefined} />
         <EquipmentHistory discharges={discharges} products={products} employees={employees} />
-        <ProductTable products={products} movements={movements} onDelete={canDeleteDischarge ? deleteProduct : undefined} onStockMovement={canModifyStock ? addStockMovement : undefined} onRefresh={refresh} employees={employees} />
+        <ProductTable products={products} movements={movements} onDelete={canDeleteDischarge ? deleteProduct : undefined} onStockMovement={canModifyStock ? addStockMovement : undefined} onRefresh={refresh} employees={employees} suppliers={suppliers} supplierProducts={supplierProducts} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={canApproveWithdrawal ? handleApproveRequest : undefined} onReject={canApproveWithdrawal ? rejectRequest : undefined} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
