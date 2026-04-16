@@ -48,6 +48,8 @@ const PurchaseRequests = () => {
   const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
+  const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
+  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
 
   const labels = lang === 'fr' ? {
     title: 'Fenêtre d\'Achat',
