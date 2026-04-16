@@ -763,6 +763,43 @@ const PurchaseRequests = () => {
                                 {!supplier.phone && (
                                   <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
                                 )}
+                                {/* Expandable: Supplier's linked items */}
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="w-full h-7 text-xs gap-1 mt-1"
+                                  onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                                >
+                                  <Package className="h-3 w-3" />
+                                  {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                  <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                                </Button>
+                                {expandedSupplierId === supplier.id && (
+                                  <div className="mt-2 space-y-1.5 border-t pt-2">
+                                    {getSupplierItems(supplier.id).length === 0 ? (
+                                      <p className="text-xs text-muted-foreground text-center py-2">
+                                        {lang === 'fr' ? 'Aucun article associé' : 'لا توجد مواد مرتبطة'}
+                                      </p>
+                                    ) : (
+                                      getSupplierItems(supplier.id).map(product => (
+                                        <div key={product.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40">
+                                          {(product as any).image_url ? (
+                                            <img src={(product as any).image_url} alt="" className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                                          ) : (
+                                            <div className="w-8 h-8 rounded-md bg-muted flex-shrink-0" />
+                                          )}
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-1.5">
+                                              {(product as any).brand_logo && <img src={(product as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
+                                              <span className="text-xs font-medium truncate">{product.designation}</span>
+                                            </div>
+                                            <span className="text-[10px] text-muted-foreground">{product.type} · {lang === 'fr' ? 'Stock' : 'المخزون'}: {product.quantity}</span>
+                                          </div>
+                                        </div>
+                                      ))
+                                    )}
+                                  </div>
+                                )}
                               </>
                             )}
                           </CardContent>
