@@ -805,27 +805,36 @@ const PurchaseRequests = () => {
                                   <span className="text-xs text-muted-foreground">{supplier.category}</span>
                                 )}
                               </div>
-                              {!linked ? (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs gap-1"
-                                  onClick={() => handleLinkAndSelect(supplier.id, selectedProductId!)}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                  {labels.linkSupplier}
+                              <div className="flex items-center gap-1">
+                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
+                                  <Edit2 className="h-3.5 w-3.5" />
                                 </Button>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="default"
-                                  className="h-7 text-xs gap-1"
-                                  onClick={() => handleSelectSupplier(supplier.id, selectedProductId!)}
-                                >
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  {labels.selectSupplier}
-                                </Button>
-                              )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
+                                      <AlertDialogDescription>{lang === 'fr' ? `Supprimer "${supplier.name}" ?` : `حذف "${supplier.name}"؟`}</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDeleteSupplier(supplier.id)}>{labels.delete}</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                {!linked ? (
+                                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => handleLinkAndSelect(supplier.id, selectedProductId!)}>
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="default" className="h-7 text-xs gap-1" onClick={() => handleSelectSupplier(supplier.id, selectedProductId!)}>
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    {labels.selectSupplier}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
 
                             {supplier.phone && (
