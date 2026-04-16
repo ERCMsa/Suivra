@@ -19,6 +19,7 @@ import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
 import { useDischarges } from '@/hooks/useDischarges';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useSuppliers } from '@/hooks/useSuppliers';
 
 const Index = () => {
   const { t } = useLanguage();
