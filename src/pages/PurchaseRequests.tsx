@@ -222,7 +222,33 @@ const PurchaseRequests = () => {
     window.open(`tel:${phone}`, '_self');
   };
 
-  const handleAddSupplier = async () => {
+  const handleEditSupplier = (supplier: any) => {
+    setEditingSupplierId(supplier.id);
+    setEditSupplierData({
+      name: supplier.name,
+      category: supplier.category || '',
+      phone: supplier.phone || '',
+      email: supplier.email || '',
+      address: supplier.address || '',
+      notes: supplier.notes || '',
+    });
+  };
+
+  const handleSaveSupplier = async () => {
+    if (!editingSupplierId) return;
+    const success = await updateSupplier(editingSupplierId, editSupplierData);
+    if (success) {
+      toast.success(lang === 'fr' ? 'Fournisseur modifié' : 'تم تعديل المورد');
+      setEditingSupplierId(null);
+    }
+  };
+
+  const handleDeleteSupplier = async (id: string) => {
+    const success = await deleteSupplier(id);
+    if (success) {
+      toast.success(lang === 'fr' ? 'Fournisseur supprimé' : 'تم حذف المورد');
+    }
+  };
     if (!newSupplier.name) return;
     const success = await addSupplier(newSupplier);
     if (success) {
