@@ -31,6 +31,7 @@ const Index = () => {
   const { employees } = useEmployees();
   const { requests, createRequest, approveRequest, rejectRequest } = useWithdrawalRequests();
   const { discharges, createDischarge, markReturned, fetchDischarges } = useDischarges();
+  const { suppliers, supplierProducts } = useSuppliers();
   
   const handleApproveRequest = async (id: string) => {
     await approveRequest(id);
