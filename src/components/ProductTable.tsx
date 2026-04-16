@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil, Eye } from 'lucide-react';
+import { Search, Trash2, PackageOpen, MoreHorizontal, ArrowUpCircle, ArrowDownCircle, History, Pencil, Eye, Building2, Phone, MessageCircle, Star, Clock, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Product, StockMovement } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
+import { Supplier } from '@/hooks/useSuppliers';
 import StockMovementForm from './StockMovementForm';
 import MovementHistory from './MovementHistory';
 import EditProductForm from './EditProductForm';
@@ -21,14 +24,22 @@ interface ProductTableProps {
   onStockMovement: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string, takenBy?: string) => void;
   onRefresh: () => void;
   employees?: Employee[];
+  suppliers?: Supplier[];
+  supplierProducts?: { supplier_id: string; product_id: string }[];
 }
 
 const INITIAL_DISPLAY_COUNT = 10;
 
-const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [] }: ProductTableProps) => {
+const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefresh, employees = [], suppliers = [], supplierProducts = [] }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAll, setShowAll] = useState(false);
-  const { t } = useLanguage();
+  const [supplierModalProduct, setSupplierModalProduct] = useState<Product | null>(null);
+  const { t, lang } = useLanguage();
+
+  const getLinkedSuppliers = (productId: string) => {
+    const linkedIds = supplierProducts.filter(sp => sp.product_id === productId).map(sp => sp.supplier_id);
+    return suppliers.filter(s => linkedIds.includes(s.id));
+  };
 
   const filteredProducts = products.filter(
     (product) =>
@@ -92,7 +103,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
               </TableHeader>
               <TableBody>
                 {displayedProducts.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30">
+                  <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30 cursor-pointer" onClick={() => setSupplierModalProduct(product)}>
                     <TableCell className="text-center">
                       {(product as any).image_url ? (
                         <img src={(product as any).image_url} alt="" className="w-9 h-9 rounded-lg object-cover mx-auto" />
@@ -125,7 +136,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center" onClick={e => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg">
@@ -167,6 +178,79 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
           </div>
         )}
       </CardContent>
+
+      {/* Supplier Modal for clicked product */}
+      <Dialog open={!!supplierModalProduct} onOpenChange={() => setSupplierModalProduct(null)}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {supplierModalProduct && (supplierModalProduct as any).image_url ? (
+                <img src={(supplierModalProduct as any).image_url} alt="" className="w-10 h-10 rounded-lg object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-muted" />
+              )}
+              <div>
+                <span className="block">{supplierModalProduct?.designation}</span>
+                {supplierModalProduct && (supplierModalProduct as any).brand && (
+                  <span className="text-xs font-normal text-muted-foreground flex items-center gap-1">
+                    {(supplierModalProduct as any).brand_logo && <img src={(supplierModalProduct as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
+                    {(supplierModalProduct as any).brand}
+                  </span>
+                )}
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+            {supplierModalProduct && getLinkedSuppliers(supplierModalProduct.id).length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground">
+                <Building2 className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                <p className="text-sm">{lang === 'fr' ? 'Aucun fournisseur associé' : 'لا يوجد مورد مرتبط'}</p>
+                <p className="text-xs mt-1">{lang === 'fr' ? 'Associez des fournisseurs depuis la Fenêtre d\'Achat' : 'اربط الموردين من نافذة الشراء'}</p>
+              </div>
+            ) : (
+              supplierModalProduct && getLinkedSuppliers(supplierModalProduct.id).map(supplier => (
+                <Card key={supplier.id} className="rounded-xl">
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-sm">{supplier.name}</span>
+                          {supplier.is_recommended && (
+                            <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                              <Star className="h-3 w-3 fill-amber-400" />
+                            </Badge>
+                          )}
+                        </div>
+                        {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                      </div>
+                    </div>
+                    {supplier.phone && (
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="h-8 flex-1 gap-2 text-xs" onClick={() => window.open(`tel:${supplier.phone}`, '_self')}>
+                          <Phone className="h-3.5 w-3.5 text-blue-500" />
+                          {supplier.phone}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
+                          onClick={() => {
+                            const msg = encodeURIComponent(`Hello, I would like info about: ${supplierModalProduct?.designation}`);
+                            window.open(`https://wa.me/${supplier.phone!.replace(/[^0-9+]/g, '')}?text=${msg}`, '_blank');
+                          }}
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          WhatsApp
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

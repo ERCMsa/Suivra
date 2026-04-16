@@ -37,7 +37,7 @@ export const useSuppliers = () => {
 
   useEffect(() => { fetchSuppliers(); }, [fetchSuppliers]);
 
-  const getSuppliersForProduct = useCallback((productId: string) => {
+  const getSuppliersForProduct = useCallback((productId: string, linkedOnly = false) => {
     const linkedIds = supplierProducts
       .filter(sp => sp.product_id === productId)
       .sort((a, b) => {
@@ -49,12 +49,20 @@ export const useSuppliers = () => {
 
     const linked = linkedIds.map(id => suppliers.find(s => s.id === id)).filter(Boolean) as Supplier[];
     
+    if (linkedOnly) return linked;
+    
     // If no linked suppliers, suggest by category match
     if (linked.length === 0) {
       return suppliers.slice(0, 3);
     }
     return linked;
   }, [suppliers, supplierProducts]);
+
+  const getProductsForSupplier = useCallback((supplierId: string) => {
+    return supplierProducts
+      .filter(sp => sp.supplier_id === supplierId)
+      .map(sp => sp.product_id);
+  }, [supplierProducts]);
 
   const addSupplier = async (data: { name: string; category: string; phone?: string; email?: string; address?: string; notes?: string; is_recommended?: boolean }) => {
     const { error } = await supabase.from('suppliers').insert(data as any);
@@ -100,6 +108,7 @@ export const useSuppliers = () => {
     isLoading,
     fetchSuppliers,
     getSuppliersForProduct,
+    getProductsForSupplier,
     addSupplier,
     updateSupplier,
     deleteSupplier,

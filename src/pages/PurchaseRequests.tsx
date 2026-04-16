@@ -32,7 +32,7 @@ const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
   const { requests, isLoading, autoDetectLowStock, updateStatus, updateRequest, deleteRequest, forceAdd } = usePurchaseRequests();
   const { products } = useInventory();
-  const { suppliers, supplierProducts, getSuppliersForProduct, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
+  const { suppliers, supplierProducts, getSuppliersForProduct, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
 
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -50,6 +50,7 @@ const PurchaseRequests = () => {
   const [supplierSearch, setSupplierSearch] = useState('');
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
   const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
+  const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
 
   const labels = lang === 'fr' ? {
     title: 'Fenêtre d\'Achat',
@@ -330,7 +331,13 @@ const PurchaseRequests = () => {
 
   const selectedProduct = selectedProductId ? products.find(p => p.id === selectedProductId) : null;
   const selectedRequest = selectedProductId ? requests.find(r => r.product_id === selectedProductId) : null;
-  const productSuppliers = selectedProductId ? getSuppliersForProduct(selectedProductId) : [];
+  const productSuppliers = selectedProductId ? getSuppliersForProduct(selectedProductId, true) : [];
+
+  // Get products linked to a supplier
+  const getSupplierItems = (supplierId: string) => {
+    const productIds = getProductsForSupplier(supplierId);
+    return productIds.map(pid => products.find(p => p.id === pid)).filter(Boolean) as typeof products;
+  };
 
   // Get last_used_at for a supplier-product pair
   const getLastUsed = (supplierId: string, productId: string) => {
@@ -756,6 +763,43 @@ const PurchaseRequests = () => {
                                 {!supplier.phone && (
                                   <p className="text-xs text-muted-foreground italic">{lang === 'fr' ? 'Pas de téléphone' : 'لا يوجد رقم هاتف'}</p>
                                 )}
+                                {/* Expandable: Supplier's linked items */}
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="w-full h-7 text-xs gap-1 mt-1"
+                                  onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                                >
+                                  <Package className="h-3 w-3" />
+                                  {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                                  <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                                </Button>
+                                {expandedSupplierId === supplier.id && (
+                                  <div className="mt-2 space-y-1.5 border-t pt-2">
+                                    {getSupplierItems(supplier.id).length === 0 ? (
+                                      <p className="text-xs text-muted-foreground text-center py-2">
+                                        {lang === 'fr' ? 'Aucun article associé' : 'لا توجد مواد مرتبطة'}
+                                      </p>
+                                    ) : (
+                                      getSupplierItems(supplier.id).map(product => (
+                                        <div key={product.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40">
+                                          {(product as any).image_url ? (
+                                            <img src={(product as any).image_url} alt="" className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                                          ) : (
+                                            <div className="w-8 h-8 rounded-md bg-muted flex-shrink-0" />
+                                          )}
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-1.5">
+                                              {(product as any).brand_logo && <img src={(product as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
+                                              <span className="text-xs font-medium truncate">{product.designation}</span>
+                                            </div>
+                                            <span className="text-[10px] text-muted-foreground">{product.type} · {lang === 'fr' ? 'Stock' : 'المخزون'}: {product.quantity}</span>
+                                          </div>
+                                        </div>
+                                      ))
+                                    )}
+                                  </div>
+                                )}
                               </>
                             )}
                           </CardContent>
@@ -768,13 +812,14 @@ const PurchaseRequests = () => {
                     <p className="text-sm">{lang === 'fr' ? 'Sélectionnez un article pour voir les fournisseurs' : 'اختر مادة لعرض الموردين'}</p>
                     <p className="text-xs mt-2">{lang === 'fr' ? 'ou cliquez "Tous" pour la liste complète' : 'أو اضغط "الكل" لعرض القائمة الكاملة'}</p>
                   </div>
-                ) : productSuppliers.length === 0 && suppliers.length === 0 ? (
+                ) : productSuppliers.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <User className="h-10 w-10 mx-auto mb-3 opacity-20" />
-                    <p className="text-sm">{labels.noSuppliers}</p>
-                    <Button size="sm" variant="outline" className="mt-3 gap-2" onClick={() => setAddSupplierOpen(true)}>
-                      <Plus className="h-4 w-4" />
-                      {labels.addSupplier}
+                    <p className="text-sm">{lang === 'fr' ? 'Aucun fournisseur associé' : 'لا يوجد مورد مرتبط'}</p>
+                    <p className="text-xs mt-1">{lang === 'fr' ? 'Liez un fournisseur depuis la liste complète' : 'اربط مورداً من القائمة الكاملة'}</p>
+                    <Button size="sm" variant="outline" className="mt-3 gap-2" onClick={() => { setShowAllSuppliers(true); }}>
+                      <Building2 className="h-4 w-4" />
+                      {lang === 'fr' ? 'Voir tous les fournisseurs' : 'عرض جميع الموردين'}
                     </Button>
                   </div>
                 ) : (
@@ -859,6 +904,44 @@ const PurchaseRequests = () => {
                                   <MessageCircle className="h-3.5 w-3.5" />
                                   {labels.whatsapp}
                                 </Button>
+                              </div>
+                            )}
+
+                            {/* Expandable: Supplier's linked items */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="w-full h-7 text-xs gap-1 mt-1"
+                              onClick={() => setExpandedSupplierId(expandedSupplierId === supplier.id ? null : supplier.id)}
+                            >
+                              <Package className="h-3 w-3" />
+                              {lang === 'fr' ? 'Articles fournis' : 'المواد الموردة'}
+                              <ChevronRight className={`h-3 w-3 transition-transform ${expandedSupplierId === supplier.id ? 'rotate-90' : ''}`} />
+                            </Button>
+                            {expandedSupplierId === supplier.id && (
+                              <div className="mt-2 space-y-1.5 border-t pt-2">
+                                {getSupplierItems(supplier.id).length === 0 ? (
+                                  <p className="text-xs text-muted-foreground text-center py-2">
+                                    {lang === 'fr' ? 'Aucun article associé' : 'لا توجد مواد مرتبطة'}
+                                  </p>
+                                ) : (
+                                  getSupplierItems(supplier.id).map(product => (
+                                    <div key={product.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40">
+                                      {(product as any).image_url ? (
+                                        <img src={(product as any).image_url} alt="" className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                                      ) : (
+                                        <div className="w-8 h-8 rounded-md bg-muted flex-shrink-0" />
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-1.5">
+                                          {(product as any).brand_logo && <img src={(product as any).brand_logo} alt="" className="w-4 h-4 rounded object-contain" />}
+                                          <span className="text-xs font-medium truncate">{product.designation}</span>
+                                        </div>
+                                        <span className="text-[10px] text-muted-foreground">{product.type} · {lang === 'fr' ? 'Stock' : 'المخزون'}: {product.quantity}</span>
+                                      </div>
+                                    </div>
+                                  ))
+                                )}
                               </div>
                             )}
                           </CardContent>

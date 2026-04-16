@@ -19,6 +19,7 @@ import { useWithdrawalRequests } from '@/hooks/useWithdrawalRequests';
 import { useDischarges } from '@/hooks/useDischarges';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useSuppliers } from '@/hooks/useSuppliers';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -30,6 +31,7 @@ const Index = () => {
   const { employees } = useEmployees();
   const { requests, createRequest, approveRequest, rejectRequest } = useWithdrawalRequests();
   const { discharges, createDischarge, markReturned, fetchDischarges } = useDischarges();
+  const { suppliers, supplierProducts } = useSuppliers();
   
   const handleApproveRequest = async (id: string) => {
     await approveRequest(id);
@@ -99,7 +101,7 @@ const Index = () => {
         </div>
         <DischargeList discharges={discharges} products={products} employees={employees} onMarkReturned={handleMarkReturned} onCancel={canCancelDischarge ? handleCancelDischarge : undefined} />
         <EquipmentHistory discharges={discharges} products={products} employees={employees} />
-        <ProductTable products={products} movements={movements} onDelete={canDeleteDischarge ? deleteProduct : undefined} onStockMovement={canModifyStock ? addStockMovement : undefined} onRefresh={refresh} employees={employees} />
+        <ProductTable products={products} movements={movements} onDelete={canDeleteDischarge ? deleteProduct : undefined} onStockMovement={canModifyStock ? addStockMovement : undefined} onRefresh={refresh} employees={employees} suppliers={suppliers} supplierProducts={supplierProducts} />
         <WithdrawalRequests requests={requests} products={products} employees={employees} onCreateRequest={createRequest} onApprove={canApproveWithdrawal ? handleApproveRequest : undefined} onReject={canApproveWithdrawal ? rejectRequest : undefined} />
         <DamageStats reports={damageReports} />
         <DamageReportList reports={damageReports} products={products} />
