@@ -280,9 +280,23 @@ const PurchaseRequests = () => {
   };
 
   const handleLinkAndSelect = async (supplierId: string, productId: string) => {
-    await linkSupplierToProduct(supplierId, productId);
+    const alreadyLinked = isLinked(supplierId, productId);
+    const success = alreadyLinked ? true : await linkSupplierToProduct(supplierId, productId);
+    if (!success) return;
     await markSupplierUsed(supplierId, productId);
-    toast.success(labels.supplierSelected);
+    toast.success(alreadyLinked ? labels.itemAlreadyLinked : labels.supplierSelected);
+  };
+
+  const handleAssignItemToSupplier = async (supplierId: string) => {
+    if (!assignProductId) return;
+    const alreadyLinked = isLinked(supplierId, assignProductId);
+    const success = alreadyLinked ? true : await linkSupplierToProduct(supplierId, assignProductId);
+    if (!success) return;
+    await markSupplierUsed(supplierId, assignProductId);
+    toast.success(alreadyLinked ? labels.itemAlreadyLinked : labels.itemAddedToSupplier);
+    setAssigningSupplierId(null);
+    setAssignProductId('');
+    setExpandedSupplierId(supplierId);
   };
 
   const handleStockEdit = async (productId: string) => {
