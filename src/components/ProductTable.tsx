@@ -103,7 +103,7 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
               </TableHeader>
               <TableBody>
                 {displayedProducts.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30">
+                  <TableRow key={product.id} className="hover:bg-secondary/20 transition-colors border-border/30 cursor-pointer" onClick={() => setSupplierModalProduct(product)}>
                     <TableCell className="text-center">
                       {(product as any).image_url ? (
                         <img src={(product as any).image_url} alt="" className="w-9 h-9 rounded-lg object-cover mx-auto" />
