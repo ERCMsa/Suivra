@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageCircle, Building2, MapPin } from 'lucide-react';
+import { Phone, MessageCircle, Building2, MapPin, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SupplierAvatarProps {
@@ -140,10 +140,24 @@ const SupplierAvatar = ({
           </div>
         </div>
         {address && (
-          <p className="text-xs text-muted-foreground flex items-start gap-1 mb-2">
-            <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
-            <span className="truncate">{address}</span>
-          </p>
+          <div className="flex items-start gap-1 mb-2">
+            <MapPin className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground truncate flex-1">{address}</span>
+            <button
+              type="button"
+              className="shrink-0 p-1 rounded-md hover:bg-muted transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
+                  '_blank',
+                );
+              }}
+              title="Google Maps"
+            >
+              <Navigation className="h-3.5 w-3.5 text-primary" />
+            </button>
+          </div>
         )}
         {phone ? (
           <div className="flex gap-2">
