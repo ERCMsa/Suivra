@@ -633,6 +633,35 @@ const PurchaseRequests = () => {
                             </div>
                           </div>
 
+                          {/* Supplier avatars */}
+                          {(() => {
+                            const linked = getSuppliersForProduct(req.product_id, true);
+                            if (linked.length === 0) return null;
+                            const visible = linked.slice(0, 3);
+                            const extra = linked.length - visible.length;
+                            return (
+                              <div className="hidden sm:flex items-center" onClick={e => e.stopPropagation()}>
+                                {visible.map((s, i) => (
+                                  <div key={s.id} className={i > 0 ? '-ml-2' : ''}>
+                                    <SupplierAvatar
+                                      name={s.name}
+                                      imageUrl={s.image_url}
+                                      phone={s.phone}
+                                      category={s.category}
+                                      size="sm"
+                                      productName={product?.designation}
+                                    />
+                                  </div>
+                                ))}
+                                {extra > 0 && (
+                                  <div className="-ml-2 h-8 w-8 rounded-full bg-muted text-muted-foreground text-[10px] font-semibold flex items-center justify-center ring-2 ring-background shadow-md">
+                                    +{extra}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+
                           {/* Right: Status & Actions */}
                           <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                             <Badge
