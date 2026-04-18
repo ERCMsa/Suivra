@@ -758,11 +758,8 @@ const PurchaseRequests = () => {
                                 </AlertDialog>
                               </div>
                             )}
-
-                            <ChevronRight className="hidden" />
-              </div>
-            )}
-        </div>
+                          </div>
+                        </div>
 
                         {/* Inline Edit Notes */}
                         {isEditing && (
@@ -775,6 +772,7 @@ const PurchaseRequests = () => {
                   );
                 })}
               </div>
+            )}
         </div>
       </main>
     </div>
