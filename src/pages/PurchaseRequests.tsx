@@ -536,32 +536,30 @@ const PurchaseRequests = () => {
           </Card>
         </div>
 
-        {/* Main Content: Two Panel Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left Panel: Purchase List */}
-          <div className="lg:col-span-3 space-y-4">
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input
-                placeholder={labels.searchPlaceholder}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="max-w-xs"
-              />
-              <div className="flex gap-2 flex-wrap">
-                {(['all', 'pending', 'ordered', 'received'] as const).map(s => (
-                  <Button key={s} variant={filter === s ? 'default' : 'outline'} size="sm" onClick={() => setFilter(s)} className="gap-1.5">
-                    {s === 'pending' && <Clock className="h-3.5 w-3.5" />}
-                    {s === 'ordered' && <Truck className="h-3.5 w-3.5" />}
-                    {s === 'received' && <CheckCircle2 className="h-3.5 w-3.5" />}
-                    {s === 'all' ? labels.all : s === 'pending' ? labels.pending : s === 'ordered' ? labels.ordered : labels.received}
-                    {s === 'pending' && pendingCount > 0 && (
-                      <Badge variant="destructive" className="text-[10px] px-1.5 py-0 ml-1">{pendingCount}</Badge>
-                    )}
-                  </Button>
-                ))}
-              </div>
+        {/* Main Content: Single column purchase list */}
+        <div className="space-y-4">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Input
+              placeholder={labels.searchPlaceholder}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="max-w-xs"
+            />
+            <div className="flex gap-2 flex-wrap">
+              {(['all', 'pending', 'ordered', 'received'] as const).map(s => (
+                <Button key={s} variant={filter === s ? 'default' : 'outline'} size="sm" onClick={() => setFilter(s)} className="gap-1.5">
+                  {s === 'pending' && <Clock className="h-3.5 w-3.5" />}
+                  {s === 'ordered' && <Truck className="h-3.5 w-3.5" />}
+                  {s === 'received' && <CheckCircle2 className="h-3.5 w-3.5" />}
+                  {s === 'all' ? labels.all : s === 'pending' ? labels.pending : s === 'ordered' ? labels.ordered : labels.received}
+                  {s === 'pending' && pendingCount > 0 && (
+                    <Badge variant="destructive" className="text-[10px] px-1.5 py-0 ml-1">{pendingCount}</Badge>
+                  )}
+                </Button>
+              ))}
             </div>
+          </div>
 
             {/* Purchase Items */}
             {filtered.length === 0 ? (
