@@ -765,6 +765,20 @@ const PurchaseRequests = () => {
                             {editingSupplierId === supplier.id ? (
                               /* Inline Edit Form */
                               <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <SupplierAvatar
+                                    name={editSupplierData.name || supplier.name}
+                                    imageUrl={editSupplierData.image_url}
+                                    size="md"
+                                    interactive={false}
+                                    showTooltip={false}
+                                  />
+                                  <ImageUpload
+                                    currentUrl={editSupplierData.image_url}
+                                    onUploaded={(url) => setEditSupplierData({ ...editSupplierData, image_url: url })}
+                                    folder="suppliers"
+                                  />
+                                </div>
                                 <Input placeholder={labels.supplierName} value={editSupplierData.name} onChange={e => setEditSupplierData({ ...editSupplierData, name: e.target.value })} className="h-8 text-sm" />
                                 <Input placeholder={labels.category} value={editSupplierData.category} onChange={e => setEditSupplierData({ ...editSupplierData, category: e.target.value })} className="h-8 text-sm" />
                                 <Input placeholder={labels.phone} value={editSupplierData.phone} onChange={e => setEditSupplierData({ ...editSupplierData, phone: e.target.value })} className="h-8 text-sm" />
