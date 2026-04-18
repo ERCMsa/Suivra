@@ -21,6 +21,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   ShoppingCart, RefreshCw, Plus, Trash2, Edit2, AlertTriangle,
   CheckCircle2, Package, Clock, Truck, FileText, Phone, MessageCircle,
