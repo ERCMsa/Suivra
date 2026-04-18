@@ -695,6 +695,7 @@ const PurchaseRequests = () => {
                                       name={s.name}
                                       imageUrl={s.image_url}
                                       phone={s.phone}
+                                      address={s.address}
                                       category={s.category}
                                       size="sm"
                                       productName={product?.designation}
