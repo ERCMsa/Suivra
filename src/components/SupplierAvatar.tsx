@@ -41,10 +41,43 @@ const getColorFromName = (name: string) => {
   return `hsl(${hue}, 65%, 55%)`;
 };
 
+interface AvatarVisualProps {
+  name: string;
+  imageUrl?: string | null;
+  size: 'sm' | 'md' | 'lg';
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+}
+
+const AvatarVisual = forwardRef<HTMLSpanElement, AvatarVisualProps>(
+  ({ name, imageUrl, size, className, onClick, ...rest }, ref) => {
+    const bgColor = getColorFromName(name);
+    return (
+      <Avatar
+        ref={ref as any}
+        onClick={onClick}
+        className={cn(
+          sizeMap[size],
+          'ring-2 ring-background shadow-md cursor-pointer transition-transform hover:scale-110',
+          className,
+        )}
+        {...rest}
+      >
+        {imageUrl && <AvatarImage src={imageUrl} alt={name} className="object-cover" />}
+        <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: bgColor }}>
+          {getInitials(name)}
+        </AvatarFallback>
+      </Avatar>
+    );
+  },
+);
+AvatarVisual.displayName = 'AvatarVisual';
+
 const SupplierAvatar = ({
   name,
   imageUrl,
   phone,
+  address,
   category,
   size = 'sm',
   showTooltip = true,
@@ -54,24 +87,6 @@ const SupplierAvatar = ({
 }: SupplierAvatarProps) => {
   const bgColor = getColorFromName(name);
 
-  const avatar = (
-    <Avatar
-      className={cn(
-        sizeMap[size],
-        'ring-2 ring-background shadow-md cursor-pointer transition-transform hover:scale-110',
-        className,
-      )}
-    >
-      {imageUrl && <AvatarImage src={imageUrl} alt={name} className="object-cover" />}
-      <AvatarFallback
-        className="font-semibold text-white"
-        style={{ backgroundColor: bgColor }}
-      >
-        {getInitials(name)}
-      </AvatarFallback>
-    </Avatar>
-  );
-
   const tooltipText = (
     <div className="text-xs">
       <div className="font-semibold">{name}</div>
@@ -80,10 +95,11 @@ const SupplierAvatar = ({
   );
 
   if (!interactive) {
-    if (!showTooltip) return avatar;
+    const visual = <AvatarVisual name={name} imageUrl={imageUrl} size={size} className={className} />;
+    if (!showTooltip) return visual;
     return (
       <Tooltip>
-        <TooltipTrigger asChild>{avatar}</TooltipTrigger>
+        <TooltipTrigger asChild>{visual}</TooltipTrigger>
         <TooltipContent side="top">{tooltipText}</TooltipContent>
       </Tooltip>
     );
@@ -93,16 +109,19 @@ const SupplierAvatar = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        {showTooltip ? (
-          <Tooltip>
-            <TooltipTrigger asChild>{avatar}</TooltipTrigger>
-            <TooltipContent side="top">{tooltipText}</TooltipContent>
-          </Tooltip>
-        ) : (
-          avatar
-        )}
+        <AvatarVisual
+          name={name}
+          imageUrl={imageUrl}
+          size={size}
+          className={className}
+          onClick={(e) => e.stopPropagation()}
+        />
       </PopoverTrigger>
-      <PopoverContent className="w-64 rounded-2xl p-3" side="top">
+      <PopoverContent
+        className="w-64 rounded-2xl p-3 z-50"
+        side="top"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-12 w-12 ring-2 ring-background shadow-sm">
             {imageUrl && <AvatarImage src={imageUrl} alt={name} className="object-cover" />}
@@ -120,6 +139,12 @@ const SupplierAvatar = ({
             )}
           </div>
         </div>
+        {address && (
+          <p className="text-xs text-muted-foreground flex items-start gap-1 mb-2">
+            <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
+            <span className="truncate">{address}</span>
+          </p>
+        )}
         {phone ? (
           <div className="flex gap-2">
             <Button
@@ -131,13 +156,13 @@ const SupplierAvatar = ({
                 window.open(`tel:${phone}`, '_self');
               }}
             >
-              <Phone className="h-3.5 w-3.5 text-blue-500" />
+              <Phone className="h-3.5 w-3.5 text-primary" />
               {phone}
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="h-8 gap-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
+              className="h-8 gap-1.5 text-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 const msg = encodeURIComponent(
