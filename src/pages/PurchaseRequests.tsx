@@ -635,56 +635,68 @@ const PurchaseRequests = () => {
                           {/* Supplier avatars */}
                           {(() => {
                             const linked = getSuppliersForProduct(req.product_id, true);
-                            if (linked.length === 0) {
-                              return (
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="hidden sm:flex h-8 gap-1 text-[11px] border-dashed text-muted-foreground hover:text-primary hover:border-primary"
-                                      onClick={e => e.stopPropagation()}
-                                    >
-                                      <Plus className="h-3.5 w-3.5" />
-                                      {lang === 'fr' ? 'Fournisseur' : 'مورد'}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-64 p-2" side="top" onClick={e => e.stopPropagation()}>
-                                    <p className="text-xs font-semibold mb-2 px-1">
-                                      {lang === 'fr' ? 'Lier un fournisseur' : 'ربط مورد'}
+                            const linkedIds = new Set(linked.map(s => s.id));
+                            const available = suppliers.filter(s => !linkedIds.has(s.id));
+
+                            const AddPicker = (
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className={
+                                      linked.length === 0
+                                        ? "hidden sm:flex h-8 gap-1 text-[11px] border-dashed text-muted-foreground hover:text-primary hover:border-primary"
+                                        : "hidden sm:flex h-8 w-8 p-0 -ml-2 rounded-full border-dashed text-muted-foreground hover:text-primary hover:border-primary ring-2 ring-background shadow-md"
+                                    }
+                                    onClick={e => e.stopPropagation()}
+                                    title={lang === 'fr' ? 'Ajouter un fournisseur' : 'إضافة مورد'}
+                                  >
+                                    <Plus className="h-3.5 w-3.5" />
+                                    {linked.length === 0 && (lang === 'fr' ? 'Fournisseur' : 'مورد')}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-72 p-2" side="top" onClick={e => e.stopPropagation()}>
+                                  <p className="text-xs font-semibold mb-2 px-1">
+                                    {lang === 'fr' ? 'Lier un fournisseur' : 'ربط مورد'}
+                                  </p>
+                                  {available.length === 0 ? (
+                                    <p className="text-xs text-muted-foreground text-center py-3">
+                                      {suppliers.length === 0
+                                        ? (lang === 'fr' ? 'Aucun fournisseur. Créez-en un dans /suppliers' : 'لا يوجد موردون. أنشئ واحداً في صفحة الموردين')
+                                        : (lang === 'fr' ? 'Tous les fournisseurs sont déjà liés' : 'جميع الموردين مرتبطون بالفعل')}
                                     </p>
-                                    {suppliers.length === 0 ? (
-                                      <p className="text-xs text-muted-foreground text-center py-3">
-                                        {lang === 'fr' ? 'Aucun fournisseur. Créez-en un dans /suppliers' : 'لا يوجد موردون. أنشئ واحداً في صفحة الموردين'}
-                                      </p>
-                                    ) : (
-                                      <div className="space-y-1 max-h-60 overflow-y-auto">
-                                        {suppliers.map(s => (
-                                          <button
-                                            key={s.id}
-                                            type="button"
-                                            className="w-full flex items-center gap-2 p-1.5 rounded-md hover:bg-muted transition-colors text-left"
-                                            onClick={() => handleLinkAndSelect(s.id, req.product_id)}
-                                          >
-                                            <SupplierAvatar
-                                              name={s.name}
-                                              imageUrl={s.image_url}
-                                              size="sm"
-                                              interactive={false}
-                                              showTooltip={false}
-                                            />
-                                            <div className="min-w-0 flex-1">
-                                              <span className="text-xs font-medium truncate block">{s.name}</span>
-                                              {s.category && <span className="text-[10px] text-muted-foreground truncate block">{s.category}</span>}
-                                            </div>
-                                          </button>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </PopoverContent>
-                                </Popover>
-                              );
-                            }
+                                  ) : (
+                                    <div className="space-y-1 max-h-60 overflow-y-auto">
+                                      {available.map(s => (
+                                        <button
+                                          key={s.id}
+                                          type="button"
+                                          className="w-full flex items-center gap-2 p-1.5 rounded-md hover:bg-muted transition-colors text-left"
+                                          onClick={() => handleLinkAndSelect(s.id, req.product_id)}
+                                        >
+                                          <SupplierAvatar
+                                            name={s.name}
+                                            imageUrl={s.image_url}
+                                            size="sm"
+                                            interactive={false}
+                                            showTooltip={false}
+                                          />
+                                          <div className="min-w-0 flex-1">
+                                            <span className="text-xs font-medium truncate block">{s.name}</span>
+                                            {s.category && <span className="text-[10px] text-muted-foreground truncate block">{s.category}</span>}
+                                          </div>
+                                          <Plus className="h-3.5 w-3.5 text-primary shrink-0" />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </PopoverContent>
+                              </Popover>
+                            );
+
+                            if (linked.length === 0) return AddPicker;
+
                             const visible = linked.slice(0, 3);
                             const extra = linked.length - visible.length;
                             return (
@@ -707,6 +719,7 @@ const PurchaseRequests = () => {
                                     +{extra}
                                   </div>
                                 )}
+                                {AddPicker}
                               </div>
                             );
                           })()}
