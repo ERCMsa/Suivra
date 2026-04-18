@@ -791,20 +791,29 @@ const PurchaseRequests = () => {
                               </div>
                             ) : (
                               <>
-                                <div className="flex items-start justify-between">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-sm">{supplier.name}</span>
-                                      {supplier.is_recommended && (
-                                        <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
-                                          <Star className="h-3 w-3 fill-amber-400" />
-                                          {labels.recommended}
-                                        </Badge>
-                                      )}
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                                    <SupplierAvatar
+                                      name={supplier.name}
+                                      imageUrl={(supplier as any).image_url}
+                                      phone={supplier.phone}
+                                      category={supplier.category}
+                                      size="md"
+                                    />
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="font-semibold text-sm">{supplier.name}</span>
+                                        {supplier.is_recommended && (
+                                          <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                                            <Star className="h-3 w-3 fill-amber-400" />
+                                            {labels.recommended}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                                      {supplier.email && <span className="text-xs text-muted-foreground block truncate">{supplier.email}</span>}
+                                      {supplier.address && <span className="text-xs text-muted-foreground block truncate">{supplier.address}</span>}
                                     </div>
-                                    {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
-                                    {supplier.email && <span className="text-xs text-muted-foreground block">{supplier.email}</span>}
-                                    {supplier.address && <span className="text-xs text-muted-foreground block">{supplier.address}</span>}
                                   </div>
                                   <div className="flex gap-1">
                                     <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
