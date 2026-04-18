@@ -760,8 +760,9 @@ const PurchaseRequests = () => {
                             )}
 
                             <ChevronRight className="hidden" />
-                          </div>
-                        </div>
+              </div>
+            )}
+        </div>
 
                         {/* Inline Edit Notes */}
                         {isEditing && (
