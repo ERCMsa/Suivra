@@ -1178,9 +1178,19 @@ const PurchaseRequests = () => {
                           .slice(0, 5)
                           .map(supplier => (
                             <div key={supplier.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                              <div>
-                                <span className="text-sm font-medium">{supplier.name}</span>
-                                {supplier.category && <span className="text-xs text-muted-foreground ml-2">{supplier.category}</span>}
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <SupplierAvatar
+                                  name={supplier.name}
+                                  imageUrl={(supplier as any).image_url}
+                                  phone={supplier.phone}
+                                  category={supplier.category}
+                                  productName={selectedProduct?.designation}
+                                  size="sm"
+                                />
+                                <div className="min-w-0">
+                                  <span className="text-sm font-medium block truncate">{supplier.name}</span>
+                                  {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                                </div>
                               </div>
                               <div className="flex gap-1">
                                 {supplier.phone && (
