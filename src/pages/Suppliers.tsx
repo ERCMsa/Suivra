@@ -38,7 +38,8 @@ const Suppliers = () => {
   const [editData, setEditData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '', image_url: '' });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [assigningId, setAssigningId] = useState<string | null>(null);
-  const [assignProductId, setAssignProductId] = useState('');
+  const [assignProductIds, setAssignProductIds] = useState<string[]>([]);
+  const [productSearch, setProductSearch] = useState('');
 
   const labels = lang === 'fr' ? {
     title: 'Fournisseurs',
@@ -126,22 +127,32 @@ const Suppliers = () => {
   };
 
   const handleAssign = async (supplierId: string) => {
-    if (!assignProductId) return;
-    const already = supplierProducts.some(sp => sp.supplier_id === supplierId && sp.product_id === assignProductId);
-    if (already) {
-      toast.info(lang === 'fr' ? 'Déjà lié' : 'مرتبط مسبقاً');
-      setAssigningId(null);
-      setAssignProductId('');
-      return;
+    if (assignProductIds.length === 0) return;
+    let added = 0;
+    for (const pid of assignProductIds) {
+      const already = supplierProducts.some(sp => sp.supplier_id === supplierId && sp.product_id === pid);
+      if (already) continue;
+      const ok = await linkSupplierToProduct(supplierId, pid);
+      if (ok) {
+        await markSupplierUsed(supplierId, pid);
+        added++;
+      }
     }
-    const ok = await linkSupplierToProduct(supplierId, assignProductId);
-    if (ok) {
-      await markSupplierUsed(supplierId, assignProductId);
-      toast.success(lang === 'fr' ? 'Produit ajouté' : 'تمت إضافة المنتج');
-      setAssigningId(null);
-      setAssignProductId('');
-      setExpandedId(supplierId);
-    }
+    toast.success(
+      lang === 'fr'
+        ? `${added} produit(s) ajouté(s)`
+        : `تمت إضافة ${added} منتج`,
+    );
+    setAssigningId(null);
+    setAssignProductIds([]);
+    setProductSearch('');
+    setExpandedId(supplierId);
+  };
+
+  const toggleProductSelection = (pid: string) => {
+    setAssignProductIds(prev =>
+      prev.includes(pid) ? prev.filter(id => id !== pid) : [...prev, pid],
+    );
   };
 
   const handleUnlink = async (supplierId: string, productId: string) => {
@@ -349,8 +360,11 @@ const Suppliers = () => {
                           variant="outline"
                           className="flex-1 h-7 text-xs gap-1"
                           onClick={() => {
-                            setAssigningId(assigningId === supplier.id ? null : supplier.id);
-                            setAssignProductId('');
+                            const opening = assigningId !== supplier.id;
+                            setAssigningId(opening ? supplier.id : null);
+                            setAssignProductIds([]);
+                            setProductSearch('');
+                            if (opening) setExpandedId(null);
                           }}
                         >
                           <Plus className="h-3 w-3" />
@@ -368,30 +382,75 @@ const Suppliers = () => {
                         </Button>
                       </div>
 
-                      {assigningId === supplier.id && (
-                        <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
-                          <Select value={assignProductId} onValueChange={setAssignProductId}>
-                            <SelectTrigger className="h-8 text-xs">
-                              <SelectValue placeholder={labels.chooseProduct} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {products.map((p) => (
-                                <SelectItem key={p.id} value={p.id}>
-                                  {p.designation} · {p.type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2">
-                            <Button size="sm" className="h-8 flex-1 text-xs" onClick={() => handleAssign(supplier.id)}>
-                              {lang === 'fr' ? 'Ajouter' : 'إضافة'}
-                            </Button>
-                            <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningId(null); setAssignProductId(''); }}>
-                              {labels.cancel}
-                            </Button>
+                      {assigningId === supplier.id && (() => {
+                        const linkedSet = new Set(getProductsForSupplier(supplier.id));
+                        const available = products.filter(p => !linkedSet.has(p.id));
+                        const filteredProducts = available.filter(p =>
+                          !productSearch ||
+                          p.designation.toLowerCase().includes(productSearch.toLowerCase()) ||
+                          (p.type || '').toLowerCase().includes(productSearch.toLowerCase()) ||
+                          (p.brand || '').toLowerCase().includes(productSearch.toLowerCase()),
+                        );
+                        return (
+                          <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
+                            <Input
+                              placeholder={labels.search}
+                              value={productSearch}
+                              onChange={e => setProductSearch(e.target.value)}
+                              className="h-8 text-xs"
+                            />
+                            <div className="max-h-56 overflow-y-auto space-y-1 rounded-md bg-background p-1 border">
+                              {filteredProducts.length === 0 ? (
+                                <p className="text-[11px] text-muted-foreground text-center py-3">
+                                  {lang === 'fr' ? 'Aucun produit disponible' : 'لا توجد منتجات متاحة'}
+                                </p>
+                              ) : filteredProducts.map(p => {
+                                const checked = assignProductIds.includes(p.id);
+                                return (
+                                  <label
+                                    key={p.id}
+                                    className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer hover:bg-muted transition-colors ${checked ? 'bg-primary/10' : ''}`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() => toggleProductSelection(p.id)}
+                                      className="h-3.5 w-3.5 accent-primary"
+                                    />
+                                    {p.image_url ? (
+                                      <img src={p.image_url} alt="" className="w-7 h-7 rounded object-cover flex-shrink-0" />
+                                    ) : (
+                                      <div className="w-7 h-7 rounded bg-muted flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <span className="text-xs font-medium truncate block">{p.designation}</span>
+                                      <span className="text-[10px] text-muted-foreground">{p.type}{p.brand ? ` · ${p.brand}` : ''}</span>
+                                    </div>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[11px] text-muted-foreground">
+                                {assignProductIds.length} {lang === 'fr' ? 'sélectionné(s)' : 'محدد'}
+                              </span>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  className="h-8 text-xs"
+                                  disabled={assignProductIds.length === 0}
+                                  onClick={() => handleAssign(supplier.id)}
+                                >
+                                  {lang === 'fr' ? `Ajouter (${assignProductIds.length})` : `إضافة (${assignProductIds.length})`}
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setAssigningId(null); setAssignProductIds([]); setProductSearch(''); }}>
+                                  {labels.cancel}
+                                </Button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {expandedId === supplier.id && (
                         <div className="mt-2 space-y-1.5 border-t pt-2">
