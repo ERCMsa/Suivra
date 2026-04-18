@@ -12,6 +12,7 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 import Settings from "./pages/Settings";
 import Caisses from "./pages/Caisses";
 import PurchaseRequests from "./pages/PurchaseRequests";
+import Suppliers from "./pages/Suppliers";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/employee/:id" element={<ProtectedRoute><EmployeeProfile /></ProtectedRoute>} />
               <Route path="/caisses" element={<ProtectedRoute><Caisses /></ProtectedRoute>} />
               <Route path="/purchase-requests" element={<ProtectedRoute><PurchaseRequests /></ProtectedRoute>} />
+              <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
