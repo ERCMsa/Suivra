@@ -27,6 +27,8 @@ import {
   Star, ChevronRight, User, X, Building2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageUpload from '@/components/ImageUpload';
+import SupplierAvatar from '@/components/SupplierAvatar';
 
 const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
@@ -45,11 +47,11 @@ const PurchaseRequests = () => {
   const [forceQty, setForceQty] = useState(1);
   const [scanning, setScanning] = useState(false);
   const [addSupplierOpen, setAddSupplierOpen] = useState(false);
-  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '' });
+  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '', image_url: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
-  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
+  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '', image_url: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
   const [assigningSupplierId, setAssigningSupplierId] = useState<string | null>(null);
   const [assignProductId, setAssignProductId] = useState('');
@@ -245,6 +247,7 @@ const PurchaseRequests = () => {
       email: supplier.email || '',
       address: supplier.address || '',
       notes: supplier.notes || '',
+      image_url: supplier.image_url || '',
     });
   };
 
@@ -269,7 +272,7 @@ const PurchaseRequests = () => {
     const success = await addSupplier(newSupplier);
     if (success) {
       toast.success(lang === 'fr' ? 'Fournisseur ajouté' : 'تمت إضافة المورد');
-      setNewSupplier({ name: '', category: '', phone: '', email: '' });
+      setNewSupplier({ name: '', category: '', phone: '', email: '', image_url: '' });
       setAddSupplierOpen(false);
     }
   };
