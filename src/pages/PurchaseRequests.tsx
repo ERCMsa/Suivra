@@ -27,6 +27,8 @@ import {
   Star, ChevronRight, User, X, Building2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageUpload from '@/components/ImageUpload';
+import SupplierAvatar from '@/components/SupplierAvatar';
 
 const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
@@ -45,11 +47,11 @@ const PurchaseRequests = () => {
   const [forceQty, setForceQty] = useState(1);
   const [scanning, setScanning] = useState(false);
   const [addSupplierOpen, setAddSupplierOpen] = useState(false);
-  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '' });
+  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '', image_url: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
-  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '' });
+  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '', image_url: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
   const [assigningSupplierId, setAssigningSupplierId] = useState<string | null>(null);
   const [assignProductId, setAssignProductId] = useState('');
@@ -245,6 +247,7 @@ const PurchaseRequests = () => {
       email: supplier.email || '',
       address: supplier.address || '',
       notes: supplier.notes || '',
+      image_url: supplier.image_url || '',
     });
   };
 
@@ -269,7 +272,7 @@ const PurchaseRequests = () => {
     const success = await addSupplier(newSupplier);
     if (success) {
       toast.success(lang === 'fr' ? 'Fournisseur ajouté' : 'تمت إضافة المورد');
-      setNewSupplier({ name: '', category: '', phone: '', email: '' });
+      setNewSupplier({ name: '', category: '', phone: '', email: '', image_url: '' });
       setAddSupplierOpen(false);
     }
   };
@@ -455,6 +458,25 @@ const PurchaseRequests = () => {
                   <DialogDescription>{lang === 'fr' ? 'Informations du fournisseur' : 'بيانات المورد'}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <SupplierAvatar
+                      name={newSupplier.name || '?'}
+                      imageUrl={newSupplier.image_url}
+                      size="lg"
+                      interactive={false}
+                      showTooltip={false}
+                    />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-1.5">
+                        {lang === 'fr' ? 'Photo (optionnelle)' : 'صورة (اختيارية)'}
+                      </p>
+                      <ImageUpload
+                        currentUrl={newSupplier.image_url}
+                        onUploaded={(url) => setNewSupplier({ ...newSupplier, image_url: url })}
+                        folder="suppliers"
+                      />
+                    </div>
+                  </div>
                   <Input placeholder={labels.supplierName} value={newSupplier.name} onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })} />
                   <Input placeholder={labels.category} value={newSupplier.category} onChange={e => setNewSupplier({ ...newSupplier, category: e.target.value })} />
                   <Input placeholder={labels.phone} value={newSupplier.phone} onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })} />
@@ -743,6 +765,20 @@ const PurchaseRequests = () => {
                             {editingSupplierId === supplier.id ? (
                               /* Inline Edit Form */
                               <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <SupplierAvatar
+                                    name={editSupplierData.name || supplier.name}
+                                    imageUrl={editSupplierData.image_url}
+                                    size="md"
+                                    interactive={false}
+                                    showTooltip={false}
+                                  />
+                                  <ImageUpload
+                                    currentUrl={editSupplierData.image_url}
+                                    onUploaded={(url) => setEditSupplierData({ ...editSupplierData, image_url: url })}
+                                    folder="suppliers"
+                                  />
+                                </div>
                                 <Input placeholder={labels.supplierName} value={editSupplierData.name} onChange={e => setEditSupplierData({ ...editSupplierData, name: e.target.value })} className="h-8 text-sm" />
                                 <Input placeholder={labels.category} value={editSupplierData.category} onChange={e => setEditSupplierData({ ...editSupplierData, category: e.target.value })} className="h-8 text-sm" />
                                 <Input placeholder={labels.phone} value={editSupplierData.phone} onChange={e => setEditSupplierData({ ...editSupplierData, phone: e.target.value })} className="h-8 text-sm" />
@@ -755,20 +791,29 @@ const PurchaseRequests = () => {
                               </div>
                             ) : (
                               <>
-                                <div className="flex items-start justify-between">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-sm">{supplier.name}</span>
-                                      {supplier.is_recommended && (
-                                        <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
-                                          <Star className="h-3 w-3 fill-amber-400" />
-                                          {labels.recommended}
-                                        </Badge>
-                                      )}
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                                    <SupplierAvatar
+                                      name={supplier.name}
+                                      imageUrl={(supplier as any).image_url}
+                                      phone={supplier.phone}
+                                      category={supplier.category}
+                                      size="md"
+                                    />
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="font-semibold text-sm">{supplier.name}</span>
+                                        {supplier.is_recommended && (
+                                          <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                                            <Star className="h-3 w-3 fill-amber-400" />
+                                            {labels.recommended}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                                      {supplier.email && <span className="text-xs text-muted-foreground block truncate">{supplier.email}</span>}
+                                      {supplier.address && <span className="text-xs text-muted-foreground block truncate">{supplier.address}</span>}
                                     </div>
-                                    {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
-                                    {supplier.email && <span className="text-xs text-muted-foreground block">{supplier.email}</span>}
-                                    {supplier.address && <span className="text-xs text-muted-foreground block">{supplier.address}</span>}
                                   </div>
                                   <div className="flex gap-1">
                                     <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
@@ -934,26 +979,36 @@ const PurchaseRequests = () => {
                       return (
                         <Card key={supplier.id} className="rounded-xl border shadow-sm hover:shadow-md transition-shadow">
                           <CardContent className="p-4 space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-sm">{supplier.name}</span>
-                                  {supplier.is_recommended && (
-                                    <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
-                                      <Star className="h-3 w-3 fill-amber-400" />
-                                      {labels.recommended}
-                                    </Badge>
-                                  )}
-                                  {lastUsed && (
-                                    <Badge variant="outline" className="text-[10px] gap-1">
-                                      <Clock className="h-3 w-3" />
-                                      {labels.lastUsed}
-                                    </Badge>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3 min-w-0 flex-1">
+                                <SupplierAvatar
+                                  name={supplier.name}
+                                  imageUrl={(supplier as any).image_url}
+                                  phone={supplier.phone}
+                                  category={supplier.category}
+                                  productName={selectedProduct?.designation}
+                                  size="md"
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-semibold text-sm">{supplier.name}</span>
+                                    {supplier.is_recommended && (
+                                      <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
+                                        <Star className="h-3 w-3 fill-amber-400" />
+                                        {labels.recommended}
+                                      </Badge>
+                                    )}
+                                    {lastUsed && (
+                                      <Badge variant="outline" className="text-[10px] gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        {labels.lastUsed}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {supplier.category && (
+                                    <span className="text-xs text-muted-foreground">{supplier.category}</span>
                                   )}
                                 </div>
-                                {supplier.category && (
-                                  <span className="text-xs text-muted-foreground">{supplier.category}</span>
-                                )}
                               </div>
                               <div className="flex items-center gap-1">
                                 <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEditSupplier(supplier)}>
@@ -1123,9 +1178,19 @@ const PurchaseRequests = () => {
                           .slice(0, 5)
                           .map(supplier => (
                             <div key={supplier.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                              <div>
-                                <span className="text-sm font-medium">{supplier.name}</span>
-                                {supplier.category && <span className="text-xs text-muted-foreground ml-2">{supplier.category}</span>}
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <SupplierAvatar
+                                  name={supplier.name}
+                                  imageUrl={(supplier as any).image_url}
+                                  phone={supplier.phone}
+                                  category={supplier.category}
+                                  productName={selectedProduct?.designation}
+                                  size="sm"
+                                />
+                                <div className="min-w-0">
+                                  <span className="text-sm font-medium block truncate">{supplier.name}</span>
+                                  {supplier.category && <span className="text-xs text-muted-foreground">{supplier.category}</span>}
+                                </div>
                               </div>
                               <div className="flex gap-1">
                                 {supplier.phone && (

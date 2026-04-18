@@ -583,6 +583,7 @@ export type Database = {
           created_by: string | null
           email: string | null
           id: string
+          image_url: string | null
           is_recommended: boolean
           name: string
           notes: string | null
@@ -596,6 +597,7 @@ export type Database = {
           created_by?: string | null
           email?: string | null
           id?: string
+          image_url?: string | null
           is_recommended?: boolean
           name: string
           notes?: string | null
@@ -609,6 +611,7 @@ export type Database = {
           created_by?: string | null
           email?: string | null
           id?: string
+          image_url?: string | null
           is_recommended?: boolean
           name?: string
           notes?: string | null

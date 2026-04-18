@@ -14,6 +14,7 @@ import { Supplier } from '@/hooks/useSuppliers';
 import StockMovementForm from './StockMovementForm';
 import MovementHistory from './MovementHistory';
 import EditProductForm from './EditProductForm';
+import SupplierAvatar from './SupplierAvatar';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -211,10 +212,18 @@ const ProductTable = ({ products, movements, onDelete, onStockMovement, onRefres
               supplierModalProduct && getLinkedSuppliers(supplierModalProduct.id).map(supplier => (
                 <Card key={supplier.id} className="rounded-xl">
                   <CardContent className="p-3 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex items-center gap-3">
+                      <SupplierAvatar
+                        name={supplier.name}
+                        imageUrl={(supplier as any).image_url}
+                        phone={supplier.phone}
+                        category={supplier.category}
+                        productName={supplierModalProduct?.designation}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-sm">{supplier.name}</span>
+                          <span className="font-semibold text-sm truncate">{supplier.name}</span>
                           {supplier.is_recommended && (
                             <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
                               <Star className="h-3 w-3 fill-amber-400" />

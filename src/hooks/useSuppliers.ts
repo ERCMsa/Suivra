@@ -10,6 +10,7 @@ export interface Supplier {
   address: string | null;
   notes: string | null;
   is_recommended: boolean;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -64,7 +65,7 @@ export const useSuppliers = () => {
       .map(sp => sp.product_id);
   }, [supplierProducts]);
 
-  const addSupplier = async (data: { name: string; category: string; phone?: string; email?: string; address?: string; notes?: string; is_recommended?: boolean }) => {
+  const addSupplier = async (data: { name: string; category: string; phone?: string; email?: string; address?: string; notes?: string; is_recommended?: boolean; image_url?: string }) => {
     const { error } = await supabase.from('suppliers').insert(data as any);
     if (!error) await fetchSuppliers();
     return !error;
