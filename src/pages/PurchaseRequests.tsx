@@ -458,6 +458,25 @@ const PurchaseRequests = () => {
                   <DialogDescription>{lang === 'fr' ? 'Informations du fournisseur' : 'بيانات المورد'}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <SupplierAvatar
+                      name={newSupplier.name || '?'}
+                      imageUrl={newSupplier.image_url}
+                      size="lg"
+                      interactive={false}
+                      showTooltip={false}
+                    />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-1.5">
+                        {lang === 'fr' ? 'Photo (optionnelle)' : 'صورة (اختيارية)'}
+                      </p>
+                      <ImageUpload
+                        currentUrl={newSupplier.image_url}
+                        onUploaded={(url) => setNewSupplier({ ...newSupplier, image_url: url })}
+                        folder="suppliers"
+                      />
+                    </div>
+                  </div>
                   <Input placeholder={labels.supplierName} value={newSupplier.name} onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })} />
                   <Input placeholder={labels.category} value={newSupplier.category} onChange={e => setNewSupplier({ ...newSupplier, category: e.target.value })} />
                   <Input placeholder={labels.phone} value={newSupplier.phone} onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })} />
