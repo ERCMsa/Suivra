@@ -1,49 +1,35 @@
 
-## Plan: Supplier Image Upload & Avatar Display
+## Plan: Show Supplier Avatars Directly on Purchase List Cards
 
-### Current state
-- `suppliers` table has no `image_url` column
-- `attachments` storage bucket exists (public) — can reuse
-- `ImageUpload.tsx` component already exists for product images
-- `UserAvatar.tsx` exists with initials fallback + tooltip — reusable pattern
-- Supplier add/edit happens inline in `PurchaseRequests.tsx`
-- Suppliers are displayed in supplier cards (right panel) and supplier suggestions on product cards
+### What's already done ✅
+- `image_url` column on `suppliers` table
+- `SupplierAvatar` component (3 sizes, initials fallback, hover tooltip, click popover with Call/WhatsApp)
+- `ImageUpload` field in **Add Supplier** and **Edit Supplier** forms (live preview, replace, remove)
+- Avatars used in: supplier list cards, edit form preview, recommended chips, `ProductTable` linked-suppliers modal
 
-### Changes
+### What's missing (this iteration)
+The purchase list rows (left panel — the cards showing "TRICOT S", urgency dot, Stock/Seuil/Qté) have **no visible supplier avatars**. The user must click a row to reveal linked suppliers in the right panel. The new prompt requires supplier avatars to appear directly inside the product card "as small circular icons" for instant visual scanning.
 
-**1. Database (migration)**
-- Add `image_url TEXT` column to `suppliers` table (nullable)
+### Change
 
-**2. New component: `SupplierAvatar.tsx`**
-- Circular avatar (rounded-full), 3 sizes (sm/md/lg)
-- Shows uploaded image OR initials fallback (auto color from name hash)
-- Tooltip on hover: name + phone
-- Click opens popover with: image, name, phone, Call button, WhatsApp button
+**Edit `src/pages/PurchaseRequests.tsx` — purchase list row (around line 591–635)**
 
-**3. Update `useSuppliers.ts`**
-- Add `image_url` to `Supplier` interface
-- Include in `addSupplier` / `updateSupplier` payloads
+Add a compact avatar stack on the right side of each purchase card, rendered just before the status badge:
 
-**4. Update `PurchaseRequests.tsx`**
-- **Add Supplier form**: include `ImageUpload` field with live preview
-- **Edit Supplier form** (inline): include `ImageUpload` field to replace/remove
-- **Supplier cards** (right panel): show new `SupplierAvatar` (md) at top
-- **Product card supplier suggestions**: replace text-only chips with row of `SupplierAvatar` (sm) — clean circular icons with hover/click behavior
+- Pull linked suppliers via `getSuppliersForProduct(req.product_id, true)` (linked-only)
+- Render up to 3 `SupplierAvatar` (size `sm`) overlapping with `-ml-2` for a stacked look
+- If more than 3 → show a `+N` chip
+- If zero linked suppliers → show a subtle "—" or skip silently (no clutter)
+- Wrap in `onClick={e => e.stopPropagation()}` so clicking an avatar opens its popover (Call/WhatsApp) without toggling the row selection
+- Hidden on very small screens (`hidden sm:flex`) to preserve mobile layout
 
-**5. Update `ProductTable.tsx` supplier modal**
-- Use `SupplierAvatar` for consistency
+### Visual layout (after change)
 
-### Technical notes
-- Reuse existing `attachments` bucket with folder `suppliers/`
-- Reuse existing `ImageUpload` component (already handles upload, preview, remove)
-- Initials fallback: first letter of first 2 words; background color derived from name string hash → consistent per supplier
-- Image processing: rely on `object-cover` + `aspect-square` + `rounded-full` for crop-to-circle (CSS-only, no server processing needed for the size we display)
-
-### Files to create
-- `src/components/SupplierAvatar.tsx`
-- New migration: `ALTER TABLE suppliers ADD COLUMN image_url TEXT`
+```text
+[●] TRICOT S [Urgent]    10  20  20    [👤👤👤+2]  [Pending]  [Edit]
+```
 
 ### Files to edit
-- `src/hooks/useSuppliers.ts`
-- `src/pages/PurchaseRequests.tsx`
-- `src/components/ProductTable.tsx`
+- `src/pages/PurchaseRequests.tsx` (one small JSX insertion in the purchase row)
+
+No DB changes, no new components, no hook changes — purely a UI enhancement reusing existing infrastructure.
