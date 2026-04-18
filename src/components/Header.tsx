@@ -1,4 +1,4 @@
-import { LogOut, Settings, Globe, Package, Users, UserCircle, Cog, Box, ShoppingCart } from 'lucide-react';
+import { LogOut, Settings, Globe, Package, Users, UserCircle, Cog, Box, ShoppingCart, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -85,6 +85,17 @@ const Header = () => {
               >
                 <ShoppingCart className="h-4 w-4" />
                 <span className="hidden sm:inline">{lang === 'fr' ? 'Achats' : 'المشتريات'}</span>
+              </Button>
+            )}
+            {canViewPurchases && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`gap-1.5 rounded-xl text-xs ${location.pathname === '/suppliers' ? 'bg-primary-foreground/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10'}`}
+                onClick={() => navigate('/suppliers')}
+              >
+                <Building2 className="h-4 w-4" />
+                <span className="hidden sm:inline">{lang === 'fr' ? 'Fournisseurs' : 'الموردون'}</span>
               </Button>
             )}
 
