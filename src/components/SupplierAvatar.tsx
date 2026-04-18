@@ -1,8 +1,9 @@
+import { forwardRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageCircle, Building2 } from 'lucide-react';
+import { Phone, MessageCircle, Building2, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SupplierAvatarProps {
