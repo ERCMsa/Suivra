@@ -10,6 +10,7 @@ interface SupplierAvatarProps {
   name: string;
   imageUrl?: string | null;
   phone?: string | null;
+  address?: string | null;
   category?: string | null;
   size?: 'sm' | 'md' | 'lg';
   showTooltip?: boolean;
