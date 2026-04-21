@@ -31,6 +31,7 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
   const [open, setOpen] = useState(false);
   const [supplierId, setSupplierId] = useState<string>('');
   const [search, setSearch] = useState('');
+  const [lowStockOnly, setLowStockOnly] = useState(false);
   const [lines, setLines] = useState<QuoteLine[]>([]);
   const [generating, setGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
