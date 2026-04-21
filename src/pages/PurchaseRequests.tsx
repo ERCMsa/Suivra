@@ -30,6 +30,7 @@ import {
 import { toast } from 'sonner';
 import ImageUpload from '@/components/ImageUpload';
 import SupplierAvatar from '@/components/SupplierAvatar';
+import QuotationGenerator from '@/components/QuotationGenerator';
 
 const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
@@ -426,6 +427,11 @@ const PurchaseRequests = () => {
               <FileText className="h-4 w-4" />
               {labels.exportPdf}
             </Button>
+            <QuotationGenerator
+              products={products}
+              defaultProductIds={requests.filter(r => r.status === 'pending').map(r => r.product_id)}
+              defaultQuantities={Object.fromEntries(requests.map(r => [r.product_id, r.suggested_quantity]))}
+            />
             <Dialog open={forceOpen} onOpenChange={setForceOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2"><Plus className="h-4 w-4" />{labels.forceAdd}</Button>
