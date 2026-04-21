@@ -68,8 +68,8 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     company: 'ERCMsa',
     triggerLabel: 'Commande personnalisée',
   } : {
-    title: 'إنشاء طلب عرض سعر',
-    desc: 'اختر المورد والمنتجات لإنشاء طلب عرض سعر مخصص',
+    title: 'إنشاء طلبية مخصصة',
+    desc: 'اختر المورد والمنتجات لإنشاء طلبية مخصصة',
     selectSupplier: 'اختر مورداً',
     searchProducts: 'ابحث عن مادة…',
     selectAll: 'تحديد الكل',
@@ -87,17 +87,17 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     noItems: 'يرجى تحديد منتج واحد على الأقل',
     success: 'تم إنشاء الملف',
     errorGen: 'خطأ في الإنشاء',
-    quoteRequest: 'طلب عرض سعر',
+    quoteRequest: 'طلبية مخصصة',
     to: 'إلى',
     from: 'من',
     date: 'التاريخ',
     ref: 'مرجع',
     designation: 'التسمية',
     quantity: 'الكمية',
-    notes: 'يرجى موافاتنا بأفضل عرض تجاري (السعر، المهلة، شروط الدفع).',
+    notes: 'يرجى تحضير الطلبية وفق الكميات المذكورة وموافاتنا بالمهلة وشروط التسليم.',
     signature: 'التوقيع والختم',
     company: 'ERCMsa',
-    triggerLabel: 'عرض سعر مخصص',
+    triggerLabel: 'طلبية مخصصة',
   };
 
   // Initialize lines when dialog opens
