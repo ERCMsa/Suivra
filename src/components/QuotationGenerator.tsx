@@ -66,7 +66,7 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     notes: 'Merci de nous transmettre votre meilleure offre commerciale (prix, délai, conditions de paiement).',
     signature: 'Signature & Cachet',
     company: 'ERCMsa',
-    triggerLabel: 'Devis personnalisé',
+    triggerLabel: 'Commande personnalisée',
   } : {
     title: 'إنشاء طلب عرض سعر',
     desc: 'اختر المورد والمنتجات لإنشاء طلب عرض سعر مخصص',
