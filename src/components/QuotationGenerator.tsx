@@ -43,6 +43,8 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     searchProducts: 'Rechercher un article…',
     selectAll: 'Tout sélectionner',
     deselectAll: 'Tout désélectionner',
+    filterAll: 'Tous les articles',
+    filterLow: 'Stock bas uniquement',
     item: 'Article',
     qty: 'Qté',
     unit: 'Unité',
@@ -72,6 +74,8 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     searchProducts: 'ابحث عن مادة…',
     selectAll: 'تحديد الكل',
     deselectAll: 'إلغاء الكل',
+    filterAll: 'كل المنتجات',
+    filterLow: 'الحد الأدنى فقط',
     item: 'المادة',
     qty: 'الكمية',
     unit: 'الوحدة',
@@ -118,10 +122,11 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     return lines.filter(l => {
       const p = products.find(pp => pp.id === l.productId);
       if (!p) return false;
+      if (lowStockOnly && p.quantity > p.min_quantity) return false;
       if (!q) return true;
       return p.designation.toLowerCase().includes(q) || (p.brand || '').toLowerCase().includes(q);
     });
-  }, [lines, products, search]);
+  }, [lines, products, search, lowStockOnly]);
 
   const selectedLines = lines.filter(l => l.selected);
   const allFilteredSelected = filteredLines.length > 0 && filteredLines.every(l => l.selected);
