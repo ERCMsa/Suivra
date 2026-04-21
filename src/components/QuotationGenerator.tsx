@@ -31,6 +31,7 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
   const [open, setOpen] = useState(false);
   const [supplierId, setSupplierId] = useState<string>('');
   const [search, setSearch] = useState('');
+  const [lowStockOnly, setLowStockOnly] = useState(false);
   const [lines, setLines] = useState<QuoteLine[]>([]);
   const [generating, setGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -42,6 +43,8 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     searchProducts: 'Rechercher un article…',
     selectAll: 'Tout sélectionner',
     deselectAll: 'Tout désélectionner',
+    filterAll: 'Tous les articles',
+    filterLow: 'Stock bas uniquement',
     item: 'Article',
     qty: 'Qté',
     unit: 'Unité',
@@ -71,6 +74,8 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     searchProducts: 'ابحث عن مادة…',
     selectAll: 'تحديد الكل',
     deselectAll: 'إلغاء الكل',
+    filterAll: 'كل المنتجات',
+    filterLow: 'الحد الأدنى فقط',
     item: 'المادة',
     qty: 'الكمية',
     unit: 'الوحدة',
@@ -117,10 +122,11 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
     return lines.filter(l => {
       const p = products.find(pp => pp.id === l.productId);
       if (!p) return false;
+      if (lowStockOnly && p.quantity > p.min_quantity) return false;
       if (!q) return true;
       return p.designation.toLowerCase().includes(q) || (p.brand || '').toLowerCase().includes(q);
     });
-  }, [lines, products, search]);
+  }, [lines, products, search, lowStockOnly]);
 
   const selectedLines = lines.filter(l => l.selected);
   const allFilteredSelected = filteredLines.length > 0 && filteredLines.every(l => l.selected);
@@ -349,6 +355,33 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8"
               />
+            </div>
+
+            <div className="flex gap-1.5">
+              <Button
+                type="button"
+                size="sm"
+                variant={lowStockOnly ? 'outline' : 'default'}
+                onClick={() => setLowStockOnly(false)}
+                className="h-7 text-xs flex-1"
+              >
+                {t.filterAll}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={lowStockOnly ? 'default' : 'outline'}
+                onClick={() => setLowStockOnly(true)}
+                className="h-7 text-xs flex-1 gap-1"
+              >
+                {t.filterLow}
+                <Badge variant="secondary" className="text-[10px] px-1 py-0">
+                  {lines.filter(l => {
+                    const p = products.find(pp => pp.id === l.productId);
+                    return p && p.quantity <= p.min_quantity;
+                  }).length}
+                </Badge>
+              </Button>
             </div>
 
             <div className="flex items-center justify-between text-xs">
