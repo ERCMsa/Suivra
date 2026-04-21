@@ -357,6 +357,33 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
               />
             </div>
 
+            <div className="flex gap-1.5">
+              <Button
+                type="button"
+                size="sm"
+                variant={lowStockOnly ? 'outline' : 'default'}
+                onClick={() => setLowStockOnly(false)}
+                className="h-7 text-xs flex-1"
+              >
+                {t.filterAll}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={lowStockOnly ? 'default' : 'outline'}
+                onClick={() => setLowStockOnly(true)}
+                className="h-7 text-xs flex-1 gap-1"
+              >
+                {t.filterLow}
+                <Badge variant="secondary" className="text-[10px] px-1 py-0">
+                  {lines.filter(l => {
+                    const p = products.find(pp => pp.id === l.productId);
+                    return p && p.quantity <= p.min_quantity;
+                  }).length}
+                </Badge>
+              </Button>
+            </div>
+
             <div className="flex items-center justify-between text-xs">
               <Button variant="ghost" size="sm" onClick={toggleAllFiltered} className="h-7 gap-1.5">
                 <Check className="h-3.5 w-3.5" />
