@@ -6,6 +6,7 @@ export interface DischargeItem {
   discharge_id: string;
   product_id: string;
   quantity: number;
+  returned_quantity: number;
   created_at: string;
 }
 
@@ -111,6 +112,13 @@ export const useDischarges = () => {
   };
 
   const markReturned = async (id: string) => {
+    // Mark all items as fully returned
+    const { data: items } = await supabase.from('discharge_items').select('*').eq('discharge_id', id);
+    if (items) {
+      for (const it of items as any[]) {
+        await supabase.from('discharge_items').update({ returned_quantity: it.quantity } as any).eq('id', it.id);
+      }
+    }
     const { error } = await supabase.from('discharges').update({
       status: 'returned',
       date_returned: new Date().toISOString(),
@@ -119,5 +127,97 @@ export const useDischarges = () => {
     await fetchDischarges();
   };
 
-  return { discharges, isLoading, createDischarge, markReturned, fetchDischarges };
+  const partialReturn = async (
+    dischargeId: string,
+    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number }[]
+  ) => {
+    // Update each item's returned_quantity
+    for (const r of returns) {
+      await supabase.from('discharge_items').update({ returned_quantity: r.new_returned_total } as any).eq('id', r.item_id);
+    }
+    // Determine new status
+    const { data: allItems } = await supabase.from('discharge_items').select('*').eq('discharge_id', dischargeId);
+    if (allItems) {
+      const totalQty = (allItems as any[]).reduce((s, i) => s + Number(i.quantity), 0);
+      const totalReturned = (allItems as any[]).reduce((s, i) => s + Number(i.returned_quantity || 0), 0);
+      let newStatus = 'active';
+      let dateReturned: string | null = null;
+      if (totalReturned >= totalQty) {
+        newStatus = 'returned';
+        dateReturned = new Date().toISOString();
+      } else if (totalReturned > 0) {
+        newStatus = 'partially_returned';
+      }
+      await supabase.from('discharges').update({ status: newStatus, date_returned: dateReturned } as any).eq('id', dischargeId);
+    }
+    await fetchDischarges();
+  };
+
+  const updateDischarge = async (
+    id: string,
+    data: {
+      employee_id?: string;
+      project?: string | null;
+      notes?: string | null;
+      date_out?: string;
+      items?: { id?: string; product_id: string; quantity: number }[];
+    },
+    onStockAdjust?: (productId: string, delta: number) => Promise<void>
+  ) => {
+    // Update main discharge record
+    const updates: any = {};
+    if (data.employee_id !== undefined) updates.employee_id = data.employee_id;
+    if (data.project !== undefined) updates.project = data.project;
+    if (data.notes !== undefined) updates.notes = data.notes;
+    if (data.date_out !== undefined) updates.date_out = data.date_out;
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase.from('discharges').update(updates).eq('id', id);
+      if (error) throw error;
+    }
+
+    // Update items if provided: compute deltas and adjust stock
+    if (data.items) {
+      const { data: existing } = await supabase.from('discharge_items').select('*').eq('discharge_id', id);
+      const existingItems = (existing as any[]) || [];
+
+      // For each new item, compare to existing
+      for (const newItem of data.items) {
+        const match = newItem.id ? existingItems.find(e => e.id === newItem.id) : null;
+        if (match) {
+          const delta = Number(newItem.quantity) - Number(match.quantity);
+          if (delta !== 0) {
+            await supabase.from('discharge_items').update({ quantity: newItem.quantity } as any).eq('id', match.id);
+            if (onStockAdjust) await onStockAdjust(newItem.product_id, -delta); // delta positive = take more out
+          }
+        } else {
+          // New item added
+          await supabase.from('discharge_items').insert({
+            discharge_id: id,
+            product_id: newItem.product_id,
+            quantity: newItem.quantity,
+          } as any);
+          if (onStockAdjust) await onStockAdjust(newItem.product_id, -newItem.quantity);
+        }
+      }
+
+      // Remove items that no longer exist
+      const keepIds = data.items.filter(i => i.id).map(i => i.id);
+      for (const ex of existingItems) {
+        if (!keepIds.includes(ex.id)) {
+          await supabase.from('discharge_items').delete().eq('id', ex.id);
+          if (onStockAdjust) await onStockAdjust(ex.product_id, Number(ex.quantity)); // restore
+        }
+      }
+
+      // Sync the legacy product_id/quantity columns on discharges to first item
+      const first = data.items[0];
+      if (first) {
+        await supabase.from('discharges').update({ product_id: first.product_id, quantity: first.quantity } as any).eq('id', id);
+      }
+    }
+
+    await fetchDischarges();
+  };
+
+  return { discharges, isLoading, createDischarge, markReturned, partialReturn, updateDischarge, fetchDischarges };
 };

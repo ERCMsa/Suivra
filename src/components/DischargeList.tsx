@@ -13,6 +13,8 @@ import { Product } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import EditDischargeForm from './EditDischargeForm';
+import PartialReturnDialog from './PartialReturnDialog';
 
 interface DischargeListProps {
   discharges: Discharge[];
@@ -20,11 +22,22 @@ interface DischargeListProps {
   employees: Employee[];
   onMarkReturned: (id: string, productId: string, quantity: number) => Promise<void>;
   onCancel?: (id: string) => Promise<void>;
+  onEditDischarge?: (
+    id: string,
+    data: { employee_id?: string; project?: string | null; notes?: string | null; items?: { id?: string; product_id: string; quantity: number }[] },
+    onStockAdjust?: (productId: string, delta: number) => Promise<void>
+  ) => Promise<void>;
+  onPartialReturn?: (
+    dischargeId: string,
+    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number }[]
+  ) => Promise<void>;
+  onStockAdjust?: (productId: string, delta: number) => Promise<void>;
+  onStockReturn?: (productId: string, quantity: number) => Promise<void>;
 }
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
-const DischargeList = ({ discharges, products, employees, onMarkReturned, onCancel }: DischargeListProps) => {
+const DischargeList = ({ discharges, products, employees, onMarkReturned, onCancel, onEditDischarge, onPartialReturn, onStockAdjust, onStockReturn }: DischargeListProps) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -208,6 +221,9 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
     const prod = getProduct(d.product_id);
     const isActive = d.status === 'active';
     const isCancelled = d.status === 'cancelled';
+    const isPartial = d.status === 'partially_returned';
+    const isReturned = d.status === 'returned';
+    const canEditOrReturn = isActive || isPartial;
 
     return (
       <TableRow key={d.id} className={`hover:bg-secondary/20 transition-colors ${isCancelled ? 'opacity-50' : ''}`}>
@@ -239,18 +255,30 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
           </p>
         </TableCell>
         <TableCell className="text-center text-sm font-semibold">
-          {d.items && d.items.length > 1 
-            ? d.items.map(i => i.quantity).join(' + ')
-            : d.quantity
-          }
+          {(() => {
+            const its = d.items && d.items.length > 0 ? d.items : [{ quantity: d.quantity, returned_quantity: 0 } as any];
+            const totalQ = its.reduce((s, i) => s + Number(i.quantity), 0);
+            const totalR = its.reduce((s, i) => s + Number((i as any).returned_quantity || 0), 0);
+            return (
+              <div>
+                <div>{its.map(i => i.quantity).join(' + ')}</div>
+                {totalR > 0 && totalR < totalQ && (
+                  <div className="text-[10px] text-amber-600 mt-0.5 font-normal">↩ {totalR}/{totalQ}</div>
+                )}
+              </div>
+            );
+          })()}
         </TableCell>
         <TableCell className="text-center text-xs">{new Date(d.date_out).toLocaleDateString('fr-FR')}</TableCell>
         <TableCell className="text-center">
           <Badge className={
             isCancelled ? 'bg-red-100 text-red-800' :
+            isPartial ? 'bg-orange-100 text-orange-800' :
             isActive ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'
           }>
-            {isCancelled ? (t.dischargeCancelledStatus || 'Annulé') : isActive ? t.dischargeActive : t.dischargeReturnedStatus}
+            {isCancelled ? (t.dischargeCancelledStatus || 'Annulé')
+              : isPartial ? ((t as any).dischargePartiallyReturned || 'Partiel')
+              : isActive ? t.dischargeActive : t.dischargeReturnedStatus}
           </Badge>
         </TableCell>
         <TableCell>
@@ -258,12 +286,29 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => generatePDF(d)} title="PDF">
               <FileText className="h-4 w-4 text-primary" />
             </Button>
-            {isActive && (
+            {canEditOrReturn && onEditDischarge && (
+              <EditDischargeForm
+                discharge={d}
+                products={products}
+                employees={employees}
+                onSave={onEditDischarge}
+                onStockAdjust={onStockAdjust}
+              />
+            )}
+            {canEditOrReturn && onPartialReturn && onStockReturn && (
+              <PartialReturnDialog
+                discharge={d}
+                products={products}
+                onConfirm={onPartialReturn}
+                onStockReturn={onStockReturn}
+              />
+            )}
+            {canEditOrReturn && (
               <>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-success hover:bg-success/10" title={t.markReturned}>
-                      <RotateCcw className="h-4 w-4" />
+                      <FileCheck className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="rounded-2xl">
