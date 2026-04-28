@@ -39,20 +39,21 @@ export const usePurchaseRequests = () => {
     // Fetch existing pending/ordered requests
     const { data: existing } = await supabase
       .from('purchase_requests')
-      .select('product_id, status')
+      .select('id, product_id, status')
       .in('status', ['pending', 'ordered']);
 
-    const existingProductIds = new Set((existing || []).map(r => r.product_id));
+    const existingByProduct = new Map<string, { id: string; status: string }>();
+    (existing || []).forEach((r: any) => existingByProduct.set(r.product_id, { id: r.id, status: r.status }));
 
     const user = (await supabase.auth.getUser()).data.user;
     const newRequests: any[] = [];
+    const obsoletePendingIds: string[] = [];
 
     for (const product of products) {
-      if (
-        product.min_quantity > 0 &&
-        product.quantity <= product.min_quantity &&
-        !existingProductIds.has(product.id)
-      ) {
+      const isLow = product.min_quantity > 0 && product.quantity <= product.min_quantity;
+      const existingReq = existingByProduct.get(product.id);
+
+      if (isLow && !existingReq) {
         const suggested = Math.max(product.min_quantity * 2 - product.quantity, product.min_quantity);
         newRequests.push({
           product_id: product.id,
@@ -62,11 +63,21 @@ export const usePurchaseRequests = () => {
           status: 'pending',
           created_by: user?.id,
         });
+      } else if (!isLow && existingReq && existingReq.status === 'pending') {
+        // Stock has been replenished — auto-cancel the obsolete pending request
+        obsoletePendingIds.push(existingReq.id);
       }
+    }
+
+    if (obsoletePendingIds.length > 0) {
+      await supabase.from('purchase_requests').delete().in('id', obsoletePendingIds);
     }
 
     if (newRequests.length > 0) {
       await supabase.from('purchase_requests').insert(newRequests);
+    }
+
+    if (newRequests.length > 0 || obsoletePendingIds.length > 0) {
       await fetchRequests();
     }
 
