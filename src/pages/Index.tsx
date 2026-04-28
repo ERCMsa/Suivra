@@ -30,7 +30,7 @@ const Index = () => {
   } = useInventory();
   const { employees } = useEmployees();
   const { requests, createRequest, approveRequest, rejectRequest } = useWithdrawalRequests();
-  const { discharges, createDischarge, markReturned, fetchDischarges } = useDischarges();
+  const { discharges, createDischarge, markReturned, partialReturn, updateDischarge, fetchDischarges } = useDischarges();
   const { suppliers, supplierProducts } = useSuppliers();
   
   const handleApproveRequest = async (id: string) => {
