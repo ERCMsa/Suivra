@@ -25,7 +25,7 @@ interface DischargeItem {
 interface DischargeFormProps {
   products: Product[];
   employees: Employee[];
-  onSubmit: (data: { employee_id: string; product_id: string; quantity: number; notes?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => Promise<any>;
+  onSubmit: (data: { employee_id: string; product_id: string; quantity: number; notes?: string; project?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => Promise<any>;
   onStockOut: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string) => void;
   onAddProduct?: (data: ProductFormData) => Promise<any>;
 }
@@ -38,6 +38,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
   const [employeeDropdownOpen, setEmployeeDropdownOpen] = useState(false);
   const [items, setItems] = useState<DischargeItem[]>([{ product_id: '', quantity: 1 }]);
   const [notes, setNotes] = useState('');
+  const [project, setProject] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dateOut, setDateOut] = useState<Date>(new Date());
@@ -138,6 +139,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
         product_id: first.product_id,
         quantity: first.quantity,
         notes: notes || undefined,
+        project: project || undefined,
         date_out: dateOut.toISOString(),
         additional_items: rest.length > 0 ? rest : undefined,
       });
@@ -155,6 +157,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
       setEmployeeSearch('');
       setItems([{ product_id: '', quantity: 1 }]);
       setNotes('');
+      setProject('');
       setDateOut(new Date());
       toast.success(t.dischargeCreated);
     } catch {
@@ -369,6 +372,17 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
                   </div>
                 );
               })}
+            </div>
+
+            <div>
+              <Label>{t.dischargeProject || 'Projet / المشروع'}</Label>
+              <Input
+                value={project}
+                onChange={e => setProject(e.target.value)}
+                placeholder={t.dischargeProjectPlaceholder || 'Nom du projet (optionnel)'}
+                className="rounded-xl mt-1"
+                maxLength={150}
+              />
             </div>
 
             <div>
