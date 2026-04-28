@@ -6,6 +6,7 @@ export interface DischargeItem {
   discharge_id: string;
   product_id: string;
   quantity: number;
+  returned_quantity: number;
   created_at: string;
 }
 
