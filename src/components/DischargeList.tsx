@@ -255,18 +255,30 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
           </p>
         </TableCell>
         <TableCell className="text-center text-sm font-semibold">
-          {d.items && d.items.length > 1 
-            ? d.items.map(i => i.quantity).join(' + ')
-            : d.quantity
-          }
+          {(() => {
+            const its = d.items && d.items.length > 0 ? d.items : [{ quantity: d.quantity, returned_quantity: 0 } as any];
+            const totalQ = its.reduce((s, i) => s + Number(i.quantity), 0);
+            const totalR = its.reduce((s, i) => s + Number((i as any).returned_quantity || 0), 0);
+            return (
+              <div>
+                <div>{its.map(i => i.quantity).join(' + ')}</div>
+                {totalR > 0 && totalR < totalQ && (
+                  <div className="text-[10px] text-amber-600 mt-0.5 font-normal">↩ {totalR}/{totalQ}</div>
+                )}
+              </div>
+            );
+          })()}
         </TableCell>
         <TableCell className="text-center text-xs">{new Date(d.date_out).toLocaleDateString('fr-FR')}</TableCell>
         <TableCell className="text-center">
           <Badge className={
             isCancelled ? 'bg-red-100 text-red-800' :
+            isPartial ? 'bg-orange-100 text-orange-800' :
             isActive ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'
           }>
-            {isCancelled ? (t.dischargeCancelledStatus || 'Annulé') : isActive ? t.dischargeActive : t.dischargeReturnedStatus}
+            {isCancelled ? (t.dischargeCancelledStatus || 'Annulé')
+              : isPartial ? ((t as any).dischargePartiallyReturned || 'Partiel')
+              : isActive ? t.dischargeActive : t.dischargeReturnedStatus}
           </Badge>
         </TableCell>
         <TableCell>
