@@ -221,6 +221,9 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
     const prod = getProduct(d.product_id);
     const isActive = d.status === 'active';
     const isCancelled = d.status === 'cancelled';
+    const isPartial = d.status === 'partially_returned';
+    const isReturned = d.status === 'returned';
+    const canEditOrReturn = isActive || isPartial;
 
     return (
       <TableRow key={d.id} className={`hover:bg-secondary/20 transition-colors ${isCancelled ? 'opacity-50' : ''}`}>
