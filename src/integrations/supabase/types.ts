@@ -245,6 +245,7 @@ export type Database = {
           id: string
           notes: string | null
           product_id: string
+          project: string | null
           quantity: number
           reference: string
           status: string
@@ -259,6 +260,7 @@ export type Database = {
           id?: string
           notes?: string | null
           product_id: string
+          project?: string | null
           quantity?: number
           reference: string
           status?: string
@@ -273,6 +275,7 @@ export type Database = {
           id?: string
           notes?: string | null
           product_id?: string
+          project?: string | null
           quantity?: number
           reference?: string
           status?: string

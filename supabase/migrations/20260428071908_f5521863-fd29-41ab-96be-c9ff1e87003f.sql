@@ -1,0 +1,1 @@
+ALTER TABLE public.discharges ADD COLUMN IF NOT EXISTS project text;
