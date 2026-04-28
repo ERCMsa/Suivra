@@ -286,12 +286,29 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => generatePDF(d)} title="PDF">
               <FileText className="h-4 w-4 text-primary" />
             </Button>
-            {isActive && (
+            {canEditOrReturn && onEditDischarge && (
+              <EditDischargeForm
+                discharge={d}
+                products={products}
+                employees={employees}
+                onSave={onEditDischarge}
+                onStockAdjust={onStockAdjust}
+              />
+            )}
+            {canEditOrReturn && onPartialReturn && onStockReturn && (
+              <PartialReturnDialog
+                discharge={d}
+                products={products}
+                onConfirm={onPartialReturn}
+                onStockReturn={onStockReturn}
+              />
+            )}
+            {canEditOrReturn && (
               <>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-success hover:bg-success/10" title={t.markReturned}>
-                      <RotateCcw className="h-4 w-4" />
+                      <FileCheck className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="rounded-2xl">
