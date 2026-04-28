@@ -44,7 +44,8 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const matchesSearch = !term ||
         d.reference.toLowerCase().includes(term) ||
         (emp?.full_name || '').toLowerCase().includes(term) ||
-        (prod?.designation || '').toLowerCase().includes(term);
+        (prod?.designation || '').toLowerCase().includes(term) ||
+        (d.project || '').toLowerCase().includes(term);
       const matchesStatus = statusFilter === 'all' || d.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -120,6 +121,12 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.text('DÉCHARGE', 80, 55);
       doc.setFontSize(11);
       doc.text(`DATE : ${dateStr}`, 150, 55);
+
+      if (d.project) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`PROJET : ${d.project.toUpperCase()}`, 14, 62);
+      }
 
       const allItems = d.items && d.items.length > 0 
         ? d.items.map((item, idx) => {
@@ -219,7 +226,10 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
           )}
         </TableCell>
         <TableCell className="text-center text-xs font-mono">{d.reference}</TableCell>
-        <TableCell className="text-center text-sm font-medium">{emp?.full_name || '-'}</TableCell>
+        <TableCell className="text-center text-sm font-medium">
+          <div>{emp?.full_name || '-'}</div>
+          {d.project && <div className="text-[10px] text-muted-foreground mt-0.5 font-normal">📋 {d.project}</div>}
+        </TableCell>
         <TableCell className="text-sm max-w-[200px]">
           <p className="line-clamp-2">
             {d.items && d.items.length > 1 

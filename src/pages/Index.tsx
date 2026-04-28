@@ -66,7 +66,7 @@ const Index = () => {
     await fetchDischarges();
   };
 
-  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
+  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; project?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
     const discharge = await createDischarge(data);
     await refresh();
     return discharge;
