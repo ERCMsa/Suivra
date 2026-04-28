@@ -37,7 +37,7 @@ interface DischargeListProps {
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
-const DischargeList = ({ discharges, products, employees, onMarkReturned, onCancel }: DischargeListProps) => {
+const DischargeList = ({ discharges, products, employees, onMarkReturned, onCancel, onEditDischarge, onPartialReturn, onStockAdjust, onStockReturn }: DischargeListProps) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
