@@ -72,6 +72,36 @@ const Index = () => {
     return discharge;
   };
 
+  // Stock adjustment helper for edit (delta: +N stock back to inventory, -N stock taken out)
+  const handleStockAdjust = async (productId: string, delta: number) => {
+    const product = products.find(p => p.id === productId);
+    if (!product || delta === 0) return;
+    const type = delta > 0 ? 'in' : 'out';
+    await addStockMovement(productId, type, Math.abs(delta), product.length, product.width, 'Modification décharge');
+  };
+
+  const handleStockReturn = async (productId: string, quantity: number) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    await addStockMovement(productId, 'in', quantity, product.length, product.width, 'Retour partiel décharge');
+  };
+
+  const handlePartialReturn = async (
+    dischargeId: string,
+    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number }[]
+  ) => {
+    await partialReturn(dischargeId, returns);
+    await refresh();
+  };
+
+  const handleEditDischarge = async (
+    id: string,
+    data: { employee_id?: string; project?: string | null; notes?: string | null; items?: { id?: string; product_id: string; quantity: number }[] },
+  ) => {
+    await updateDischarge(id, data, handleStockAdjust);
+    await refresh();
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
