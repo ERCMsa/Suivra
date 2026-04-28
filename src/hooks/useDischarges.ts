@@ -19,6 +19,7 @@ export interface Discharge {
   date_returned: string | null;
   status: string;
   notes: string | null;
+  project: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -67,6 +68,7 @@ export const useDischarges = () => {
     product_id: string;
     quantity: number;
     notes?: string;
+    project?: string;
     additional_items?: { product_id: string; quantity: number }[];
   }) => {
     const user = (await supabase.auth.getUser()).data.user;
@@ -77,6 +79,7 @@ export const useDischarges = () => {
       product_id: data.product_id,
       quantity: data.quantity,
       notes: data.notes,
+      project: data.project,
       reference,
       created_by: user?.id,
     } as any).select().single();
