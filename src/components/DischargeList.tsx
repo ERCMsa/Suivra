@@ -13,6 +13,8 @@ import { Product } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import EditDischargeForm from './EditDischargeForm';
+import PartialReturnDialog from './PartialReturnDialog';
 
 interface DischargeListProps {
   discharges: Discharge[];
@@ -20,6 +22,17 @@ interface DischargeListProps {
   employees: Employee[];
   onMarkReturned: (id: string, productId: string, quantity: number) => Promise<void>;
   onCancel?: (id: string) => Promise<void>;
+  onEditDischarge?: (
+    id: string,
+    data: { employee_id?: string; project?: string | null; notes?: string | null; items?: { id?: string; product_id: string; quantity: number }[] },
+    onStockAdjust?: (productId: string, delta: number) => Promise<void>
+  ) => Promise<void>;
+  onPartialReturn?: (
+    dischargeId: string,
+    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number }[]
+  ) => Promise<void>;
+  onStockAdjust?: (productId: string, delta: number) => Promise<void>;
+  onStockReturn?: (productId: string, quantity: number) => Promise<void>;
 }
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
