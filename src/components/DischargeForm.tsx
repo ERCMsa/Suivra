@@ -375,11 +375,11 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
             </div>
 
             <div>
-              <Label>{t.dischargeProject || 'Projet / المشروع'}</Label>
+              <Label>{(t as any).dischargeProject || 'Projet / المشروع'}</Label>
               <Input
                 value={project}
                 onChange={e => setProject(e.target.value)}
-                placeholder={t.dischargeProjectPlaceholder || 'Nom du projet (optionnel)'}
+                placeholder={(t as any).dischargeProjectPlaceholder || 'Nom du projet (optionnel)'}
                 className="rounded-xl mt-1"
                 maxLength={150}
               />
