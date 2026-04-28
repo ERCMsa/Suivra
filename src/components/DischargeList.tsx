@@ -121,6 +121,12 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.setFontSize(11);
       doc.text(`DATE : ${dateStr}`, 150, 55);
 
+      if (d.project) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`PROJET : ${d.project.toUpperCase()}`, 14, 62);
+      }
+
       const allItems = d.items && d.items.length > 0 
         ? d.items.map((item, idx) => {
             const itemProd = products.find(p => p.id === item.product_id);
