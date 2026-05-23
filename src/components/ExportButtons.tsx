@@ -102,8 +102,11 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
       doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
 
-      const headers = ['N°', t.designation, t.type, t.color, t.unitCol, t.quantity];
-      const rows = products.map((p, i) => [i + 1, p.designation, p.type, p.color, p.unit, p.quantity]);
+      // Strip Arabic/non-latin chars (jsPDF helvetica ne les supporte pas)
+      const clean = (s: any) => String(s ?? '').replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '').replace(/\s*\/\s*$/, '').replace(/\s+/g, ' ').trim();
+
+      const headers = ['N°', t.designation, 'Catégorie', 'État', 'Unité', 'Quantité'];
+      const rows = products.map((p, i) => [i + 1, clean(p.designation), clean(p.type), clean(p.color), clean(p.unit), p.quantity]);
       (doc as any).autoTable({
         startY: headerY + headerH + 5,
         head: [headers],
@@ -112,6 +115,16 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
         headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.3, lineColor: [0, 0, 0] },
         margin: { left: 10, right: 10 },
       });
+
+      // Pagination X/Y
+      const totalPages = (doc as any).internal.getNumberOfPages();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Page ${i} / ${totalPages}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+      }
 
       doc.save(`inventaire_general_${new Date().toISOString().slice(0, 10)}.pdf`);
       toast.success(t.exportSuccess);
