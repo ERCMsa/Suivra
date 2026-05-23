@@ -7,12 +7,16 @@ export interface DischargeItem {
   product_id: string;
   quantity: number;
   returned_quantity: number;
+  return_condition?: string | null;
+  return_observation?: string | null;
+  returned_at?: string | null;
   created_at: string;
 }
 
 export interface Discharge {
   id: string;
   reference: string;
+  return_reference?: string | null;
   employee_id: string;
   product_id: string;
   quantity: number;
