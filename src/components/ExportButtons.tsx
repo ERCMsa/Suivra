@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { Upload, FileSpreadsheet, FileText, Download, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -46,17 +46,74 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
     try {
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
-      const doc = new jsPDF({ orientation: 'landscape' });
-      const headers = [t.quantity, t.unitCol, t.color, t.type, t.designation];
-      const rows = products.map((p) => [p.quantity, p.unit, p.color, p.type, p.designation]);
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      // === En-tête cartouche FOR-MGX-05 ===
+      const headerY = 8;
+      const headerH = 22;
+      const logoW = 40;
+      const rightW = 70;
+      const titleX = 10 + logoW;
+      const titleW = pageWidth - 10 - logoW - rightW - 10;
+
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.4);
+      doc.rect(10, headerY, pageWidth - 20, headerH);
+      doc.line(10 + logoW, headerY, 10 + logoW, headerY + headerH);
+      doc.line(pageWidth - 10 - rightW, headerY, pageWidth - 10 - rightW, headerY + headerH);
+      doc.line(10, headerY + headerH - 6, 10 + logoW, headerY + headerH - 6);
+      doc.line(titleX, headerY + headerH / 2, titleX + titleW, headerY + headerH / 2);
+      doc.line(pageWidth - 10 - rightW, headerY + headerH / 3, pageWidth - 10, headerY + headerH / 3);
+      doc.line(pageWidth - 10 - rightW, headerY + (headerH / 3) * 2, pageWidth - 10, headerY + (headerH / 3) * 2);
+      const rightLabelW = 26;
+      doc.line(pageWidth - 10 - rightW + rightLabelW, headerY, pageWidth - 10 - rightW + rightLabelW, headerY + headerH);
+
+      try {
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          logoImg.onload = () => resolve();
+          logoImg.onerror = () => reject();
+          logoImg.src = '/images/ercm-logo.png';
+        });
+        doc.addImage(logoImg, 'PNG', 12, headerY + 1, logoW - 4, headerH - 8);
+      } catch {}
+
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Page 1 sur 1', 12, headerY + headerH - 2);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text('Formulaire', titleX + titleW / 2, headerY + headerH / 2 - 2, { align: 'center' });
+      doc.text('Inventaire matériel', titleX + titleW / 2, headerY + headerH / 2 + 5, { align: 'center' });
+
+      const rLabelX = pageWidth - 10 - rightW + 2;
+      const rValueX = pageWidth - 10 - rightW + rightLabelW + 2;
+      const rowH = headerH / 3;
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Référence :', rLabelX, headerY + rowH / 2 + 1);
+      doc.text('Date :', rLabelX, headerY + rowH * 1.5 + 1);
+      doc.text('Version :', rLabelX, headerY + rowH * 2.5 + 1);
+      doc.setFont('helvetica', 'normal');
+      doc.text('FOR-MGX-05', rValueX, headerY + rowH / 2 + 1);
+      doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
+      doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
+
+      const headers = ['N°', t.designation, t.type, t.color, t.unitCol, t.quantity];
+      const rows = products.map((p, i) => [i + 1, p.designation, p.type, p.color, p.unit, p.quantity]);
       (doc as any).autoTable({
+        startY: headerY + headerH + 5,
         head: [headers],
         body: rows,
-        styles: { font: 'helvetica', halign: 'center', fontSize: 10 },
-        headStyles: { fillColor: [66, 99, 235], halign: 'center' },
-        margin: { top: 20 },
+        styles: { font: 'helvetica', halign: 'center', fontSize: 9, cellPadding: 2, lineWidth: 0.2, lineColor: [0, 0, 0] },
+        headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.3, lineColor: [0, 0, 0] },
+        margin: { left: 10, right: 10 },
       });
-      doc.save(`inventory_${new Date().toISOString().slice(0, 10)}.pdf`);
+
+      doc.save(`inventaire_general_${new Date().toISOString().slice(0, 10)}.pdf`);
       toast.success(t.exportSuccess);
     } catch {
       toast.error(t.exportFail);
@@ -146,6 +203,10 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
         <Button variant="outline" size="sm" onClick={exportPDF} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-secondary/50">
           <FileText className="h-3.5 w-3.5" />
           PDF
+        </Button>
+        <Button size="sm" onClick={exportPDF} className="rounded-xl gap-1.5 text-xs h-9 bg-primary text-primary-foreground hover:bg-primary/90">
+          <Printer className="h-3.5 w-3.5" />
+          Imprimer Inventaire
         </Button>
         <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-success/10 text-success hover:text-success">
           <Upload className="h-3.5 w-3.5" />
