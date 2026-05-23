@@ -204,6 +204,10 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
           <FileText className="h-3.5 w-3.5" />
           PDF
         </Button>
+        <Button size="sm" onClick={exportPDF} className="rounded-xl gap-1.5 text-xs h-9 bg-primary text-primary-foreground hover:bg-primary/90">
+          <Printer className="h-3.5 w-3.5" />
+          Imprimer Inventaire
+        </Button>
         <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl gap-1.5 text-xs h-9 border-border/60 hover:bg-success/10 text-success hover:text-success">
           <Upload className="h-3.5 w-3.5" />
           استيراد Excel
