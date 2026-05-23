@@ -203,6 +203,9 @@ export type Database = {
           id: string
           product_id: string
           quantity: number
+          return_condition: string | null
+          return_observation: string | null
+          returned_at: string | null
           returned_quantity: number
         }
         Insert: {
@@ -211,6 +214,9 @@ export type Database = {
           id?: string
           product_id: string
           quantity?: number
+          return_condition?: string | null
+          return_observation?: string | null
+          returned_at?: string | null
           returned_quantity?: number
         }
         Update: {
@@ -219,6 +225,9 @@ export type Database = {
           id?: string
           product_id?: string
           quantity?: number
+          return_condition?: string | null
+          return_observation?: string | null
+          returned_at?: string | null
           returned_quantity?: number
         }
         Relationships: [
@@ -251,6 +260,7 @@ export type Database = {
           project: string | null
           quantity: number
           reference: string
+          return_reference: string | null
           status: string
           updated_at: string
         }
@@ -266,6 +276,7 @@ export type Database = {
           project?: string | null
           quantity?: number
           reference: string
+          return_reference?: string | null
           status?: string
           updated_at?: string
         }
@@ -281,6 +292,7 @@ export type Database = {
           project?: string | null
           quantity?: number
           reference?: string
+          return_reference?: string | null
           status?: string
           updated_at?: string
         }
