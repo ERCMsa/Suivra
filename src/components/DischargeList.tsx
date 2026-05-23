@@ -299,6 +299,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
               <PartialReturnDialog
                 discharge={d}
                 products={products}
+                employees={employees}
                 onConfirm={onPartialReturn}
                 onStockReturn={onStockReturn}
               />
