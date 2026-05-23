@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { History, User, ArrowRight, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { History, User, ArrowRight, ArrowLeft, ChevronDown, ChevronUp, Printer } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Discharge } from '@/hooks/useDischarges';
@@ -34,25 +35,114 @@ const EquipmentHistory = ({ discharges, products, employees }: EquipmentHistoryP
         .sort((a, b) => new Date(a.date_out).getTime() - new Date(b.date_out).getTime())
     : [];
 
+  const handlePrintHistory = async () => {
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      // Header
+      doc.setDrawColor(0); doc.setLineWidth(0.4);
+      doc.rect(10, 10, 190, 22);
+      try {
+        const logoImg = new Image(); logoImg.crossOrigin = 'anonymous';
+        await new Promise<void>((res, rej) => { logoImg.onload = () => res(); logoImg.onerror = () => rej(); logoImg.src = '/images/ercm-logo.png'; });
+        doc.addImage(logoImg, 'PNG', 170, 12, 28, 18);
+      } catch {}
+      doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+      doc.text('ERCMSA - HISTORIQUE DE MATÉRIEL', 14, 20);
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.text(`Édité le : ${new Date().toLocaleString('fr-FR')}`, 14, 27);
+
+      const prod = products.find(p => p.id === selectedProductId);
+      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text(`Matériel : ${prod?.designation || '-'}`, 14, 40);
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+      doc.text(`Stock actuel : ${prod?.quantity ?? 0} ${prod?.unit || ''}`, 14, 46);
+
+      // Aggregate movement totals from history for this product
+      let totalOut = 0, totalReturned = 0;
+      productHistory.forEach(d => {
+        const item = d.items?.find(i => i.product_id === selectedProductId);
+        const q = Number(item?.quantity || d.quantity);
+        const r = Number(item?.returned_quantity || 0);
+        totalOut += q; totalReturned += r;
+      });
+      doc.text(`Total sorties : ${totalOut}    |    Total retours : ${totalReturned}    |    En cours : ${totalOut - totalReturned}`, 14, 52);
+
+      const rows = productHistory.map((d, i) => {
+        const emp = getEmployee(d.employee_id);
+        const item = d.items?.find(it => it.product_id === selectedProductId);
+        const q = Number(item?.quantity || d.quantity);
+        const r = Number(item?.returned_quantity || 0);
+        return [
+          i + 1,
+          d.reference,
+          new Date(d.date_out).toLocaleDateString('fr-FR'),
+          emp?.full_name || '-',
+          d.project || '-',
+          q,
+          r,
+          d.date_returned ? new Date(d.date_returned).toLocaleDateString('fr-FR') : '-',
+          d.status === 'returned' ? 'Retourné' : d.status === 'partially_returned' ? 'Partiel' : d.status === 'cancelled' ? 'Annulé' : 'En cours',
+        ];
+      });
+
+      (doc as any).autoTable({
+        startY: 58,
+        head: [['N°', 'Réf.', 'Date sortie', 'Utilisateur', 'Projet', 'Qté', 'Rendu', 'Date retour', 'Statut']],
+        body: rows,
+        styles: { font: 'helvetica', fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [40, 70, 120], textColor: 255, fontStyle: 'bold' },
+        margin: { left: 10, right: 10 },
+      });
+
+      const totalPages = (doc as any).internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(`Page ${i} / ${totalPages}`, 105, 290, { align: 'center' });
+      }
+
+      doc.save(`historique_${prod?.designation || 'materiel'}_${new Date().toISOString().slice(0,10)}.pdf`);
+      toast.success(t.exportSuccess);
+    } catch (e) {
+      console.error(e);
+      toast.error(t.exportFail);
+    }
+  };
+
   return (
     <Card className="rounded-2xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <CardTitle className="flex items-center gap-2 text-base cursor-pointer" onClick={() => setExpanded(!expanded)}>
             <History className="h-5 w-5 text-primary" />
-            {t.equipmentHistory}
+            HISTORIQUE DE MATÉRIEL
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </CardTitle>
-          <Select value={selectedProductId} onValueChange={setSelectedProductId}>
-            <SelectTrigger className="max-w-xs rounded-xl text-sm">
-              <SelectValue placeholder={t.selectEquipment} />
-            </SelectTrigger>
-            <SelectContent>
-              {productsWithHistory.map(p => (
-                <SelectItem key={p.id} value={p.id}>{p.designation}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+              <SelectTrigger className="max-w-xs rounded-xl text-sm w-[220px]">
+                <SelectValue placeholder={t.selectEquipment} />
+              </SelectTrigger>
+              <SelectContent>
+                {productsWithHistory.map(p => (
+                  <SelectItem key={p.id} value={p.id}>{p.designation}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl gap-1.5"
+              onClick={handlePrintHistory}
+              disabled={!selectedProductId || productHistory.length === 0}
+            >
+              <Printer className="h-4 w-4" />
+              Imprimer Historique
+            </Button>
+          </div>
         </div>
       </CardHeader>
       {expanded && (

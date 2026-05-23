@@ -7,12 +7,16 @@ export interface DischargeItem {
   product_id: string;
   quantity: number;
   returned_quantity: number;
+  return_condition?: string | null;
+  return_observation?: string | null;
+  returned_at?: string | null;
   created_at: string;
 }
 
 export interface Discharge {
   id: string;
   reference: string;
+  return_reference?: string | null;
   employee_id: string;
   product_id: string;
   quantity: number;
@@ -127,16 +131,32 @@ export const useDischarges = () => {
     await fetchDischarges();
   };
 
+  const generateReturnReference = async () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const { count } = await supabase
+      .from('discharges')
+      .select('return_reference', { count: 'exact', head: true })
+      .not('return_reference', 'is', null)
+      .gte('updated_at', `${year}-01-01`)
+      .lte('updated_at', `${year}-12-31T23:59:59`);
+    const nextNum = (count || 0) + 1;
+    return `BR-${nextNum.toString().padStart(4, '0')}-${year}`;
+  };
+
   const partialReturn = async (
     dischargeId: string,
-    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number }[]
-  ) => {
-    // Update each item's returned_quantity
+    returns: { item_id: string; product_id: string; quantity: number; new_returned_total: number; condition?: string; observation?: string }[]
+  ): Promise<string | null> => {
+    const nowIso = new Date().toISOString();
     for (const r of returns) {
-      await supabase.from('discharge_items').update({ returned_quantity: r.new_returned_total } as any).eq('id', r.item_id);
+      const update: any = { returned_quantity: r.new_returned_total, returned_at: nowIso };
+      if (r.condition !== undefined) update.return_condition = r.condition;
+      if (r.observation !== undefined) update.return_observation = r.observation;
+      await supabase.from('discharge_items').update(update).eq('id', r.item_id);
     }
-    // Determine new status
     const { data: allItems } = await supabase.from('discharge_items').select('*').eq('discharge_id', dischargeId);
+    let returnRef: string | null = null;
     if (allItems) {
       const totalQty = (allItems as any[]).reduce((s, i) => s + Number(i.quantity), 0);
       const totalReturned = (allItems as any[]).reduce((s, i) => s + Number(i.returned_quantity || 0), 0);
@@ -144,13 +164,16 @@ export const useDischarges = () => {
       let dateReturned: string | null = null;
       if (totalReturned >= totalQty) {
         newStatus = 'returned';
-        dateReturned = new Date().toISOString();
+        dateReturned = nowIso;
       } else if (totalReturned > 0) {
         newStatus = 'partially_returned';
       }
-      await supabase.from('discharges').update({ status: newStatus, date_returned: dateReturned } as any).eq('id', dischargeId);
+      const { data: dch } = await supabase.from('discharges').select('return_reference').eq('id', dischargeId).single();
+      returnRef = (dch as any)?.return_reference || await generateReturnReference();
+      await supabase.from('discharges').update({ status: newStatus, date_returned: dateReturned, return_reference: returnRef } as any).eq('id', dischargeId);
     }
     await fetchDischarges();
+    return returnRef;
   };
 
   const updateDischarge = async (

@@ -241,8 +241,8 @@ const translations = {
     operatedBy: 'بواسطة',
 
     // Discharge
-    newDischarge: 'إنشاء ديشارج',
-    dischargeList: 'قائمة الديشارج',
+    newDischarge: 'إخراج المواد',
+    dischargeList: 'إخراج المواد',
     dischargeRef: 'المرجع',
     dischargeEmployee: 'العامل',
     dischargeProduct: 'المادة',
@@ -562,8 +562,8 @@ const translations = {
     operatedBy: 'Par',
 
     // Discharge
-    newDischarge: 'Nouvelle Décharge',
-    dischargeList: 'Liste des Décharges',
+    newDischarge: 'SORTIE MATÉRIEL',
+    dischargeList: 'SORTIE MATÉRIEL',
     dischargeRef: 'Référence',
     dischargeEmployee: 'Employé',
     dischargeProduct: 'Article',
