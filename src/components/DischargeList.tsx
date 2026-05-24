@@ -354,7 +354,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
         </TableCell>
         <TableCell>
           <div className="flex items-center justify-center gap-1">
-            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => generatePDF(d)} title="PDF">
+            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => generatePDF(d)} title="Imprimer fiche ENTRÉE / SORTIE">
               <FileText className="h-4 w-4 text-primary" />
             </Button>
             {canEditOrReturn && onEditDischarge && (
