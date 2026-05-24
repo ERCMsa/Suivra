@@ -41,18 +41,49 @@ const EquipmentHistory = ({ discharges, products, employees }: EquipmentHistoryP
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      // Header
-      doc.setDrawColor(0); doc.setLineWidth(0.4);
-      doc.rect(10, 10, 190, 22);
+      // ====== EN-TÊTE FOR-MGX-06 ======
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const headerX = 10, headerY = 10, headerW = pageWidth - 20, headerH = 24;
+      const logoW = 32, refW = 50;
+      const titleW = headerW - logoW - refW;
+
+      doc.setDrawColor(0); doc.setLineWidth(0.3);
+      doc.rect(headerX, headerY, headerW, headerH);
+      doc.line(headerX + logoW, headerY, headerX + logoW, headerY + headerH);
+      doc.line(headerX, headerY + headerH - 6, headerX + logoW, headerY + headerH - 6);
+      doc.line(headerX + logoW + titleW, headerY, headerX + logoW + titleW, headerY + headerH);
+      doc.line(headerX + logoW, headerY + 8, headerX + logoW + titleW, headerY + 8);
+      doc.line(headerX + logoW + titleW, headerY + 8, headerX + headerW, headerY + 8);
+      doc.line(headerX + logoW + titleW, headerY + 16, headerX + headerW, headerY + 16);
+      const refLabelW = 20;
+      doc.line(headerX + logoW + titleW + refLabelW, headerY, headerX + logoW + titleW + refLabelW, headerY + headerH);
+
       try {
         const logoImg = new Image(); logoImg.crossOrigin = 'anonymous';
         await new Promise<void>((res, rej) => { logoImg.onload = () => res(); logoImg.onerror = () => rej(); logoImg.src = '/images/ercm-logo.png'; });
-        doc.addImage(logoImg, 'PNG', 170, 12, 28, 18);
+        doc.addImage(logoImg, 'PNG', headerX + 2, headerY + 1, logoW - 4, headerH - 8);
       } catch {}
-      doc.setFontSize(12); doc.setFont('helvetica', 'bold');
-      doc.text('ERCMSA - HISTORIQUE DE MATÉRIEL', 14, 20);
+
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+      doc.text('Page 1 sur 1', headerX + logoW / 2, headerY + headerH - 2, { align: 'center' });
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.text('Formulaire', headerX + logoW + titleW / 2, headerY + 5.5, { align: 'center' });
+      doc.setFontSize(11);
+      doc.text('Historique équipement', headerX + logoW + titleW / 2, headerY + 17, { align: 'center' });
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      const refColX = headerX + logoW + titleW;
+      doc.text('Référence :', refColX + 2, headerY + 5);
+      doc.text('Date :', refColX + 2, headerY + 13);
+      doc.text('Version :', refColX + 2, headerY + 21);
+      doc.setFont('helvetica', 'normal');
+      doc.text('FOR-MGX-06', refColX + refLabelW + 2, headerY + 5);
+      doc.text(new Date().toLocaleDateString('fr-FR'), refColX + refLabelW + 2, headerY + 13);
+      doc.text('00', refColX + refLabelW + 2, headerY + 21);
+
       doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-      doc.text(`Édité le : ${new Date().toLocaleString('fr-FR')}`, 14, 27);
+      doc.text(`Édité le : ${new Date().toLocaleString('fr-FR')}`, 14, headerY + headerH + 5);
 
       const prod = products.find(p => p.id === selectedProductId);
       doc.setFontSize(11); doc.setFont('helvetica', 'bold');
