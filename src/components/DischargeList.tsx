@@ -96,12 +96,29 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+
+      // ====== EN-TÊTE OFFICIEL FOR-MGX-04 ======
+      const headerY = 8;
+      const headerH = 22;
+      const logoW = 38;
+      const rightW = 60;
+      const titleX = 10 + logoW;
+      const titleW = pageW - 20 - logoW - rightW;
 
       doc.setDrawColor(0);
-      doc.setLineWidth(0.5);
-      doc.rect(10, 10, 190, 30);
+      doc.setLineWidth(0.4);
+      doc.rect(10, headerY, pageW - 20, headerH);
+      doc.line(10 + logoW, headerY, 10 + logoW, headerY + headerH);
+      doc.line(pageW - 10 - rightW, headerY, pageW - 10 - rightW, headerY + headerH);
+      doc.line(10, headerY + headerH - 6, 10 + logoW, headerY + headerH - 6);
+      doc.line(titleX, headerY + headerH / 2, titleX + titleW, headerY + headerH / 2);
+      doc.line(pageW - 10 - rightW, headerY + headerH / 3, pageW - 10, headerY + headerH / 3);
+      doc.line(pageW - 10 - rightW, headerY + (headerH / 3) * 2, pageW - 10, headerY + (headerH / 3) * 2);
+      const rightLabelW = 24;
+      doc.line(pageW - 10 - rightW + rightLabelW, headerY, pageW - 10 - rightW + rightLabelW, headerY + headerH);
 
-      // Add company logo on the right side (rectangular)
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
@@ -110,108 +127,162 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
           logoImg.onerror = () => reject();
           logoImg.src = '/images/ercm-logo.png';
         });
-        doc.addImage(logoImg, 'PNG', 170, 12, 28, 18);
-      } catch {
-        // If logo fails to load, continue without it
-      }
+        doc.addImage(logoImg, 'PNG', 12, headerY + 1, logoW - 4, headerH - 8);
+      } catch {}
 
-      const textStartX = 14;
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('ERCMSA', textStartX, 18);
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Etude Realisation Constructions Metaliques  Salhi ADEL', textStartX, 23);
-      doc.text('SIDI SALEM NORD LOT 08 N° Q2 OULED MOUSSA BOUMERDES', textStartX, 27);
-      doc.text('ercmsalhisteel@Email.com', textStartX, 31);
       doc.setFontSize(6);
-      doc.text('N° RC : 35/00-3674152  A 17    N° Art : 35204129121', textStartX, 35);
-      doc.text('N° IF : 191163800093114         N° Art : 35204129121', textStartX, 38);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Page 1 sur 1', 12, headerY + headerH - 2);
 
-      doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      const dateStr = new Date(d.date_out).toLocaleDateString('fr-FR');
-      doc.text('DÉCHARGE', 80, 55);
       doc.setFontSize(11);
-      doc.text(`DATE : ${dateStr}`, 150, 55);
+      doc.text('Formulaire', titleX + titleW / 2, headerY + headerH / 2 - 2, { align: 'center' });
+      doc.text('Entrée / Sortie matériel', titleX + titleW / 2, headerY + headerH / 2 + 5, { align: 'center' });
 
+      const rLabelX = pageW - 10 - rightW + 2;
+      const rValueX = pageW - 10 - rightW + rightLabelW + 2;
+      const rowH = headerH / 3;
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Référence :', rLabelX, headerY + rowH / 2 + 1);
+      doc.text('Date :', rLabelX, headerY + rowH * 1.5 + 1);
+      doc.text('Version :', rLabelX, headerY + rowH * 2.5 + 1);
+      doc.setFont('helvetica', 'normal');
+      doc.text('FOR-MGX-04', rValueX, headerY + rowH / 2 + 1);
+      doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
+      doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
+
+      // ====== TITRE DOCUMENT + STATUT ======
+      let y = headerY + headerH + 6;
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ENTRÉE / SORTIE DE MATÉRIEL', pageW / 2, y, { align: 'center' });
+      y += 6;
+
+      const statusLabel = d.status === 'returned' ? 'RETOURNÉ'
+        : d.status === 'partially_returned' ? 'RETOUR PARTIEL'
+        : d.status === 'cancelled' ? 'ANNULÉ'
+        : 'SORTIE EN COURS';
+      const statusColor: [number, number, number] = d.status === 'returned' ? [200, 240, 200]
+        : d.status === 'partially_returned' ? [255, 230, 190]
+        : d.status === 'cancelled' ? [255, 200, 200]
+        : [255, 240, 180];
+      doc.setFillColor(...statusColor);
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.3);
+      const sbW = 60, sbH = 7;
+      doc.rect((pageW - sbW) / 2, y, sbW, sbH, 'FD');
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`STATUT : ${statusLabel}`, pageW / 2, y + 5, { align: 'center' });
+      y += sbH + 5;
+
+      // Infos générales
+      const dateOut = new Date(d.date_out).toLocaleDateString('fr-FR');
+      const timeOut = new Date(d.date_out).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Référence : ${d.reference}`, 14, y);
+      doc.text(`Date sortie : ${dateOut}    Heure : ${timeOut}`, pageW - 14, y, { align: 'right' });
+      y += 5;
+      doc.text(`Utilisateur : ${emp.full_name}`, 14, y);
+      doc.text(`Fonction : ${emp.position || emp.department || '-'}`, pageW - 14, y, { align: 'right' });
+      y += 5;
       if (d.project) {
-        doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.text(`PROJET : ${d.project.toUpperCase()}`, 14, 62);
+        doc.text(`Projet : ${d.project}`, 14, y);
+        doc.setFont('helvetica', 'normal');
+        y += 5;
       }
 
-      const allItems = d.items && d.items.length > 0 
-        ? d.items.map((item, idx) => {
-            const itemProd = products.find(p => p.id === item.product_id);
-            return [idx + 1, itemProd?.designation?.toUpperCase() || '-', item.quantity];
-          })
-        : [[1, prod.designation.toUpperCase(), d.quantity]];
-
+      // ====== TABLEAU MATÉRIEL ======
+      const its = (d.items && d.items.length > 0) ? d.items : [{ id: '', product_id: d.product_id, quantity: d.quantity, returned_quantity: 0 } as any];
+      const rows = its.map((it: any, idx) => {
+        const p = products.find(pp => pp.id === it.product_id);
+        const ret = Number(it.returned_quantity || 0);
+        const rem = Number(it.quantity) - ret;
+        return [idx + 1, p?.designation || '-', p?.type || '-', it.quantity, ret, rem, it.return_condition || '-'];
+      });
       (doc as any).autoTable({
-        startY: 65,
-        head: [['N°', 'DESIGNATION', 'QUANTITÉ']],
-        body: allItems,
-        styles: { font: 'helvetica', halign: 'center', fontSize: 10, cellPadding: 5 },
-        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.4, lineColor: [0, 0, 0], fontStyle: 'bold' },
-        bodyStyles: { lineWidth: 0.4, lineColor: [0, 0, 0], fontStyle: 'bold' },
-        columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 130, halign: 'left' }, 2: { cellWidth: 30 } },
+        startY: y,
+        head: [['N°', 'Désignation', 'Référence', 'Qté Sortie', 'Qté Retour', 'Reste', 'État retour']],
+        body: rows,
+        styles: { font: 'helvetica', fontSize: 9, halign: 'center', cellPadding: 2.5, lineWidth: 0.25, lineColor: [0, 0, 0] },
+        headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.3, lineColor: [0, 0, 0] },
+        columnStyles: { 1: { halign: 'left' }, 2: { halign: 'left' } },
         margin: { left: 14, right: 14 },
       });
+      y = (doc as any).lastAutoTable.finalY + 4;
 
-      let finalY = (doc as any).lastAutoTable.finalY + 5;
+      if (d.notes) {
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Observations sortie :', 14, y);
+        doc.setFont('helvetica', 'normal');
+        const nLines = doc.splitTextToSize(d.notes, pageW - 28);
+        doc.text(nLines, 14, y + 4);
+        y += 4 + nLines.length * 4;
+      }
+      y += 3;
 
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Avis important :', 14, finalY + 5);
-      
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      const notices = [
-        "Le réceptionnaire reconnaît avoir reçu les matériaux ou équipements mentionnés ci-dessus et assume l'entière responsabilité de leur conservation et de leur bonne utilisation.",
-        "Il est interdit de transférer le matériel reçu à un tiers sans autorisation préalable du responsable du stock ou de la direction.",
-        "Le réceptionnaire est tenu de restituer les équipements récupérables dès la fin des travaux ou sur demande de la direction.",
-        "En cas de perte ou de détérioration non justifiée, le réceptionnaire supportera les frais de réparation ou de remplacement conformément aux règlements internes de l'entreprise.",
-        "Cette décharge constitue une preuve officielle de réception et sera conservée dans un dossier dédié au réceptionnaire.",
-        "- La signature de ce document vaut acceptation pleine et entière de ces conditions."
-      ];
-      
-      let textY = finalY + 12;
-      notices.forEach(notice => {
-        const lines = doc.splitTextToSize(notice, 180);
-        doc.text(lines, 14, textY);
-        textY += lines.length * 3.5 + 1;
-      });
-
-      const sigY = textY + 8;
-      
+      // ====== SECTION RETOUR DU MATÉRIEL ======
+      const returnedItems = its.filter((i: any) => Number(i.returned_quantity || 0) > 0);
+      const retBoxH = 32;
+      doc.setDrawColor(0);
       doc.setLineWidth(0.4);
-      doc.rect(14, sigY, 88, 40);
+      doc.rect(14, y, pageW - 28, retBoxH);
+      doc.setFillColor(240, 240, 240);
+      doc.rect(14, y, pageW - 28, 6, 'FD');
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
-      doc.text(`NOM ET PRENOM :  ${emp.full_name.toUpperCase()}`, 18, sigY + 10);
-      doc.text(`FONCTION : ${(emp.position || emp.department).toUpperCase()}`, 18, sigY + 20);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Signature et empreinte', 58, sigY + 35, { align: 'center' });
+      doc.text('RETOUR DU MATÉRIEL', pageW / 2, y + 4.2, { align: 'center' });
 
-      doc.rect(108, sigY, 88, 40);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.text("L'ACCUSÉ DE RESPONSABLE DE STOCK / MAGASINIER", 110, sigY + 10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Signature et Cachet', 152, sigY + 35, { align: 'center' });
+      const retDate = d.date_returned ? new Date(d.date_returned) : null;
+      const retDateStr = retDate ? retDate.toLocaleDateString('fr-FR') : '....................';
+      const retTimeStr = retDate ? retDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '..........';
+      const retCondition = returnedItems.map((i: any) => i.return_condition).filter(Boolean).join(', ') || '....................';
+      const retObs = returnedItems.map((i: any) => i.return_observation).filter(Boolean).join(' ; ') || '....................';
 
-      const footerY = sigY + 50;
-      doc.setLineWidth(0.3);
-      doc.line(14, footerY, 196, footerY);
-      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      let ry = y + 11;
+      doc.text(`Date de retour : ${retDateStr}`, 17, ry);
+      doc.text(`Heure : ${retTimeStr}`, pageW / 2 + 10, ry);
+      ry += 5;
+      doc.text(`État du matériel : ${retCondition}`, 17, ry);
+      ry += 5;
+      const obsLines = doc.splitTextToSize(`Observation : ${retObs}`, pageW - 34);
+      doc.text(obsLines, 17, ry);
+      ry += obsLines.length * 4 + 1;
+      doc.text('Responsable de retour : ....................................................', 17, ry);
+
+      y += retBoxH + 5;
+
+      // ====== ZONE SIGNATURES (4 cases) ======
+      const sigW = (pageW - 28 - 6) / 4;
+      const sigH = 28;
+      const sigLabels = ['Signature Magasinier', 'Signature Responsable', "Signature Utilisateur", 'Signature lors du retour'];
+      for (let i = 0; i < 4; i++) {
+        const sx = 14 + i * (sigW + 2);
+        doc.setLineWidth(0.3);
+        doc.rect(sx, y, sigW, sigH);
+        doc.setFillColor(245, 245, 245);
+        doc.rect(sx, y, sigW, 5, 'FD');
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(sigLabels[i], sx + sigW / 2, y + 3.5, { align: 'center' });
+      }
+      y += sigH + 4;
+
+      // Pied de page
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'italic');
-      doc.text('Document généré automatiquement - A conserver', 105, footerY + 5, { align: 'center' });
+      doc.text("Document généré automatiquement — Fiche de circulation du matériel — À conserver", pageW / 2, pageH - 8, { align: 'center' });
 
-      doc.save(`decharge_${d.reference}.pdf`);
+      doc.save(`fiche_entree_sortie_${d.reference}.pdf`);
       toast.success(t.exportSuccess);
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error(t.exportFail);
     }
   };
