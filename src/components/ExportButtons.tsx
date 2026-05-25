@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import { Product, StockMovement, ProductFormData } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface ExportButtonsProps {
   products: Product[];
@@ -47,6 +48,7 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
       const pageWidth = doc.internal.pageSize.getWidth();
 
       // === En-tête cartouche FOR-MGX-05 ===
@@ -102,16 +104,13 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
       doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
 
-      // Strip Arabic/non-latin chars (jsPDF helvetica ne les supporte pas)
-      const clean = (s: any) => String(s ?? '').replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '').replace(/\s*\/\s*$/, '').replace(/\s+/g, ' ').trim();
-
       const headers = ['N°', t.designation, 'Catégorie', 'État', 'Unité', 'Quantité'];
-      const rows = products.map((p, i) => [i + 1, clean(p.designation), clean(p.type), clean(p.color), clean(p.unit), p.quantity]);
+      const rows = products.map((p, i) => [i + 1, p.designation || '-', p.type || '-', p.color || '-', p.unit || '-', p.quantity]);
       (doc as any).autoTable({
         startY: headerY + headerH + 5,
         head: [headers],
         body: rows,
-        styles: { font: 'helvetica', halign: 'center', fontSize: 9, cellPadding: 2, lineWidth: 0.2, lineColor: [0, 0, 0] },
+        styles: { font: PDF_FONT, halign: 'center', fontSize: 9, cellPadding: 2, lineWidth: 0.2, lineColor: [0, 0, 0] },
         headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.3, lineColor: [0, 0, 0] },
         margin: { left: 10, right: 10 },
       });
