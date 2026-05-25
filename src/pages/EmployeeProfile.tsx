@@ -9,6 +9,7 @@ import { useEmployees } from '@/hooks/useEmployees';
 import { useDischarges } from '@/hooks/useDischarges';
 import { useInventory } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +53,7 @@ const EmployeeProfile = () => {
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
 
       // Header border
       doc.setDrawColor(0);
@@ -118,7 +120,7 @@ const EmployeeProfile = () => {
           startY: y,
           head: [['Reference', 'Designation', 'Quantite', 'Date sortie']],
           body: activeRows,
-          styles: { font: 'helvetica', halign: 'center', fontSize: 8, cellPadding: 3 },
+          styles: { font: PDF_FONT, halign: 'center', fontSize: 8, cellPadding: 3 },
           headStyles: { fillColor: [255, 193, 7], textColor: [0, 0, 0], fontStyle: 'bold' },
           bodyStyles: { lineWidth: 0.2, lineColor: [0, 0, 0] },
           margin: { left: 14, right: 14 },
@@ -152,7 +154,7 @@ const EmployeeProfile = () => {
           startY: y,
           head: [['Reference', 'Designation', 'Qte', 'Sortie', 'Retour', 'Statut']],
           body: historyRows,
-          styles: { font: 'helvetica', halign: 'center', fontSize: 8, cellPadding: 3 },
+          styles: { font: PDF_FONT, halign: 'center', fontSize: 8, cellPadding: 3 },
           headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
           bodyStyles: { lineWidth: 0.2, lineColor: [0, 0, 0] },
           margin: { left: 14, right: 14 },
