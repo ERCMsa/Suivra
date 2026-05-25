@@ -1,6 +1,6 @@
-import notoSansArabicUrl from '@/assets/fonts/NotoSansArabic.ttf?url';
+import pdfFontUrl from '@/assets/fonts/DejaVuSans.ttf?url';
 
-export const PDF_FONT = 'NotoSansArabic';
+export const PDF_FONT = 'DejaVuSans';
 
 let cachedFontBase64: string | null = null;
 
@@ -17,17 +17,17 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
 
 export const setupPdfFont = async (doc: any) => {
   if (!cachedFontBase64) {
-    const response = await fetch(notoSansArabicUrl);
+    const response = await fetch(pdfFontUrl);
     const buffer = await response.arrayBuffer();
     cachedFontBase64 = arrayBufferToBase64(buffer);
   }
 
-  if (!doc.existsFileInVFS?.('NotoSansArabic.ttf')) {
-    doc.addFileToVFS('NotoSansArabic.ttf', cachedFontBase64);
+  if (!doc.existsFileInVFS?.('DejaVuSans.ttf')) {
+    doc.addFileToVFS('DejaVuSans.ttf', cachedFontBase64);
   }
 
-  doc.addFont('NotoSansArabic.ttf', PDF_FONT, 'normal');
-  doc.addFont('NotoSansArabic.ttf', PDF_FONT, 'bold');
-  doc.addFont('NotoSansArabic.ttf', PDF_FONT, 'italic');
+  doc.addFont('DejaVuSans.ttf', PDF_FONT, 'normal');
+  doc.addFont('DejaVuSans.ttf', PDF_FONT, 'bold');
+  doc.addFont('DejaVuSans.ttf', PDF_FONT, 'italic');
   doc.setFont(PDF_FONT, 'normal');
 };
