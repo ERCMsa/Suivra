@@ -66,31 +66,31 @@ const EquipmentHistory = ({ discharges, products, employees }: EquipmentHistoryP
         doc.addImage(logoImg, 'PNG', headerX + 2, headerY + 1, logoW - 4, headerH - 8);
       } catch {}
 
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+      doc.setFont(PDF_FONT, 'normal'); doc.setFontSize(7);
       doc.text('Page 1 sur 1', headerX + logoW / 2, headerY + headerH - 2, { align: 'center' });
 
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.setFont(PDF_FONT, 'bold'); doc.setFontSize(10);
       doc.text('Formulaire', headerX + logoW + titleW / 2, headerY + 5.5, { align: 'center' });
       doc.setFontSize(11);
       doc.text('Historique équipement', headerX + logoW + titleW / 2, headerY + 17, { align: 'center' });
 
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.setFont(PDF_FONT, 'bold'); doc.setFontSize(8);
       const refColX = headerX + logoW + titleW;
       doc.text('Référence :', refColX + 2, headerY + 5);
       doc.text('Date :', refColX + 2, headerY + 13);
       doc.text('Version :', refColX + 2, headerY + 21);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('FOR-MGX-06', refColX + refLabelW + 2, headerY + 5);
       doc.text(new Date().toLocaleDateString('fr-FR'), refColX + refLabelW + 2, headerY + 13);
       doc.text('00', refColX + refLabelW + 2, headerY + 21);
 
-      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8); doc.setFont(PDF_FONT, 'normal');
       doc.text(`Édité le : ${new Date().toLocaleString('fr-FR')}`, 14, headerY + headerH + 5);
 
       const prod = products.find(p => p.id === selectedProductId);
-      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11); doc.setFont(PDF_FONT, 'bold');
       doc.text(`Matériel : ${prod?.designation || '-'}`, 14, 40);
-      doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9); doc.setFont(PDF_FONT, 'normal');
       doc.text(`Stock actuel : ${prod?.quantity ?? 0} ${prod?.unit || ''}`, 14, 46);
 
       // Aggregate movement totals from history for this product

@@ -78,22 +78,22 @@ const PartialReturnDialog = ({ discharge, products, employees, onConfirm, onStoc
       } catch {}
 
       doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('ERCMSA', 14, 18);
       doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('Etude Realisation Constructions Metaliques  Salhi ADEL', 14, 23);
       doc.text('SIDI SALEM NORD LOT 08 N° Q2 OULED MOUSSA BOUMERDES', 14, 27);
       doc.text('ercmsalhisteel@Email.com', 14, 31);
 
       // Title
       doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('BON DE RETOUR MATÉRIEL', 105, 52, { align: 'center' });
 
       // Info block
       doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       const dateStr = new Date().toLocaleDateString('fr-FR');
       doc.text(`N° : ${returnRef}`, 14, 64);
       doc.text(`Date : ${dateStr}`, 105, 64);
@@ -126,23 +126,23 @@ const PartialReturnDialog = ({ discharge, products, employees, onConfirm, onStoc
       doc.setLineWidth(0.4);
       doc.rect(14, finalY, 88, 35);
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('Utilisateur (retour)', 18, finalY + 7);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.setFontSize(8);
       if (employee) doc.text(employee.full_name, 18, finalY + 14);
       doc.text('Signature :', 18, finalY + 30);
 
       doc.rect(108, finalY, 88, 35);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.setFontSize(9);
       doc.text('Magasinier / Responsable stock', 112, finalY + 7);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.setFontSize(8);
       doc.text('Signature et cachet :', 112, finalY + 30);
 
       doc.setFontSize(7);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont(PDF_FONT, 'italic');
       doc.text('Document généré automatiquement - ERCM SA', 105, 285, { align: 'center' });
 
       doc.save(`bon_retour_${returnRef}.pdf`);

@@ -83,10 +83,10 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       } catch {}
 
       doc.setFontSize(6);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('Page 1 sur 1', 12, headerY + headerH - 2);
 
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.setFontSize(12);
       doc.text('Formulaire', titleX + titleW / 2, headerY + headerH / 2 - 2, { align: 'center' });
       doc.text('Inventaire matériel', titleX + titleW / 2, headerY + headerH / 2 + 5, { align: 'center' });
@@ -95,11 +95,11 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       const rValueX = pageWidth - 10 - rightW + rightLabelW + 2;
       const rowH = headerH / 3;
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('Référence :', rLabelX, headerY + rowH / 2 + 1);
       doc.text('Date :', rLabelX, headerY + rowH * 1.5 + 1);
       doc.text('Version :', rLabelX, headerY + rowH * 2.5 + 1);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('FOR-MGX-05', rValueX, headerY + rowH / 2 + 1);
       doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
       doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
@@ -121,7 +121,7 @@ const ExportButtons = ({ products, movements, onImport }: ExportButtonsProps) =>
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
         doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(PDF_FONT, 'normal');
         doc.text(`Page ${i} / ${totalPages}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
       }
 

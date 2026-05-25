@@ -133,10 +133,10 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       } catch {}
 
       doc.setFontSize(6);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('Page 1 sur 1', 12, headerY + headerH - 2);
 
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.setFontSize(11);
       doc.text('Formulaire', titleX + titleW / 2, headerY + headerH / 2 - 2, { align: 'center' });
       doc.text('Entrée / Sortie matériel', titleX + titleW / 2, headerY + headerH / 2 + 5, { align: 'center' });
@@ -145,11 +145,11 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const rValueX = pageW - 10 - rightW + rightLabelW + 2;
       const rowH = headerH / 3;
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('Référence :', rLabelX, headerY + rowH / 2 + 1);
       doc.text('Date :', rLabelX, headerY + rowH * 1.5 + 1);
       doc.text('Version :', rLabelX, headerY + rowH * 2.5 + 1);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('FOR-MGX-04', rValueX, headerY + rowH / 2 + 1);
       doc.text(new Date().toLocaleDateString('fr-FR'), rValueX, headerY + rowH * 1.5 + 1);
       doc.text('00', rValueX, headerY + rowH * 2.5 + 1);
@@ -157,7 +157,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       // ====== TITRE DOCUMENT + STATUT ======
       let y = headerY + headerH + 6;
       doc.setFontSize(15);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('ENTRÉE / SORTIE DE MATÉRIEL', pageW / 2, y, { align: 'center' });
       y += 6;
 
@@ -175,7 +175,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const sbW = 60, sbH = 7;
       doc.rect((pageW - sbW) / 2, y, sbW, sbH, 'FD');
       doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text(`STATUT : ${statusLabel}`, pageW / 2, y + 5, { align: 'center' });
       y += sbH + 5;
 
@@ -183,7 +183,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const dateOut = new Date(d.date_out).toLocaleDateString('fr-FR');
       const timeOut = new Date(d.date_out).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text(`Référence : ${d.reference}`, 14, y);
       doc.text(`Date sortie : ${dateOut}    Heure : ${timeOut}`, pageW - 14, y, { align: 'right' });
       y += 5;
@@ -191,9 +191,9 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.text(`Fonction : ${emp.position || emp.department || '-'}`, pageW - 14, y, { align: 'right' });
       y += 5;
       if (d.project) {
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(PDF_FONT, 'bold');
         doc.text(`Projet : ${d.project}`, 14, y);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(PDF_FONT, 'normal');
         y += 5;
       }
 
@@ -218,9 +218,9 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
 
       if (d.notes) {
         doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(PDF_FONT, 'bold');
         doc.text('Observations sortie :', 14, y);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(PDF_FONT, 'normal');
         const nLines = doc.splitTextToSize(d.notes, pageW - 28);
         doc.text(nLines, 14, y + 4);
         y += 4 + nLines.length * 4;
@@ -236,7 +236,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       doc.setFillColor(240, 240, 240);
       doc.rect(14, y, pageW - 28, 6, 'FD');
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('RETOUR DU MATÉRIEL', pageW / 2, y + 4.2, { align: 'center' });
 
       const retDate = d.date_returned ? new Date(d.date_returned) : null;
@@ -245,7 +245,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const retCondition = returnedItems.map((i: any) => i.return_condition).filter(Boolean).join(', ') || '....................';
       const retObs = returnedItems.map((i: any) => i.return_observation).filter(Boolean).join(' ; ') || '....................';
 
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.setFontSize(8.5);
       let ry = y + 11;
       doc.text(`Date de retour : ${retDateStr}`, 17, ry);
@@ -271,14 +271,14 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
         doc.setFillColor(245, 245, 245);
         doc.rect(sx, y, sigW, 5, 'FD');
         doc.setFontSize(7.5);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(PDF_FONT, 'bold');
         doc.text(sigLabels[i], sx + sigW / 2, y + 3.5, { align: 'center' });
       }
       y += sigH + 4;
 
       // Pied de page
       doc.setFontSize(7);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont(PDF_FONT, 'italic');
       doc.text("Document généré automatiquement — Fiche de circulation du matériel — À conserver", pageW / 2, pageH - 8, { align: 'center' });
 
       doc.save(`fiche_entree_sortie_${d.reference}.pdf`);

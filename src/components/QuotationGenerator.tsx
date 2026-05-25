@@ -218,10 +218,10 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
       // From / To
       doc.setFontSize(10);
       doc.setTextColor(40, 40, 40);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text(`${t.from}:`, 14, 52);
       doc.text(`${t.to}:`, 110, 52);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text(t.company, 14, 58);
       doc.text(supplier!.name, 110, 58);
       if (supplier!.category) doc.text(supplier!.category, 110, 63);
