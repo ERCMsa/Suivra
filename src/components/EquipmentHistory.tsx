@@ -9,6 +9,7 @@ import { Discharge } from '@/hooks/useDischarges';
 import { Product } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface EquipmentHistoryProps {
   discharges: Discharge[];
@@ -40,6 +41,7 @@ const EquipmentHistory = ({ discharges, products, employees }: EquipmentHistoryP
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
 
       // ====== EN-TÊTE FOR-MGX-06 ======
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -123,7 +125,7 @@ const EquipmentHistory = ({ discharges, products, employees }: EquipmentHistoryP
         startY: 58,
         head: [['N°', 'Réf.', 'Date sortie', 'Utilisateur', 'Projet', 'Qté', 'Rendu', 'Date retour', 'Statut']],
         body: rows,
-        styles: { font: 'helvetica', fontSize: 8, cellPadding: 2 },
+        styles: { font: PDF_FONT, fontSize: 8, cellPadding: 2 },
         headStyles: { fillColor: [40, 70, 120], textColor: 255, fontStyle: 'bold' },
         margin: { left: 10, right: 10 },
       });
