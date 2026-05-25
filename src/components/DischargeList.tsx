@@ -15,6 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import EditDischargeForm from './EditDischargeForm';
 import PartialReturnDialog from './PartialReturnDialog';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface DischargeListProps {
   discharges: Discharge[];
@@ -96,6 +97,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
 
@@ -207,7 +209,7 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
         startY: y,
         head: [['N°', 'Désignation', 'Référence', 'Qté Sortie', 'Qté Retour', 'Reste', 'État retour']],
         body: rows,
-        styles: { font: 'helvetica', fontSize: 9, halign: 'center', cellPadding: 2.5, lineWidth: 0.25, lineColor: [0, 0, 0] },
+        styles: { font: PDF_FONT, fontSize: 9, halign: 'center', cellPadding: 2.5, lineWidth: 0.25, lineColor: [0, 0, 0] },
         headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.3, lineColor: [0, 0, 0] },
         columnStyles: { 1: { halign: 'left' }, 2: { halign: 'left' } },
         margin: { left: 14, right: 14 },
