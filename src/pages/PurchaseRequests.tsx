@@ -31,6 +31,7 @@ import { toast } from 'sonner';
 import ImageUpload from '@/components/ImageUpload';
 import SupplierAvatar from '@/components/SupplierAvatar';
 import QuotationGenerator from '@/components/QuotationGenerator';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
@@ -330,6 +331,7 @@ const PurchaseRequests = () => {
         return;
       }
       const doc = new jsPDF({ orientation: 'portrait' });
+      await setupPdfFont(doc);
       const today = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'ar-DZ');
       doc.setFontSize(18);
       doc.setTextColor(66, 99, 235);
@@ -345,7 +347,7 @@ const PurchaseRequests = () => {
         const product = products.find(p => p.id === req.product_id);
         return [String(i + 1), product?.designation || '—', String(req.current_stock), String(req.min_threshold), String(req.suggested_quantity), req.status === 'pending' ? labels.pending : labels.ordered, req.notes || '—'];
       });
-      (doc as any).autoTable({ head: [headers], body: rows, startY: 42, styles: { font: 'helvetica', halign: 'center', fontSize: 9, cellPadding: 4 }, headStyles: { fillColor: [66, 99, 235], halign: 'center', fontSize: 9 }, alternateRowStyles: { fillColor: [245, 247, 255] }, columnStyles: { 0: { cellWidth: 10 }, 1: { halign: 'left', cellWidth: 50 }, 6: { halign: 'left', cellWidth: 35 } } });
+      (doc as any).autoTable({ head: [headers], body: rows, startY: 42, styles: { font: PDF_FONT, halign: 'center', fontSize: 9, cellPadding: 4 }, headStyles: { fillColor: [66, 99, 235], halign: 'center', fontSize: 9 }, alternateRowStyles: { fillColor: [245, 247, 255] }, columnStyles: { 0: { cellWidth: 10 }, 1: { halign: 'left', cellWidth: 50 }, 6: { halign: 'left', cellWidth: 35 } } });
       const finalY = (doc as any).lastAutoTable?.finalY || 180;
       doc.setFontSize(10);
       doc.setTextColor(60, 60, 60);

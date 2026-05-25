@@ -9,6 +9,7 @@ import { useEmployees } from '@/hooks/useEmployees';
 import { useDischarges } from '@/hooks/useDischarges';
 import { useInventory } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +53,7 @@ const EmployeeProfile = () => {
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
 
       // Header border
       doc.setDrawColor(0);
@@ -59,22 +61,22 @@ const EmployeeProfile = () => {
       doc.rect(10, 10, 190, 25);
 
       doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('ERCMsa', 14, 18);
       doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text('Etude et Realisation de Constructions Metalliques Salhi Adel', 14, 22);
       doc.text('Sidi Salem Nord 08 n 02 Ouled Moussa BOUMEDRES ALGERIE', 14, 26);
       doc.text('contact@ercmsalhi.com', 14, 30);
 
       // Title
       doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text('FICHE EMPLOYE', 105, 50, { align: 'center' });
 
       // Employee info
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       let y = 60;
       const info = [
         ['Nom et Prenom', employee.full_name],
@@ -86,16 +88,16 @@ const EmployeeProfile = () => {
         ['Statut', employee.status === 'active' ? 'Actif' : employee.status === 'on_leave' ? 'En conge' : 'Inactif'],
       ];
       info.forEach(([label, value]) => {
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(PDF_FONT, 'bold');
         doc.text(`${label}: `, 14, y);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(PDF_FONT, 'normal');
         doc.text(value, 55, y);
         y += 6;
       });
 
       // Stats
       y += 4;
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.setFontSize(10);
       doc.text(`Total decharges: ${empDischarges.length}  |  En cours: ${activeDischarges.length}  |  Retournees: ${returnedDischarges.length}`, 14, y);
       y += 10;
@@ -103,7 +105,7 @@ const EmployeeProfile = () => {
       // Current equipment
       if (activeDischarges.length > 0) {
         doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(PDF_FONT, 'bold');
         doc.text('EQUIPEMENT EN COURS', 14, y);
         y += 2;
 
@@ -118,7 +120,7 @@ const EmployeeProfile = () => {
           startY: y,
           head: [['Reference', 'Designation', 'Quantite', 'Date sortie']],
           body: activeRows,
-          styles: { font: 'helvetica', halign: 'center', fontSize: 8, cellPadding: 3 },
+          styles: { font: PDF_FONT, halign: 'center', fontSize: 8, cellPadding: 3 },
           headStyles: { fillColor: [255, 193, 7], textColor: [0, 0, 0], fontStyle: 'bold' },
           bodyStyles: { lineWidth: 0.2, lineColor: [0, 0, 0] },
           margin: { left: 14, right: 14 },
@@ -128,7 +130,7 @@ const EmployeeProfile = () => {
 
       // Full history
       doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       if (y > 250) { doc.addPage(); y = 20; }
       doc.text('HISTORIQUE COMPLET DES DECHARGES', 14, y);
       y += 2;
@@ -152,7 +154,7 @@ const EmployeeProfile = () => {
           startY: y,
           head: [['Reference', 'Designation', 'Qte', 'Sortie', 'Retour', 'Statut']],
           body: historyRows,
-          styles: { font: 'helvetica', halign: 'center', fontSize: 8, cellPadding: 3 },
+          styles: { font: PDF_FONT, halign: 'center', fontSize: 8, cellPadding: 3 },
           headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
           bodyStyles: { lineWidth: 0.2, lineColor: [0, 0, 0] },
           margin: { left: 14, right: 14 },
@@ -164,7 +166,7 @@ const EmployeeProfile = () => {
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setFontSize(7);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(PDF_FONT, 'normal');
         doc.text(`Document genere le ${new Date().toLocaleDateString('fr-FR')} - Page ${i}/${pageCount}`, 105, 285, { align: 'center' });
       }
 

@@ -11,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useSuppliers, type Supplier } from '@/hooks/useSuppliers';
 import type { Product } from '@/hooks/useInventory';
 import companyLogo from '@/assets/logo.png';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface QuotationGeneratorProps {
   products: Product[];
@@ -183,6 +184,7 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
       const ref = buildRef();
       const today = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'fr-DZ');
 
@@ -216,10 +218,10 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
       // From / To
       doc.setFontSize(10);
       doc.setTextColor(40, 40, 40);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(PDF_FONT, 'bold');
       doc.text(`${t.from}:`, 14, 52);
       doc.text(`${t.to}:`, 110, 52);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(PDF_FONT, 'normal');
       doc.text(t.company, 14, 58);
       doc.text(supplier!.name, 110, 58);
       if (supplier!.category) doc.text(supplier!.category, 110, 63);
@@ -239,7 +241,7 @@ const QuotationGenerator = ({ products, defaultProductIds = [], defaultQuantitie
         head: [headers],
         body: rows,
         startY: 90,
-        styles: { font: 'helvetica', halign: 'center', fontSize: 10, cellPadding: 4 },
+        styles: { font: PDF_FONT, halign: 'center', fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [66, 99, 235], halign: 'center' },
         alternateRowStyles: { fillColor: [245, 247, 255] },
         columnStyles: { 0: { cellWidth: 12 }, 1: { halign: 'left' }, 2: { cellWidth: 25 }, 3: { cellWidth: 30 } },
