@@ -12,6 +12,7 @@ import { Product } from '@/hooks/useInventory';
 import { Employee } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface PartialReturnDialogProps {
   discharge: Discharge;
@@ -58,6 +59,7 @@ const PartialReturnDialog = ({ discharge, products, employees, onConfirm, onStoc
       const { default: jsPDF } = await import('jspdf');
       await import('jspdf-autotable');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
 
       // Header cartouche
       doc.setDrawColor(0);
@@ -112,7 +114,7 @@ const PartialReturnDialog = ({ discharge, products, employees, onConfirm, onStoc
         startY: 84,
         head: [['N°', 'Désignation', 'Référence', 'Qté retournée', 'État', 'Observation']],
         body: rows,
-        styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
+        styles: { font: PDF_FONT, fontSize: 9, cellPadding: 3 },
         headStyles: { fillColor: [40, 70, 120], textColor: 255, fontStyle: 'bold' },
         columnStyles: { 0: { cellWidth: 12, halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } },
         margin: { left: 14, right: 14 },
