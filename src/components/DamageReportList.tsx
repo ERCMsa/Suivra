@@ -9,6 +9,7 @@ import { Product } from '@/hooks/useInventory';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { toast } from 'sonner';
+import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
 interface DamageReport {
   id: string;
@@ -56,9 +57,10 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
     }
   };
 
-  const exportPdf = () => {
+  const exportPdf = async () => {
     try {
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      await setupPdfFont(doc);
 
       // Title
       doc.setFontSize(18);
@@ -101,7 +103,7 @@ const DamageReportList = ({ reports, products }: DamageReportListProps) => {
         body: rows,
         startY: 38,
         theme: 'grid',
-        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+        styles: { font: PDF_FONT, fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
         headStyles: { fillColor: [180, 40, 40], textColor: 255, fontStyle: 'bold', fontSize: 8 },
         alternateRowStyles: { fillColor: [252, 245, 245] },
         columnStyles: {
