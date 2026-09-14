@@ -36,19 +36,42 @@ export const useDischarges = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchDischarges = useCallback(async () => {
-    const { data } = await supabase.from('discharges').select('*').order('created_at', { ascending: false });
-    if (!data) return;
-    
-    // Fetch items for all discharges
-    const ids = data.map(d => d.id);
-    const { data: items } = await supabase.from('discharge_items').select('*').in('discharge_id', ids.length > 0 ? ids : ['none']);
-    
-    const dischargesWithItems = (data as Discharge[]).map(d => ({
-      ...d,
-      items: (items as DischargeItem[] || []).filter(i => i.discharge_id === d.id),
-    }));
-    
-    setDischarges(dischargesWithItems);
+    const PAGE = 1000;
+
+    // Fetch all discharges (paginated — PostgREST caps each request at 1000 rows)
+    const allDischarges: Discharge[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('discharges')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(from, from + PAGE - 1);
+      if (error || !data) break;
+      allDischarges.push(...(data as Discharge[]));
+      if (data.length < PAGE) break;
+    }
+
+    // Fetch ALL items (paginated) so discharges never lose rows to the 1000-row cap
+    const allItems: DischargeItem[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('discharge_items')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error || !data) break;
+      allItems.push(...(data as DischargeItem[]));
+      if (data.length < PAGE) break;
+    }
+
+    const byDischarge = new Map<string, DischargeItem[]>();
+    for (const it of allItems) {
+      const list = byDischarge.get(it.discharge_id);
+      if (list) list.push(it);
+      else byDischarge.set(it.discharge_id, [it]);
+    }
+
+    setDischarges(allDischarges.map(d => ({ ...d, items: byDischarge.get(d.id) || [] })));
   }, []);
 
   useEffect(() => {
