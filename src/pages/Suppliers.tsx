@@ -24,18 +24,22 @@ import {
 import { toast } from 'sonner';
 import ImageUpload from '@/components/ImageUpload';
 import SupplierAvatar from '@/components/SupplierAvatar';
+import SupplierCategories from '@/components/SupplierCategories';
+import SupplierCategoryPicker from '@/components/SupplierCategoryPicker';
+import { categorySupplierIds } from '@/lib/supplierCategories';
 import { useLanguage as useLang } from '@/hooks/useLanguage';
 
 const Suppliers = () => {
   const { t, lang } = useLanguage();
-  const { suppliers, supplierProducts, isLoading, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, unlinkSupplierFromProduct, markSupplierUsed } = useSuppliers();
+  const { suppliers, categories, categoryLinks, fetchSuppliers, supplierProducts, isLoading, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, unlinkSupplierFromProduct, markSupplierUsed } = useSuppliers();
   const { products } = useInventory();
 
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '', address: '', image_url: '' });
+  const [newSupplier, setNewSupplier] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', address: '', image_url: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '', image_url: '' });
+  const [editData, setEditData] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', address: '', notes: '', image_url: '' });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [assignProductIds, setAssignProductIds] = useState<string[]>([]);
@@ -98,7 +102,7 @@ const Suppliers = () => {
     const ok = await addSupplier(newSupplier);
     if (ok) {
       toast.success(lang === 'fr' ? 'Fournisseur ajouté' : 'تمت إضافة المورد');
-      setNewSupplier({ name: '', category: '', phone: '', email: '', address: '', image_url: '' });
+      setNewSupplier({ name: '', category_ids: [], phone: '', email: '', address: '', image_url: '' });
       setAddOpen(false);
     }
   };
@@ -106,7 +110,7 @@ const Suppliers = () => {
   const handleEdit = (s: any) => {
     setEditingId(s.id);
     setEditData({
-      name: s.name, category: s.category || '', phone: s.phone || '',
+      name: s.name, category_ids: s.category_ids || [], phone: s.phone || '',
       email: s.email || '', address: s.address || '', notes: s.notes || '',
       image_url: s.image_url || '',
     });
@@ -165,8 +169,10 @@ const Suppliers = () => {
     return ids.map(pid => products.find(p => p.id === pid)).filter(Boolean) as typeof products;
   };
 
-  const filtered = suppliers.filter(s =>
-    !search || s.name.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase())
+  const selectedCategory = categories.find(c => c.id === activeCategory);
+  const visibleIds = selectedCategory ? new Set(categorySupplierIds(categoryLinks, selectedCategory.id)) : null;
+  const filtered = suppliers.filter(s => (!visibleIds || visibleIds.has(s.id)) &&
+    (!search || s.name.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase()))
   );
 
   if (isLoading) {
@@ -220,7 +226,7 @@ const Suppliers = () => {
                   </div>
                 </div>
                 <Input placeholder={labels.name} value={newSupplier.name} onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })} />
-                <Input placeholder={labels.category} value={newSupplier.category} onChange={e => setNewSupplier({ ...newSupplier, category: e.target.value })} />
+                <SupplierCategoryPicker categories={categories} selected={newSupplier.category_ids} onChange={category_ids => setNewSupplier({ ...newSupplier, category_ids })} />
                 <Input placeholder={labels.phone} value={newSupplier.phone} onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })} />
                 <Input placeholder={labels.email} value={newSupplier.email} onChange={e => setNewSupplier({ ...newSupplier, email: e.target.value })} />
                 <Input placeholder={labels.address} value={newSupplier.address} onChange={e => setNewSupplier({ ...newSupplier, address: e.target.value })} />
@@ -230,6 +236,11 @@ const Suppliers = () => {
           </Dialog>
         </div>
 
+        <SupplierCategories categories={categories} links={categoryLinks} refresh={fetchSuppliers} onConsult={id => { setActiveCategory(id); setSearch(''); document.getElementById('supplier-list')?.scrollIntoView({ behavior: 'smooth' }); }} />
+        <div id="supplier-list" className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 className="text-xl font-semibold break-words">{selectedCategory?.name || labels.title} ({filtered.length})</h2>
+          {selectedCategory && <Button variant="outline" onClick={() => setActiveCategory(null)}>{lang === 'fr' ? 'Tous les fournisseurs' : 'كل الموردين'}</Button>}
+        </div>
         {/* Search */}
         <Input
           placeholder={labels.search}
@@ -269,7 +280,7 @@ const Suppliers = () => {
                         />
                       </div>
                       <Input placeholder={labels.name} value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} className="h-8 text-sm" />
-                      <Input placeholder={labels.category} value={editData.category} onChange={e => setEditData({ ...editData, category: e.target.value })} className="h-8 text-sm" />
+                      <SupplierCategoryPicker categories={categories} selected={editData.category_ids} onChange={category_ids => setEditData({ ...editData, category_ids })} />
                       <Input placeholder={labels.phone} value={editData.phone} onChange={e => setEditData({ ...editData, phone: e.target.value })} className="h-8 text-sm" />
                       <Input placeholder={labels.email} value={editData.email} onChange={e => setEditData({ ...editData, email: e.target.value })} className="h-8 text-sm" />
                       <Input placeholder={labels.address} value={editData.address} onChange={e => setEditData({ ...editData, address: e.target.value })} className="h-8 text-sm" />
@@ -343,7 +354,7 @@ const Suppliers = () => {
                             className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
                             onClick={() => {
                               const msg = encodeURIComponent(`Hello, ${supplier.name}`);
-                              window.open(`https://wa.me/${supplier.phone!.replace(/[^0-9+]/g, '')}?text=${msg}`, '_blank');
+                              if (supplier.phone) window.open(`https://wa.me/${supplier.phone.replace(/[^0-9+]/g, '')}?text=${msg}`, '_blank');
                             }}
                           >
                             <MessageCircle className="h-3.5 w-3.5" />

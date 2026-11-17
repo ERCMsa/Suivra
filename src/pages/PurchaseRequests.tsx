@@ -30,6 +30,7 @@ import {
 import { toast } from 'sonner';
 import ImageUpload from '@/components/ImageUpload';
 import SupplierAvatar from '@/components/SupplierAvatar';
+import SupplierCategoryPicker from '@/components/SupplierCategoryPicker';
 import QuotationGenerator from '@/components/QuotationGenerator';
 import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
 
@@ -37,7 +38,7 @@ const PurchaseRequests = () => {
   const { t, lang } = useLanguage();
   const { requests, isLoading, autoDetectLowStock, updateStatus, updateRequest, deleteRequest, forceAdd } = usePurchaseRequests();
   const { products, addStockMovement } = useInventory();
-  const { suppliers, supplierProducts, getSuppliersForProduct, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
+  const { suppliers, categories, supplierProducts, getSuppliersForProduct, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, markSupplierUsed } = useSuppliers();
 
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -50,7 +51,7 @@ const PurchaseRequests = () => {
   const [forceQty, setForceQty] = useState(1);
   const [scanning, setScanning] = useState(false);
   const [addSupplierOpen, setAddSupplierOpen] = useState(false);
-  const [newSupplier, setNewSupplier] = useState({ name: '', category: '', phone: '', email: '', image_url: '' });
+  const [newSupplier, setNewSupplier] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', image_url: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
   const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
@@ -275,7 +276,7 @@ const PurchaseRequests = () => {
     const success = await addSupplier(newSupplier);
     if (success) {
       toast.success(lang === 'fr' ? 'Fournisseur ajouté' : 'تمت إضافة المورد');
-      setNewSupplier({ name: '', category: '', phone: '', email: '', image_url: '' });
+      setNewSupplier({ name: '', category_ids: [], phone: '', email: '', image_url: '' });
       setAddSupplierOpen(false);
     }
   };
@@ -487,7 +488,7 @@ const PurchaseRequests = () => {
                     </div>
                   </div>
                   <Input placeholder={labels.supplierName} value={newSupplier.name} onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })} />
-                  <Input placeholder={labels.category} value={newSupplier.category} onChange={e => setNewSupplier({ ...newSupplier, category: e.target.value })} />
+                  <SupplierCategoryPicker categories={categories} selected={newSupplier.category_ids} onChange={category_ids => setNewSupplier({ ...newSupplier, category_ids })} />
                   <Input placeholder={labels.phone} value={newSupplier.phone} onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })} />
                   <Input placeholder={labels.email} value={newSupplier.email} onChange={e => setNewSupplier({ ...newSupplier, email: e.target.value })} />
                   <Button onClick={handleAddSupplier} className="w-full">{labels.add}</Button>
