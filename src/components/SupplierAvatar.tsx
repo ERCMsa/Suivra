@@ -10,6 +10,7 @@ interface SupplierAvatarProps {
   name: string;
   imageUrl?: string | null;
   phone?: string | null;
+  whatsapp?: string | null;
   address?: string | null;
   category?: string | null;
   size?: 'sm' | 'md' | 'lg';
@@ -77,6 +78,7 @@ const SupplierAvatar = ({
   name,
   imageUrl,
   phone,
+  whatsapp,
   address,
   category,
   size = 'sm',
@@ -86,11 +88,12 @@ const SupplierAvatar = ({
   className,
 }: SupplierAvatarProps) => {
   const bgColor = getColorFromName(name);
+  const whatsappNumber = whatsapp || phone;
 
   const tooltipText = (
     <div className="text-xs">
       <div className="font-semibold">{name}</div>
-      {phone && <div className="opacity-80">{phone}</div>}
+      {(phone || whatsappNumber) && <div className="opacity-80">{phone || whatsappNumber}</div>}
     </div>
   );
 
@@ -159,40 +162,44 @@ const SupplierAvatar = ({
             </button>
           </div>
         )}
-        {phone ? (
+        {(phone || whatsappNumber) ? (
           <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 flex-1 gap-1.5 text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(`tel:${phone}`, '_self');
-              }}
-            >
-              <Phone className="h-3.5 w-3.5 text-primary" />
-              {phone}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1.5 text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                const msg = encodeURIComponent(
-                  productName
-                    ? `Hello, I would like info about: ${productName}`
-                    : `Hello, ${name}`,
-                );
-                window.open(
-                  `https://wa.me/${phone.replace(/[^0-9+]/g, '')}?text=${msg}`,
-                  '_blank',
-                );
-              }}
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              WhatsApp
-            </Button>
+            {phone && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 flex-1 gap-1.5 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(`tel:${phone}`, '_self');
+                }}
+              >
+                <Phone className="h-3.5 w-3.5 text-primary" />
+                {phone}
+              </Button>
+            )}
+            {whatsappNumber && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 gap-1.5 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const msg = encodeURIComponent(
+                    productName
+                      ? `Hello, I would like info about: ${productName}`
+                      : `Hello, ${name}`,
+                  );
+                  window.open(
+                    `https://wa.me/${whatsappNumber.replace(/[^0-9+]/g, '')}?text=${msg}`,
+                    '_blank',
+                  );
+                }}
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                WhatsApp
+              </Button>
+            )}
           </div>
         ) : (
           <p className="text-xs text-muted-foreground italic text-center py-1">

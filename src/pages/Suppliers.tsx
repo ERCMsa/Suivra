@@ -1,17 +1,15 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
-import { useSuppliers, type Supplier } from '@/hooks/useSuppliers';
+import { useSuppliers, type Supplier, type SupplierInput } from '@/hooks/useSuppliers';
 import { useInventory } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePermissions } from '@/hooks/usePermissions';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -19,27 +17,36 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  Building2, Plus, Trash2, Edit2, Phone, MessageCircle, Star, ChevronRight, Package, X, ArrowLeft, FolderOpen, Users,
+  Building2, Plus, Trash2, Edit2, Phone, MessageCircle, Star, ChevronRight,
+  Package, X, ArrowLeft, FolderOpen, Users, Mail, MapPin, UserMinus, UserRound,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import ImageUpload from '@/components/ImageUpload';
 import SupplierAvatar from '@/components/SupplierAvatar';
 import SupplierCategories from '@/components/SupplierCategories';
-import SupplierCategoryPicker from '@/components/SupplierCategoryPicker';
-import { categorySupplierIds } from '@/lib/supplierCategories';
-import { useLanguage as useLang } from '@/hooks/useLanguage';
+import AddSupplierToCategoryDialog from '@/components/AddSupplierToCategoryDialog';
+import SupplierForm, { type SupplierFormValue } from '@/components/SupplierForm';
+import { categorySupplierIds, supplierMatchesSearch } from '@/lib/supplierCategories';
+
+const WhatsAppLink = (number: string, name: string) => {
+  const message = encodeURIComponent(`Bonjour, ${name}`);
+  window.open(`https://wa.me/${number.replace(/[^0-9+]/g, '')}?text=${message}`, '_blank');
+};
 
 const Suppliers = () => {
   const { t, lang } = useLanguage();
-  const { suppliers, categories, categoryLinks, fetchSuppliers, supplierProducts, isLoading, getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier, linkSupplierToProduct, unlinkSupplierFromProduct, markSupplierUsed } = useSuppliers();
+  const {
+    suppliers, categories, categoryLinks, fetchSuppliers, supplierProducts, isLoading,
+    getProductsForSupplier, addSupplier, updateSupplier, deleteSupplier,
+    linkSuppliersToCategory, unlinkSupplierFromCategory,
+    linkSupplierToProduct, unlinkSupplierFromProduct, markSupplierUsed,
+  } = useSuppliers();
   const { products } = useInventory();
+  const { canViewPurchases: canManage, isAdmin } = usePermissions();
 
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [newSupplier, setNewSupplier] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', address: '', image_url: '' });
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', address: '', notes: '', image_url: '' });
+  const [editing, setEditing] = useState<Supplier | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [assignProductIds, setAssignProductIds] = useState<string[]>([]);
@@ -47,92 +54,101 @@ const Suppliers = () => {
 
   const labels = lang === 'fr' ? {
     title: 'Fournisseurs',
-    subtitle: 'Gérer les fournisseurs et leurs produits',
+    subtitle: 'Organisez vos fournisseurs par catégories',
     add: 'Ajouter un fournisseur',
+    addToCategory: 'Ajouter un fournisseur à cette catégorie',
     name: 'Nom',
-    category: 'Catégorie',
     phone: 'Téléphone',
     email: 'Email',
     address: 'Adresse',
     save: 'Enregistrer',
     cancel: 'Annuler',
-    delete: 'Supprimer',
+    delete: 'Supprimer définitivement',
     edit: 'Modifier',
     whatsapp: 'WhatsApp',
     recommended: 'Recommandé',
     products: 'Produits fournis',
     noProducts: 'Aucun produit associé',
     addProduct: 'Ajouter un produit',
-    chooseProduct: 'Choisir un produit',
-    search: 'Rechercher...',
-    noSuppliers: 'Aucun fournisseur',
-    noSuppliersDesc: 'Ajoutez votre premier fournisseur',
-    confirmDelete: 'Supprimer ce fournisseur ?',
+    search: 'Rechercher un fournisseur…',
+    noSuppliers: 'Aucun fournisseur dans cette catégorie',
+    noSuppliersDesc: 'Ajoutez un fournisseur existant ou créez une nouvelle fiche.',
+    confirmDelete: 'Supprimer définitivement ce fournisseur ?',
+    deleteDescription: 'La fiche centrale, ses contacts et toutes ses associations seront supprimés. Cette action est irréversible.',
+    removeFromCategory: 'Retirer de la catégorie',
+    confirmUnlink: 'Retirer ce fournisseur de la catégorie ?',
+    unlinkDescription: 'Seule l’association avec cette catégorie sera supprimée. La fiche fournisseur et ses autres catégories restent intactes.',
     noPhone: 'Pas de téléphone',
-    unlink: 'Retirer',
+    unlink: 'Retirer le produit',
+    contacts: 'Contacts commerciaux',
+    noContacts: 'Aucun contact commercial',
+    categories: 'catégories',
   } : {
     title: 'الموردون',
-    subtitle: 'إدارة الموردين والمنتجات التي يبيعونها',
+    subtitle: 'نظّم مورديك حسب الفئات',
     add: 'إضافة مورد',
+    addToCategory: 'إضافة مورد إلى هذه الفئة',
     name: 'الاسم',
-    category: 'الفئة',
     phone: 'الهاتف',
     email: 'البريد',
     address: 'العنوان',
     save: 'حفظ',
     cancel: 'إلغاء',
-    delete: 'حذف',
+    delete: 'حذف نهائي',
     edit: 'تعديل',
     whatsapp: 'واتساب',
     recommended: 'موصى به',
     products: 'المنتجات الموردة',
     noProducts: 'لا توجد منتجات مرتبطة',
     addProduct: 'إضافة منتج',
-    chooseProduct: 'اختر منتجاً',
-    search: 'بحث...',
-    noSuppliers: 'لا يوجد موردون',
-    noSuppliersDesc: 'أضف أول مورد',
-    confirmDelete: 'حذف هذا المورد؟',
+    search: 'البحث عن مورد…',
+    noSuppliers: 'لا يوجد موردون في هذه الفئة',
+    noSuppliersDesc: 'أضف مورداً موجوداً أو أنشئ بطاقة جديدة.',
+    confirmDelete: 'حذف هذا المورد نهائياً؟',
+    deleteDescription: 'سيتم حذف البطاقة المركزية وجهات الاتصال وجميع الارتباطات. لا يمكن التراجع عن هذا الإجراء.',
+    removeFromCategory: 'إزالة من الفئة',
+    confirmUnlink: 'إزالة هذا المورد من الفئة؟',
+    unlinkDescription: 'سيتم حذف الارتباط بهذه الفئة فقط. تبقى بطاقة المورد وفئاته الأخرى كما هي.',
     noPhone: 'لا يوجد رقم',
-    unlink: 'فصل',
+    unlink: 'إزالة المنتج',
+    contacts: 'جهات الاتصال التجارية',
+    noContacts: 'لا توجد جهات اتصال تجارية',
+    categories: 'فئات',
   };
 
-  const handleAdd = async () => {
-    if (!newSupplier.name) return;
-    const ok = await addSupplier(newSupplier);
-    if (ok) {
-      toast.success(lang === 'fr' ? 'Fournisseur ajouté' : 'تمت إضافة المورد');
-      setNewSupplier({ name: '', category_ids: [], phone: '', email: '', address: '', image_url: '' });
-      setAddOpen(false);
-    }
+  const openAdd = () => setAddOpen(true);
+
+  const handleCreateNew = async (data: SupplierInput) => {
+    if (!selectedCategory) return false;
+    return addSupplier({ ...data, category_ids: [selectedCategory.id] });
   };
 
-  const openAddSupplier = (categoryId?: string) => {
-    setNewSupplier({ name: '', category_ids: categoryId ? [categoryId] : [], phone: '', email: '', address: '', image_url: '' });
-    setAddOpen(true);
+  const handleLinkExisting = async (supplierIds: string[]) => {
+    if (!selectedCategory) return false;
+    return linkSuppliersToCategory(supplierIds, selectedCategory.id);
   };
 
-  const handleEdit = (s: Supplier) => {
-    setEditingId(s.id);
-    setEditData({
-      name: s.name, category_ids: s.category_ids || [], phone: s.phone || '',
-      email: s.email || '', address: s.address || '', notes: s.notes || '',
-      image_url: s.image_url || '',
-    });
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editingId) return;
-    const ok = await updateSupplier(editingId, editData);
+  const handleSaveEdit = async (value: SupplierFormValue) => {
+    if (!editing) return false;
+    const ok = await updateSupplier(editing.id, value);
     if (ok) {
       toast.success(lang === 'fr' ? 'Fournisseur modifié' : 'تم التعديل');
-      setEditingId(null);
+      setEditing(null);
     }
+    return ok;
   };
 
-  const handleDelete = async (id: string) => {
-    const ok = await deleteSupplier(id);
-    if (ok) toast.success(lang === 'fr' ? 'Fournisseur supprimé' : 'تم الحذف');
+  const handleUnlinkFromCategory = async (supplier: Supplier) => {
+    if (!selectedCategory) return;
+    const ok = await unlinkSupplierFromCategory(supplier.id, selectedCategory.id);
+    if (ok) toast.success(lang === 'fr'
+      ? `${supplier.name} retiré de la catégorie`
+      : `تمت إزالة ${supplier.name} من الفئة`);
+  };
+
+  const handleDelete = async (supplier: Supplier) => {
+    const ok = await deleteSupplier(supplier.id);
+    if (ok) toast.success(lang === 'fr' ? 'Fournisseur supprimé définitivement' : 'تم حذف المورد نهائياً');
   };
 
   const handleAssign = async (supplierId: string) => {
@@ -164,7 +180,7 @@ const Suppliers = () => {
     );
   };
 
-  const handleUnlink = async (supplierId: string, productId: string) => {
+  const handleUnlinkProduct = async (supplierId: string, productId: string) => {
     const ok = await unlinkSupplierFromProduct(supplierId, productId);
     if (ok) toast.success(lang === 'fr' ? 'Lien retiré' : 'تم الفصل');
   };
@@ -174,12 +190,33 @@ const Suppliers = () => {
     return ids.map(pid => products.find(p => p.id === pid)).filter(Boolean) as typeof products;
   };
 
+  const toFormValue = (supplier: Supplier): SupplierFormValue => ({
+    name: supplier.name,
+    image_url: supplier.image_url || '',
+    phone: supplier.phone || '',
+    whatsapp: supplier.whatsapp || '',
+    email: supplier.email || '',
+    address: supplier.address || '',
+    wilaya: supplier.wilaya || '',
+    commune: supplier.commune || '',
+    notes: supplier.notes || '',
+    contacts: supplier.contacts.map(contact => ({
+      name: contact.name,
+      role: contact.role || '',
+      phone: contact.phone || '',
+      whatsapp: contact.whatsapp || '',
+      email: contact.email || '',
+    })),
+    product_ids: getProductsForSupplier(supplier.id),
+  });
+
   const selectedCategory = categories.find(c => c.id === activeCategory);
-  const visibleIds = selectedCategory ? new Set(categorySupplierIds(categoryLinks, selectedCategory.id)) : null;
-  const categorySupplierCount = selectedCategory ? categorySupplierIds(categoryLinks, selectedCategory.id).length : 0;
-  const filtered = suppliers.filter(s => (!visibleIds || visibleIds.has(s.id)) &&
-    (!search || s.name.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase()))
-  );
+  const categoryLinkedIds = selectedCategory
+    ? new Set(categorySupplierIds(categoryLinks, selectedCategory.id))
+    : new Set<string>();
+  const categorySuppliers = suppliers.filter(supplier => categoryLinkedIds.has(supplier.id));
+  const filtered = categorySuppliers.filter(supplier => supplierMatchesSearch(supplier, search));
+  const categorySupplierCount = categorySuppliers.length;
 
   if (isLoading) {
     return (
@@ -193,60 +230,31 @@ const Suppliers = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
-        {/* Title + Add */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <Building2 className="h-6 w-6 text-primary" />
-              {labels.title}
-            </h2>
-            <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
-          </div>
-          <Dialog open={addOpen} onOpenChange={setAddOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2" onClick={() => openAddSupplier(selectedCategory?.id)}><Plus className="h-4 w-4" />{labels.add}</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{labels.add}</DialogTitle>
-                <DialogDescription>{lang === 'fr' ? 'Informations du fournisseur' : 'بيانات المورد'}</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <SupplierAvatar
-                    name={newSupplier.name || '?'}
-                    imageUrl={newSupplier.image_url}
-                    size="lg"
-                    interactive={false}
-                    showTooltip={false}
-                  />
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground mb-1.5">
-                      {lang === 'fr' ? 'Photo (optionnelle)' : 'صورة (اختيارية)'}
-                    </p>
-                    <ImageUpload
-                      currentUrl={newSupplier.image_url}
-                      onUploaded={(url) => setNewSupplier({ ...newSupplier, image_url: url })}
-                      folder="suppliers"
-                    />
-                  </div>
-                </div>
-                <Input placeholder={labels.name} value={newSupplier.name} onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })} />
-                <SupplierCategoryPicker categories={categories} selected={newSupplier.category_ids} onChange={category_ids => setNewSupplier({ ...newSupplier, category_ids })} />
-                <Input placeholder={labels.phone} value={newSupplier.phone} onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })} />
-                <Input placeholder={labels.email} value={newSupplier.email} onChange={e => setNewSupplier({ ...newSupplier, email: e.target.value })} />
-                <Input placeholder={labels.address} value={newSupplier.address} onChange={e => setNewSupplier({ ...newSupplier, address: e.target.value })} />
-                <Button onClick={handleAdd} className="w-full">{labels.add}</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Building2 className="h-6 w-6 text-primary" />
+            {labels.title}
+          </h2>
+          <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
         </div>
 
-        {selectedCategory ? (
-          <section id="supplier-list" className="space-y-4 mb-6">
+        {!selectedCategory ? (
+          <SupplierCategories
+            categories={categories}
+            links={categoryLinks}
+            refresh={fetchSuppliers}
+            onConsult={id => {
+              setActiveCategory(id);
+              setSearch('');
+              requestAnimationFrame(() => document.getElementById('supplier-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+            }}
+          />
+        ) : (
+          <section id="supplier-list" className="space-y-4">
             <Button variant="ghost" size="sm" className="gap-2 -ml-2" onClick={() => { setActiveCategory(null); setSearch(''); }}>
               <ArrowLeft className="h-4 w-4" />{lang === 'fr' ? 'Toutes les catégories' : 'كل الفئات'}
             </Button>
+
             <Card className="rounded-2xl overflow-hidden">
               {selectedCategory.image_url
                 ? <img src={selectedCategory.image_url} alt={selectedCategory.name} className="w-full aspect-[21/9] object-cover" />
@@ -257,7 +265,11 @@ const Suppliers = () => {
                     <h2 className="text-xl font-semibold break-words">{selectedCategory.name}</h2>
                     {selectedCategory.description && <p className="text-sm text-muted-foreground break-words whitespace-pre-wrap mt-1">{selectedCategory.description}</p>}
                   </div>
-                  <Button className="gap-2 shrink-0" onClick={() => openAddSupplier(selectedCategory.id)}><Plus className="h-4 w-4" />{labels.add}</Button>
+                  {canManage && (
+                    <Button className="gap-2 shrink-0" onClick={openAdd}>
+                      <Plus className="h-4 w-4" />{labels.add}
+                    </Button>
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                   <Users className="h-4 w-4 shrink-0" />
@@ -265,77 +277,47 @@ const Suppliers = () => {
                 </p>
               </CardContent>
             </Card>
-          </section>
-        ) : (
-          <>
-            <SupplierCategories categories={categories} links={categoryLinks} refresh={fetchSuppliers} onConsult={id => { setActiveCategory(id); setSearch(''); requestAnimationFrame(() => document.getElementById('supplier-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); }} />
-            <div id="supplier-list" className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <h2 className="text-xl font-semibold break-words">{labels.title} ({filtered.length})</h2>
-            </div>
-          </>
-        )}
-        {/* Search */}
-        <Input
-          placeholder={labels.search}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="max-w-sm mb-4"
-        />
 
-        {/* Suppliers List */}
-        {filtered.length === 0 ? (
-          <Card className="rounded-2xl">
-            <CardContent className="text-center py-12 text-muted-foreground">
-              <Building2 className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="font-medium">{selectedCategory ? (lang === 'fr' ? 'Aucun fournisseur dans cette catégorie' : 'لا يوجد موردون في هذه الفئة') : labels.noSuppliers}</p>
-              <p className="text-sm">{selectedCategory ? (lang === 'fr' ? 'Associez un fournisseur à cette catégorie pour le voir apparaître ici.' : 'اربط مورداً بهذه الفئة لعرضه هنا.') : labels.noSuppliersDesc}</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filtered.map(supplier => (
-              <Card key={supplier.id} className="rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-4 space-y-3">
-                  {editingId === supplier.id ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <SupplierAvatar
-                          name={editData.name || supplier.name}
-                          imageUrl={editData.image_url}
-                          size="lg"
-                          interactive={false}
-                          showTooltip={false}
-                        />
-                        <ImageUpload
-                          currentUrl={editData.image_url}
-                          onUploaded={(url) => setEditData({ ...editData, image_url: url })}
-                          folder="suppliers"
-                        />
-                      </div>
-                      <Input placeholder={labels.name} value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} className="h-8 text-sm" />
-                      <SupplierCategoryPicker categories={categories} selected={editData.category_ids} onChange={category_ids => setEditData({ ...editData, category_ids })} />
-                      <Input placeholder={labels.phone} value={editData.phone} onChange={e => setEditData({ ...editData, phone: e.target.value })} className="h-8 text-sm" />
-                      <Input placeholder={labels.email} value={editData.email} onChange={e => setEditData({ ...editData, email: e.target.value })} className="h-8 text-sm" />
-                      <Input placeholder={labels.address} value={editData.address} onChange={e => setEditData({ ...editData, address: e.target.value })} className="h-8 text-sm" />
-                      <div className="flex gap-2">
-                        <Button size="sm" className="h-8 flex-1 text-xs" onClick={handleSaveEdit}>{labels.save}</Button>
-                        <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setEditingId(null)}>{labels.cancel}</Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
+            <Input
+              placeholder={labels.search}
+              value={search}
+              onChange={event => setSearch(event.target.value)}
+              className="max-w-sm"
+            />
+
+            {filtered.length === 0 ? (
+              <Card className="rounded-2xl">
+                <CardContent className="text-center py-12 text-muted-foreground">
+                  <Building2 className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p className="font-medium">{labels.noSuppliers}</p>
+                  <p className="text-sm">{labels.noSuppliersDesc}</p>
+                  {canManage && (
+                    <Button className="mt-4 gap-2" onClick={openAdd}>
+                      <Plus className="h-4 w-4" />{labels.add}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filtered.map(supplier => (
+                  <Card key={supplier.id} className="rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="p-4 space-y-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 min-w-0 flex-1">
                           <SupplierAvatar
                             name={supplier.name}
                             imageUrl={supplier.image_url}
                             phone={supplier.phone}
+                            whatsapp={supplier.whatsapp}
                             category={supplier.category}
+                            address={[supplier.address, supplier.commune, supplier.wilaya].filter(Boolean).join(', ')}
                             size="md"
+                            interactive={false}
                           />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-sm">{supplier.name}</span>
+                              <span className="font-semibold text-sm break-words">{supplier.name}</span>
                               {supplier.is_recommended && (
                                 <Badge variant="outline" className="text-[10px] gap-1 bg-amber-50 text-amber-600 border-amber-200">
                                   <Star className="h-3 w-3 fill-amber-400" />
@@ -343,35 +325,24 @@ const Suppliers = () => {
                                 </Badge>
                               )}
                             </div>
-                            {supplier.category && <span className="text-xs text-muted-foreground block">{supplier.category}</span>}
+                            {supplier.category && <span className="text-xs text-muted-foreground block break-words">{supplier.category}</span>}
                             {supplier.email && <span className="text-xs text-muted-foreground block truncate">{supplier.email}</span>}
                             {supplier.address && <span className="text-xs text-muted-foreground block truncate">{supplier.address}</span>}
+                            {(supplier.wilaya || supplier.commune) && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                                <MapPin className="h-3 w-3 shrink-0" />
+                                {[supplier.commune, supplier.wilaya].filter(Boolean).join(', ')}
+                              </span>
+                            )}
+                            {supplier.notes && (
+                              <span className="text-xs text-muted-foreground block whitespace-pre-wrap break-words mt-1">{supplier.notes}</span>
+                            )}
                           </div>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => handleEdit(supplier)}>
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
-                                <AlertDialogDescription>{labels.confirmDelete}</AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(supplier.id)}>{labels.delete}</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
                         </div>
                       </div>
 
-                      {supplier.phone ? (
-                        <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        {supplier.phone && (
                           <Button
                             size="sm"
                             variant="outline"
@@ -381,39 +352,88 @@ const Suppliers = () => {
                             <Phone className="h-3.5 w-3.5 text-blue-500" />
                             {supplier.phone}
                           </Button>
+                        )}
+                        {(supplier.whatsapp || supplier.phone) && (
                           <Button
                             size="sm"
                             variant="outline"
                             className="h-8 gap-2 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
-                            onClick={() => {
-                              const msg = encodeURIComponent(`Hello, ${supplier.name}`);
-                              if (supplier.phone) window.open(`https://wa.me/${supplier.phone.replace(/[^0-9+]/g, '')}?text=${msg}`, '_blank');
-                            }}
+                            onClick={() => WhatsAppLink(supplier.whatsapp || supplier.phone || '', supplier.name)}
                           >
                             <MessageCircle className="h-3.5 w-3.5" />
                             {labels.whatsapp}
                           </Button>
+                        )}
+                        {supplier.email && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 gap-2 text-xs"
+                            onClick={() => window.open(`mailto:${supplier.email}`, '_self')}
+                          >
+                            <Mail className="h-3.5 w-3.5 text-primary" />
+                            {labels.email}
+                          </Button>
+                        )}
+                        {!supplier.phone && !supplier.whatsapp && !supplier.email && (
+                          <p className="text-xs text-muted-foreground italic">{labels.noPhone}</p>
+                        )}
+                      </div>
+
+                      {supplier.contacts.length > 0 && (
+                        <div className="space-y-1.5">
+                          <p className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
+                            <UserRound className="h-3 w-3" />{labels.contacts}
+                          </p>
+                          {supplier.contacts.map(contact => (
+                            <div key={contact.id} className="rounded-lg bg-muted/40 p-2 flex items-center gap-2">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium truncate">
+                                  {contact.name || (lang === 'fr' ? 'Contact' : 'جهة اتصال')}
+                                  {contact.role && <span className="font-normal text-muted-foreground"> · {contact.role}</span>}
+                                </p>
+                                {contact.email && <p className="text-[10px] text-muted-foreground truncate">{contact.email}</p>}
+                              </div>
+                              <div className="flex gap-1 shrink-0">
+                                {contact.phone && (
+                                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" title={contact.phone} onClick={() => window.open(`tel:${contact.phone}`, '_self')}>
+                                    <Phone className="h-3.5 w-3.5 text-blue-500" />
+                                  </Button>
+                                )}
+                                {(contact.whatsapp || contact.phone) && (
+                                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-emerald-600" title="WhatsApp" onClick={() => WhatsAppLink(contact.whatsapp || contact.phone || '', contact.name || supplier.name)}>
+                                    <MessageCircle className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
+                                {contact.email && (
+                                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" title={contact.email} onClick={() => window.open(`mailto:${contact.email}`, '_self')}>
+                                    <Mail className="h-3.5 w-3.5 text-primary" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground italic">{labels.noPhone}</p>
                       )}
 
                       <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="flex-1 h-7 text-xs gap-1"
-                          onClick={() => {
-                            const opening = assigningId !== supplier.id;
-                            setAssigningId(opening ? supplier.id : null);
-                            setAssignProductIds([]);
-                            setProductSearch('');
-                            if (opening) setExpandedId(null);
-                          }}
-                        >
-                          <Plus className="h-3 w-3" />
-                          {labels.addProduct}
-                        </Button>
+                        {canManage && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 h-7 text-xs gap-1"
+                            onClick={() => {
+                              const opening = assigningId !== supplier.id;
+                              setAssigningId(opening ? supplier.id : null);
+                              setAssignProductIds([]);
+                              setProductSearch('');
+                              if (opening) setExpandedId(null);
+                            }}
+                          >
+                            <Plus className="h-3 w-3" />
+                            {labels.addProduct}
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="ghost"
@@ -438,9 +458,9 @@ const Suppliers = () => {
                         return (
                           <div className="mt-2 space-y-2 rounded-lg border bg-muted/30 p-2">
                             <Input
-                              placeholder={labels.search}
+                              placeholder={lang === 'fr' ? 'Rechercher un produit…' : 'البحث عن منتج…'}
                               value={productSearch}
-                              onChange={e => setProductSearch(e.target.value)}
+                              onChange={event => setProductSearch(event.target.value)}
                               className="h-8 text-xs"
                             />
                             <div className="max-h-56 overflow-y-auto space-y-1 rounded-md bg-background p-1 border">
@@ -512,27 +532,127 @@ const Suppliers = () => {
                                   <span className="text-xs font-medium truncate block">{product.designation}</span>
                                   <span className="text-[10px] text-muted-foreground">{product.type}</span>
                                 </div>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-destructive"
-                                  onClick={() => handleUnlink(supplier.id, product.id)}
-                                  title={labels.unlink}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
+                                {canManage && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0 text-destructive"
+                                    onClick={() => handleUnlinkProduct(supplier.id, product.id)}
+                                    title={labels.unlink}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                )}
                               </div>
                             ))
                           )}
                         </div>
                       )}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+                      {(canManage || isAdmin) && (
+                        <div className="flex flex-wrap gap-1.5 border-t pt-2">
+                          {canManage && (
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setEditing(supplier)}>
+                              <Edit2 className="h-3 w-3" />{labels.edit}
+                            </Button>
+                          )}
+                          {canManage && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1">
+                                  <UserMinus className="h-3 w-3" />{labels.removeFromCategory}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{labels.confirmUnlink}</AlertDialogTitle>
+                                  <AlertDialogDescription>{labels.unlinkDescription}</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleUnlinkFromCategory(supplier)}>
+                                    {labels.removeFromCategory}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+                          {isAdmin && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-destructive hover:text-destructive ml-auto">
+                                  <Trash2 className="h-3 w-3" />{labels.delete}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t.areYouSure}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    <span className="block font-medium text-foreground mb-1">{labels.confirmDelete}</span>
+                                    {labels.deleteDescription}
+                                    {supplier.category_ids.length > 1 && (
+                                      <span className="block mt-2">
+                                        {lang === 'fr'
+                                          ? `Ce fournisseur est associé à ${supplier.category_ids.length} catégories.`
+                                          : `هذا المورد مرتبط بـ ${supplier.category_ids.length} فئات.`}
+                                      </span>
+                                    )}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{labels.cancel}</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    onClick={() => handleDelete(supplier)}
+                                  >
+                                    {labels.delete}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </section>
         )}
+
+        {selectedCategory && (
+          <AddSupplierToCategoryDialog
+            open={addOpen}
+            onOpenChange={setAddOpen}
+            category={selectedCategory}
+            categories={categories}
+            suppliers={suppliers}
+            links={categoryLinks}
+            products={products}
+            onLinkExisting={handleLinkExisting}
+            onCreateNew={handleCreateNew}
+          />
+        )}
+
+        <Dialog open={!!editing} onOpenChange={value => { if (!value) setEditing(null); }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{lang === 'fr' ? 'Modifier le fournisseur' : 'تعديل المورد'}</DialogTitle>
+              <DialogDescription>{editing?.name}</DialogDescription>
+            </DialogHeader>
+            {editing && (
+              <SupplierForm
+                key={editing.id}
+                initial={toFormValue(editing)}
+                products={products}
+                submitLabel={labels.save}
+                onSubmit={handleSaveEdit}
+                onCancel={() => setEditing(null)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
