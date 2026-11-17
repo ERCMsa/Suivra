@@ -38,7 +38,7 @@ const ImageUpload = ({ currentUrl, onUploaded, folder }: ImageUploadProps) => {
       {preview ? (
         <div className="relative w-20 h-20 rounded-xl overflow-hidden border">
           <img src={preview} alt="" className="w-full h-full object-cover" />
-          <Button size="icon" variant="destructive" className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full" onClick={() => { setPreview(null); onUploaded(''); }}>
+          <Button type="button" aria-label="Retirer la photo" size="icon" variant="destructive" className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full" onClick={() => { setPreview(null); onUploaded(''); }}>
             <X className="h-3 w-3" />
           </Button>
         </div>
