@@ -554,6 +554,66 @@ export type Database = {
           },
         ]
       }
+      supplier_categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      supplier_category_links: {
+        Row: {
+          category_id: string
+          supplier_id: string
+        }
+        Insert: {
+          category_id: string
+          supplier_id: string
+        }
+        Update: {
+          category_id?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_category_links_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_category_links_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       supplier_products: {
         Row: {
           created_at: string
@@ -730,6 +790,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      save_supplier_with_categories: {
+        Args: { _category_ids: string[]; _data: Json; _id: string }
+        Returns: string
       }
     }
     Enums: {
