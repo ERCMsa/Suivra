@@ -1,5 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { supplierCategoryIds } from '@/lib/supplierCategories';
+
+export interface SupplierCategory {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+}
 
 export interface Supplier {
   id: string;
@@ -12,6 +21,7 @@ export interface Supplier {
   is_recommended: boolean;
   image_url: string | null;
   created_at: string;
+  category_ids: string[];
 }
 
 export interface SupplierProduct {
@@ -25,13 +35,24 @@ export const useSuppliers = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [supplierProducts, setSupplierProducts] = useState<SupplierProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState<SupplierCategory[]>([]);
+  const [categoryLinks, setCategoryLinks] = useState<{ supplier_id: string; category_id: string }[]>([]);
 
   const fetchSuppliers = useCallback(async () => {
-    const [{ data: s }, { data: sp }] = await Promise.all([
+    const [{ data: s, error: se }, { data: sp, error: spe }, { data: c, error: ce }, { data: links, error: le }] = await Promise.all([
       supabase.from('suppliers').select('*').order('name'),
       supabase.from('supplier_products').select('*'),
+      supabase.from('supplier_categories').select('*').order('name'),
+      supabase.from('supplier_category_links').select('*'),
     ]);
-    if (s) setSuppliers(s as Supplier[]);
+    const error = se || spe || ce || le;
+    if (error) toast.error(error.message);
+    if (c) setCategories(c);
+    if (links) setCategoryLinks(links);
+    if (s && c && links) setSuppliers(s.map(supplier => {
+      const ids = supplierCategoryIds(links, supplier.id);
+      return { ...supplier, category_ids: ids, category: c.filter(category => ids.includes(category.id)).map(category => category.name).join(', ') };
+    }));
     if (sp) setSupplierProducts(sp as SupplierProduct[]);
     setIsLoading(false);
   }, []);
@@ -65,14 +86,18 @@ export const useSuppliers = () => {
       .map(sp => sp.product_id);
   }, [supplierProducts]);
 
-  const addSupplier = async (data: { name: string; category: string; phone?: string; email?: string; address?: string; notes?: string; is_recommended?: boolean; image_url?: string }) => {
-    const { error } = await supabase.from('suppliers').insert(data as any);
+  const addSupplier = async (data: { name: string; category?: string; category_ids?: string[]; phone?: string; email?: string; address?: string; notes?: string; is_recommended?: boolean; image_url?: string }) => {
+    const { category_ids = [], category: _legacy, ...fields } = data;
+    const { error } = await supabase.rpc('save_supplier_with_categories', { _id: null as unknown as string, _data: fields, _category_ids: category_ids });
+    if (error) toast.error(error.message);
     if (!error) await fetchSuppliers();
     return !error;
   };
 
   const updateSupplier = async (id: string, data: Partial<Supplier>) => {
-    const { error } = await supabase.from('suppliers').update(data as any).eq('id', id);
+    const { category_ids, category: _legacy, ...fields } = data;
+    const { error } = await supabase.rpc('save_supplier_with_categories', { _id: id, _data: fields, ...category_ids ? { _category_ids: category_ids } : { _category_ids: null as unknown as string[] } });
+    if (error) toast.error(error.message);
     if (!error) await fetchSuppliers();
     return !error;
   };
@@ -115,6 +140,8 @@ export const useSuppliers = () => {
   };
 
   return {
+    categories,
+    categoryLinks,
     suppliers,
     supplierProducts,
     isLoading,
