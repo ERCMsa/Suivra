@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
-import { useSuppliers } from '@/hooks/useSuppliers';
+import { useSuppliers, type Supplier } from '@/hooks/useSuppliers';
 import { useInventory } from '@/hooks/useInventory';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  Building2, Plus, Trash2, Edit2, Phone, MessageCircle, Star, ChevronRight, Package, X,
+  Building2, Plus, Trash2, Edit2, Phone, MessageCircle, Star, ChevronRight, Package, X, ArrowLeft, FolderOpen, Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageUpload from '@/components/ImageUpload';
@@ -107,7 +107,12 @@ const Suppliers = () => {
     }
   };
 
-  const handleEdit = (s: any) => {
+  const openAddSupplier = (categoryId?: string) => {
+    setNewSupplier({ name: '', category_ids: categoryId ? [categoryId] : [], phone: '', email: '', address: '', image_url: '' });
+    setAddOpen(true);
+  };
+
+  const handleEdit = (s: Supplier) => {
     setEditingId(s.id);
     setEditData({
       name: s.name, category_ids: s.category_ids || [], phone: s.phone || '',
@@ -171,6 +176,7 @@ const Suppliers = () => {
 
   const selectedCategory = categories.find(c => c.id === activeCategory);
   const visibleIds = selectedCategory ? new Set(categorySupplierIds(categoryLinks, selectedCategory.id)) : null;
+  const categorySupplierCount = selectedCategory ? categorySupplierIds(categoryLinks, selectedCategory.id).length : 0;
   const filtered = suppliers.filter(s => (!visibleIds || visibleIds.has(s.id)) &&
     (!search || s.name.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase()))
   );
@@ -198,7 +204,7 @@ const Suppliers = () => {
           </div>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2"><Plus className="h-4 w-4" />{labels.add}</Button>
+              <Button className="gap-2" onClick={() => openAddSupplier(selectedCategory?.id)}><Plus className="h-4 w-4" />{labels.add}</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -236,11 +242,38 @@ const Suppliers = () => {
           </Dialog>
         </div>
 
-        <SupplierCategories categories={categories} links={categoryLinks} refresh={fetchSuppliers} onConsult={id => { setActiveCategory(id); setSearch(''); document.getElementById('supplier-list')?.scrollIntoView({ behavior: 'smooth' }); }} />
-        <div id="supplier-list" className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h2 className="text-xl font-semibold break-words">{selectedCategory?.name || labels.title} ({filtered.length})</h2>
-          {selectedCategory && <Button variant="outline" onClick={() => setActiveCategory(null)}>{lang === 'fr' ? 'Tous les fournisseurs' : 'كل الموردين'}</Button>}
-        </div>
+        {selectedCategory ? (
+          <section id="supplier-list" className="space-y-4 mb-6">
+            <Button variant="ghost" size="sm" className="gap-2 -ml-2" onClick={() => { setActiveCategory(null); setSearch(''); }}>
+              <ArrowLeft className="h-4 w-4" />{lang === 'fr' ? 'Toutes les catégories' : 'كل الفئات'}
+            </Button>
+            <Card className="rounded-2xl overflow-hidden">
+              {selectedCategory.image_url
+                ? <img src={selectedCategory.image_url} alt={selectedCategory.name} className="w-full aspect-[21/9] object-cover" />
+                : <div className="aspect-[21/9] bg-muted flex items-center justify-center"><FolderOpen className="h-12 w-12 text-muted-foreground" /></div>}
+              <CardContent className="p-4 space-y-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-xl font-semibold break-words">{selectedCategory.name}</h2>
+                    {selectedCategory.description && <p className="text-sm text-muted-foreground break-words whitespace-pre-wrap mt-1">{selectedCategory.description}</p>}
+                  </div>
+                  <Button className="gap-2 shrink-0" onClick={() => openAddSupplier(selectedCategory.id)}><Plus className="h-4 w-4" />{labels.add}</Button>
+                </div>
+                <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                  <Users className="h-4 w-4 shrink-0" />
+                  {categorySupplierCount} {lang === 'fr' ? (categorySupplierCount === 1 ? 'fournisseur associé' : 'fournisseurs associés') : 'مورد مرتبط'}
+                </p>
+              </CardContent>
+            </Card>
+          </section>
+        ) : (
+          <>
+            <SupplierCategories categories={categories} links={categoryLinks} refresh={fetchSuppliers} onConsult={id => { setActiveCategory(id); setSearch(''); requestAnimationFrame(() => document.getElementById('supplier-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); }} />
+            <div id="supplier-list" className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <h2 className="text-xl font-semibold break-words">{labels.title} ({filtered.length})</h2>
+            </div>
+          </>
+        )}
         {/* Search */}
         <Input
           placeholder={labels.search}
@@ -254,8 +287,8 @@ const Suppliers = () => {
           <Card className="rounded-2xl">
             <CardContent className="text-center py-12 text-muted-foreground">
               <Building2 className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="font-medium">{labels.noSuppliers}</p>
-              <p className="text-sm">{labels.noSuppliersDesc}</p>
+              <p className="font-medium">{selectedCategory ? (lang === 'fr' ? 'Aucun fournisseur dans cette catégorie' : 'لا يوجد موردون في هذه الفئة') : labels.noSuppliers}</p>
+              <p className="text-sm">{selectedCategory ? (lang === 'fr' ? 'Associez un fournisseur à cette catégorie pour le voir apparaître ici.' : 'اربط مورداً بهذه الفئة لعرضه هنا.') : labels.noSuppliersDesc}</p>
             </CardContent>
           </Card>
         ) : (

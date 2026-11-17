@@ -54,8 +54,6 @@ const PurchaseRequests = () => {
   const [newSupplier, setNewSupplier] = useState({ name: '', category_ids: [] as string[], phone: '', email: '', image_url: '' });
   const [showAllSuppliers, setShowAllSuppliers] = useState(false);
   const [supplierSearch, setSupplierSearch] = useState('');
-  const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
-  const [editSupplierData, setEditSupplierData] = useState({ name: '', category: '', phone: '', email: '', address: '', notes: '', image_url: '' });
   const [expandedSupplierId, setExpandedSupplierId] = useState<string | null>(null);
   const [assigningSupplierId, setAssigningSupplierId] = useState<string | null>(null);
   const [assignProductId, setAssignProductId] = useState('');
@@ -240,28 +238,6 @@ const PurchaseRequests = () => {
 
   const handleCall = (phone: string) => {
     window.open(`tel:${phone}`, '_self');
-  };
-
-  const handleEditSupplier = (supplier: any) => {
-    setEditingSupplierId(supplier.id);
-    setEditSupplierData({
-      name: supplier.name,
-      category: supplier.category || '',
-      phone: supplier.phone || '',
-      email: supplier.email || '',
-      address: supplier.address || '',
-      notes: supplier.notes || '',
-      image_url: supplier.image_url || '',
-    });
-  };
-
-  const handleSaveSupplier = async () => {
-    if (!editingSupplierId) return;
-    const success = await updateSupplier(editingSupplierId, editSupplierData);
-    if (success) {
-      toast.success(lang === 'fr' ? 'Fournisseur modifié' : 'تم تعديل المورد');
-      setEditingSupplierId(null);
-    }
   };
 
   const handleDeleteSupplier = async (id: string) => {

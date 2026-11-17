@@ -8,9 +8,10 @@ interface ImageUploadProps {
   currentUrl?: string | null;
   onUploaded: (url: string) => void;
   folder: string;
+  previewClassName?: string;
 }
 
-const ImageUpload = ({ currentUrl, onUploaded, folder }: ImageUploadProps) => {
+const ImageUpload = ({ currentUrl, onUploaded, folder, previewClassName }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentUrl || null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +37,7 @@ const ImageUpload = ({ currentUrl, onUploaded, folder }: ImageUploadProps) => {
   return (
     <div className="space-y-2">
       {preview ? (
-        <div className="relative w-20 h-20 rounded-xl overflow-hidden border">
+        <div className={`relative overflow-hidden border ${previewClassName ?? 'w-20 h-20 rounded-xl'}`}>
           <img src={preview} alt="" className="w-full h-full object-cover" />
           <Button type="button" aria-label="Retirer la photo" size="icon" variant="destructive" className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full" onClick={() => { setPreview(null); onUploaded(''); }}>
             <X className="h-3 w-3" />

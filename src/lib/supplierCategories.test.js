@@ -1,6 +1,6 @@
 import { describe, test } from 'node:test';
 import { deepStrictEqual } from 'node:assert';
-import { categorySupplierIds, supplierCategoryIds, toggleCategory } from './supplierCategories';
+import { categorySupplierIds, supplierCategoryIds, toggleCategory } from './supplierCategories.ts';
 
 describe('User-managed supplier categories', () => {
   test('No category associations are invented for an empty system', () => {
