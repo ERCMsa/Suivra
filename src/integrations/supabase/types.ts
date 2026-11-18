@@ -614,53 +614,6 @@ export type Database = {
           },
         ]
       }
-      supplier_contacts: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          is_primary: boolean
-          name: string
-          phone: string | null
-          role: string | null
-          supplier_id: string
-          updated_at: string
-          whatsapp: string | null
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_primary?: boolean
-          name?: string
-          phone?: string | null
-          role?: string | null
-          supplier_id: string
-          updated_at?: string
-          whatsapp?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_primary?: boolean
-          name?: string
-          phone?: string | null
-          role?: string | null
-          supplier_id?: string
-          updated_at?: string
-          whatsapp?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "supplier_contacts_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       supplier_products: {
         Row: {
           created_at: string
@@ -704,7 +657,6 @@ export type Database = {
         Row: {
           address: string | null
           category: string
-          commune: string | null
           created_at: string
           created_by: string | null
           email: string | null
@@ -715,13 +667,10 @@ export type Database = {
           notes: string | null
           phone: string | null
           updated_at: string
-          whatsapp: string | null
-          wilaya: string | null
         }
         Insert: {
           address?: string | null
           category?: string
-          commune?: string | null
           created_at?: string
           created_by?: string | null
           email?: string | null
@@ -732,13 +681,10 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           updated_at?: string
-          whatsapp?: string | null
-          wilaya?: string | null
         }
         Update: {
           address?: string | null
           category?: string
-          commune?: string | null
           created_at?: string
           created_by?: string | null
           email?: string | null
@@ -749,8 +695,6 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           updated_at?: string
-          whatsapp?: string | null
-          wilaya?: string | null
         }
         Relationships: []
       }
@@ -848,13 +792,7 @@ export type Database = {
         Returns: boolean
       }
       save_supplier_with_categories: {
-        Args: {
-          _category_ids?: string[] | null
-          _contacts?: Json | null
-          _data: Json
-          _id: string
-          _product_ids?: string[] | null
-        }
+        Args: { _category_ids: string[]; _data: Json; _id: string }
         Returns: string
       }
     }
