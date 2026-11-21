@@ -34,6 +34,7 @@ export const usePermissions = () => {
     canEditProduct: isAdmin || isMagasinier,
     canDeleteProduct: isAdmin,
     canModifyStock: isAdmin || isMagasinier,
+    canSaveInventory: isAdmin || isMagasinier,
 
     // Discharges
     canCreateDischarge: isAdmin || isMagasinier,

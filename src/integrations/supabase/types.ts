@@ -358,6 +358,92 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_snapshot_items: {
+        Row: {
+          created_at: string
+          designation: string
+          id: string
+          product_id: string | null
+          quantity: number
+          reference: string
+          snapshot_id: string
+          sort_order: number
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          designation: string
+          id?: string
+          product_id?: string | null
+          quantity: number
+          reference: string
+          snapshot_id: string
+          sort_order?: number
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          reference?: string
+          snapshot_id?: string
+          sort_order?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_snapshot_items_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_snapshots: {
+        Row: {
+          captured_at: string
+          created_at: string
+          created_by: string | null
+          created_by_name: string | null
+          id: string
+          material_count: number
+          note: string | null
+          request_id: string
+          save_order: number
+          snapshot_type: string
+          total_quantity: number
+        }
+        Insert: {
+          captured_at: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          id?: string
+          material_count?: number
+          note?: string | null
+          request_id: string
+          save_order?: never
+          snapshot_type: string
+          total_quantity?: number
+        }
+        Update: {
+          captured_at?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          id?: string
+          material_count?: number
+          note?: string | null
+          request_id?: string
+          save_order?: never
+          snapshot_type?: string
+          total_quantity?: number
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           brand: string
@@ -854,6 +940,14 @@ export type Database = {
           _data: Json
           _id: string
           _product_ids?: string[]
+        }
+        Returns: string
+      }
+      save_inventory_snapshot: {
+        Args: {
+          _items: Json
+          _note?: string | null
+          _request_id: string
         }
         Returns: string
       }

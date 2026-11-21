@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Caisses from "./pages/Caisses";
 import PurchaseRequests from "./pages/PurchaseRequests";
 import Suppliers from "./pages/Suppliers";
+import Inventory from "./pages/Inventory";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/caisses" element={<ProtectedRoute><Caisses /></ProtectedRoute>} />
               <Route path="/purchase-requests" element={<ProtectedRoute><PurchaseRequests /></ProtectedRoute>} />
               <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
+              <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
