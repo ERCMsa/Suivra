@@ -132,7 +132,7 @@ const AddSupplierToCategoryDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={value => { if (!busy) onOpenChange(value); }}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden rounded-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FolderPlus className="h-5 w-5 text-primary" />
@@ -145,13 +145,23 @@ const AddSupplierToCategoryDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="existing">{fr ? 'Fournisseur existant' : 'مورد موجود'}</TabsTrigger>
-            <TabsTrigger value="new">{fr ? 'Nouveau fournisseur' : 'مورد جديد'}</TabsTrigger>
+        <Tabs value={tab} onValueChange={setTab} className="min-w-0">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1">
+            <TabsTrigger
+              value="existing"
+              className="h-full whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm"
+            >
+              {fr ? 'Fournisseur existant' : 'مورد موجود'}
+            </TabsTrigger>
+            <TabsTrigger
+              value="new"
+              className="h-full whitespace-normal px-2 py-2 text-center text-xs leading-tight sm:text-sm"
+            >
+              {fr ? 'Nouveau fournisseur' : 'مورد جديد'}
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="existing" className="space-y-3">
+          <TabsContent value="existing" className="min-w-0 space-y-3">
             <p className="text-xs text-muted-foreground">
               {fr
                 ? "Sélectionnez une ou plusieurs fiches de la base centrale. Aucun doublon ne sera créé."
@@ -249,7 +259,7 @@ const AddSupplierToCategoryDialog = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="new">
+          <TabsContent value="new" className="min-w-0">
             <SupplierForm
               key={category?.id || 'new'}
               products={products}
