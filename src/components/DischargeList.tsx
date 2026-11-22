@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { FileCheck, RotateCcw, FileText, Search, Package, Trash2, Eye, X, Filter, ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
+import { FileCheck, RotateCcw, FileText, Search, Package, Trash2, Eye, X, Filter, ChevronLeft, ChevronRight, ImageIcon, Truck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import EditDischargeForm from './EditDischargeForm';
 import PartialReturnDialog from './PartialReturnDialog';
 import { PDF_FONT, setupPdfFont } from '@/lib/pdfFonts';
+import { deliveryNoteFromDischarge, downloadDeliveryNote } from '@/lib/deliveryNote';
 
 interface DischargeListProps {
   discharges: Discharge[];
@@ -85,6 +86,17 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
       toast.success(t.dischargeCancelled || 'Décharge annulée');
     } catch {
       toast.error(t.dischargeFail);
+    }
+  };
+
+  const handleDeliveryNote = async (d: Discharge) => {
+    const emp = getEmployee(d.employee_id);
+    try {
+      await downloadDeliveryNote(deliveryNoteFromDischarge(d, emp), products);
+      toast.success(t.exportSuccess);
+    } catch (err) {
+      console.error(err);
+      toast.error(t.exportFail);
     }
   };
 
@@ -356,6 +368,11 @@ const DischargeList = ({ discharges, products, employees, onMarkReturned, onCanc
         </TableCell>
         <TableCell>
           <div className="flex items-center justify-center gap-1">
+            {d.has_delivery_note && (
+              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => handleDeliveryNote(d)} title={t.deliveryNote}>
+                <Truck className="h-4 w-4 text-emerald-600" />
+              </Button>
+            )}
             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => generatePDF(d)} title="Imprimer fiche ENTRÉE / SORTIE">
               <FileText className="h-4 w-4 text-primary" />
             </Button>

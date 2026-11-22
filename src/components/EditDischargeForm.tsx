@@ -18,7 +18,16 @@ interface EditDischargeFormProps {
   employees: Employee[];
   onSave: (
     id: string,
-    data: { employee_id?: string; project?: string | null; notes?: string | null; items?: { id?: string; product_id: string; quantity: number }[] },
+    data: {
+      employee_id?: string;
+      project?: string | null;
+      notes?: string | null;
+      has_delivery_note?: boolean;
+      delivery_destination?: string | null;
+      delivery_driver?: string | null;
+      delivery_vehicle_plate?: string | null;
+      items?: { id?: string; product_id: string; quantity: number }[];
+    },
     onStockAdjust?: (productId: string, delta: number) => Promise<void>
   ) => Promise<void>;
   onStockAdjust?: (productId: string, delta: number) => Promise<void>;
@@ -36,6 +45,9 @@ const EditDischargeForm = ({ discharge, products, employees, onSave, onStockAdju
   const [employeeId, setEmployeeId] = useState(discharge.employee_id);
   const [project, setProject] = useState(discharge.project || '');
   const [notes, setNotes] = useState(discharge.notes || '');
+  const [destination, setDestination] = useState(discharge.delivery_destination || '');
+  const [driver, setDriver] = useState(discharge.delivery_driver || '');
+  const [plate, setPlate] = useState(discharge.delivery_vehicle_plate || '');
   const [items, setItems] = useState<EditableItem[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -44,6 +56,9 @@ const EditDischargeForm = ({ discharge, products, employees, onSave, onStockAdju
       setEmployeeId(discharge.employee_id);
       setProject(discharge.project || '');
       setNotes(discharge.notes || '');
+      setDestination(discharge.delivery_destination || '');
+      setDriver(discharge.delivery_driver || '');
+      setPlate(discharge.delivery_vehicle_plate || '');
       const init: EditableItem[] = (discharge.items && discharge.items.length > 0)
         ? discharge.items.map(i => ({ id: i.id, product_id: i.product_id, quantity: Number(i.quantity) }))
         : [{ product_id: discharge.product_id, quantity: Number(discharge.quantity) }];
@@ -85,7 +100,20 @@ const EditDischargeForm = ({ discharge, products, employees, onSave, onStockAdju
     try {
       await onSave(
         discharge.id,
-        { employee_id: employeeId, project: project || null, notes: notes || null, items },
+        {
+          employee_id: employeeId,
+          project: project || null,
+          notes: notes || null,
+          ...(discharge.has_delivery_note
+            ? {
+                has_delivery_note: true,
+                delivery_destination: destination.trim() || null,
+                delivery_driver: driver.trim() || null,
+                delivery_vehicle_plate: plate.trim() || null,
+              }
+            : {}),
+          items,
+        },
         onStockAdjust,
       );
       toast.success((t as any).dischargeUpdated || 'Modifié');
@@ -127,6 +155,26 @@ const EditDischargeForm = ({ discharge, products, employees, onSave, onStockAdju
             <Label>{(t as any).dischargeProject || 'Projet'}</Label>
             <Input value={project} onChange={e => setProject(e.target.value)} className="rounded-xl mt-1" maxLength={150} />
           </div>
+
+          {discharge.has_delivery_note && (
+            <div className="space-y-3 rounded-xl border border-dashed border-amber-300/70 bg-amber-50/40 dark:bg-amber-950/20 p-3">
+              <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">{t.deliveryStepTitle}</p>
+              <div>
+                <Label>{t.deliveryDestination}</Label>
+                <Input value={destination} onChange={e => setDestination(e.target.value)} className="rounded-xl mt-1" maxLength={150} />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>{t.deliveryDriver}</Label>
+                  <Input value={driver} onChange={e => setDriver(e.target.value)} className="rounded-xl mt-1" maxLength={100} />
+                </div>
+                <div>
+                  <Label>{t.deliveryVehiclePlate}</Label>
+                  <Input value={plate} onChange={e => setPlate(e.target.value)} className="rounded-xl mt-1" maxLength={50} />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">

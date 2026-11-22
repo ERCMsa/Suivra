@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { FileCheck, Plus, Trash2, Search, CalendarIcon, Package } from 'lucide-react';
+import { FileCheck, Plus, Trash2, Search, CalendarIcon, Package, Truck, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,6 +15,7 @@ import { Employee } from '@/hooks/useEmployees';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { downloadDeliveryNote } from '@/lib/deliveryNote';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -25,7 +27,19 @@ interface DischargeItem {
 interface DischargeFormProps {
   products: Product[];
   employees: Employee[];
-  onSubmit: (data: { employee_id: string; product_id: string; quantity: number; notes?: string; project?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => Promise<any>;
+  onSubmit: (data: {
+    employee_id: string;
+    product_id: string;
+    quantity: number;
+    notes?: string;
+    project?: string;
+    date_out?: string;
+    has_delivery_note?: boolean;
+    delivery_destination?: string;
+    delivery_driver?: string;
+    delivery_vehicle_plate?: string;
+    additional_items?: { product_id: string; quantity: number }[];
+  }) => Promise<any>;
   onStockOut: (productId: string, type: 'in' | 'out', quantity: number, length: number, width: number, notes?: string) => void;
   onAddProduct?: (data: ProductFormData) => Promise<any>;
 }
@@ -42,6 +56,11 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
   const [productSearch, setProductSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dateOut, setDateOut] = useState<Date>(new Date());
+  const [step, setStep] = useState<1 | 2>(1);
+  const [withDeliveryNote, setWithDeliveryNote] = useState(false);
+  const [destination, setDestination] = useState('');
+  const [driver, setDriver] = useState('');
+  const [plate, setPlate] = useState('');
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [quickAddData, setQuickAddData] = useState({ designation: '', type: 'Équipement', quantity: 0, color: '', thickness: 0, unit: 'وحدة', length: 0, width: 0 });
   const employeeRef = useRef<HTMLDivElement>(null);
@@ -117,16 +136,51 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
   const getProduct = (id: string) => products.find(p => p.id === id);
   const usedProductIds = items.map(i => i.product_id).filter(Boolean);
 
-  const handleSubmit = async () => {
+  const resetForm = () => {
+    setStep(1);
+    setWithDeliveryNote(false);
+    setDestination('');
+    setDriver('');
+    setPlate('');
+    setEmployeeId('');
+    setEmployeeSearch('');
+    setItems([{ product_id: '', quantity: 1 }]);
+    setNotes('');
+    setProject('');
+    setDateOut(new Date());
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) resetForm();
+  };
+
+  const validateStepOne = () => {
     if (!employeeId || !items[0].product_id) {
       toast.error(t.fillRequired);
-      return;
+      return false;
     }
     for (const item of items) {
       if (!item.product_id) continue;
       const prod = getProduct(item.product_id);
-      if (item.quantity <= 0) { toast.error(t.quantityMustBePositive); return; }
-      if (prod && item.quantity > prod.quantity) { toast.error(`${t.insufficientStock}: ${prod.designation}`); return; }
+      if (item.quantity <= 0) { toast.error(t.quantityMustBePositive); return false; }
+      if (prod && item.quantity > prod.quantity) { toast.error(`${t.insufficientStock}: ${prod.designation}`); return false; }
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (withDeliveryNote && step === 1) {
+      if (validateStepOne()) setStep(2);
+      return;
+    }
+    if (!validateStepOne()) {
+      setStep(1);
+      return;
+    }
+    if (withDeliveryNote && !destination.trim()) {
+      toast.error(t.deliveryDestinationRequired);
+      return;
     }
 
     setIsSubmitting(true);
@@ -141,6 +195,10 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
         notes: notes || undefined,
         project: project || undefined,
         date_out: dateOut.toISOString(),
+        has_delivery_note: withDeliveryNote,
+        delivery_destination: withDeliveryNote ? destination.trim() : undefined,
+        delivery_driver: withDeliveryNote ? (driver.trim() || undefined) : undefined,
+        delivery_vehicle_plate: withDeliveryNote ? (plate.trim() || undefined) : undefined,
         additional_items: rest.length > 0 ? rest : undefined,
       });
 
@@ -151,14 +209,31 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
         }
       }
 
+      if (withDeliveryNote && selectedEmployee) {
+        try {
+          await downloadDeliveryNote(
+            {
+              reference: discharge?.reference || '',
+              dateOut: dateOut.toISOString(),
+              project: project || null,
+              destination: destination.trim(),
+              driver: driver.trim() || null,
+              plate: plate.trim() || null,
+              recipientName: selectedEmployee.full_name,
+              recipientPosition: selectedEmployee.position || selectedEmployee.department || null,
+              items: validItems.map(i => ({ product_id: i.product_id, quantity: i.quantity })),
+            },
+            products
+          );
+        } catch (err) {
+          console.error(err);
+          toast.error(t.exportFail);
+        }
+      }
+
       saveRecentEmployee(employeeId);
+      resetForm();
       setOpen(false);
-      setEmployeeId('');
-      setEmployeeSearch('');
-      setItems([{ product_id: '', quantity: 1 }]);
-      setNotes('');
-      setProject('');
-      setDateOut(new Date());
       toast.success(t.dischargeCreated);
     } catch {
       toast.error(t.dischargeFail);
@@ -192,7 +267,7 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button size="sm" className="gap-2 rounded-xl h-9 text-sm shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white">
             <FileCheck className="h-3.5 w-3.5" />
@@ -202,11 +277,13 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-amber-600" />
-              {t.newDischarge}
+              {step === 2 ? <Truck className="h-5 w-5 text-amber-600" /> : <FileCheck className="h-5 w-5 text-amber-600" />}
+              {step === 2 ? t.deliveryStepTitle : t.newDischarge}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
+            {step === 1 ? (
+              <>
             {/* Employee searchable select */}
             <div ref={employeeRef}>
               <Label>{t.dischargeEmployee} *</Label>
@@ -397,12 +474,95 @@ const DischargeForm = ({ products, employees, onSubmit, onStockOut, onAddProduct
               />
             </div>
 
+            {/* Delivery note switch */}
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-amber-300/70 bg-amber-50/40 dark:bg-amber-950/20 p-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <Truck className="h-4 w-4 text-amber-600 shrink-0" />
+                <div className="min-w-0">
+                  <Label htmlFor="delivery-note-switch" className="cursor-pointer text-sm">{t.deliveryNoteSwitch}</Label>
+                  <p className="text-[11px] text-muted-foreground">{t.deliveryNoteSwitchDesc}</p>
+                </div>
+              </div>
+              <Switch id="delivery-note-switch" checked={withDeliveryNote} onCheckedChange={setWithDeliveryNote} />
+            </div>
+
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>{t.cancel}</Button>
+              <Button variant="outline" className="flex-1 rounded-xl" onClick={() => handleOpenChange(false)}>{t.cancel}</Button>
+              <Button className="flex-1 rounded-xl gap-2 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? t.loading : withDeliveryNote ? t.next : t.createDischarge}
+                {withDeliveryNote && !isSubmitting && <ArrowRight className="h-4 w-4" />}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="rounded-xl border bg-secondary/20 p-3 text-sm space-y-1.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">{t.dischargeEmployee}</span>
+                <span className="font-medium">{selectedEmployee?.full_name || '-'}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">{t.dischargeDate}</span>
+                <span>{format(dateOut, 'PPP', { locale: fr })}</span>
+              </div>
+              {project && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-muted-foreground">{(t as any).dischargeProject || 'Projet'}</span>
+                  <span className="font-medium truncate max-w-[60%]">{project}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">{t.dischargeProducts}</span>
+                <span className="font-medium">
+                  {items.filter(i => i.product_id).length} · {items.filter(i => i.product_id).reduce((s, i) => s + Number(i.quantity || 0), 0)} {t.unit}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <Label>{t.deliveryDestination || 'Destination de livraison'}</Label>
+              <Input
+                value={destination}
+                onChange={e => setDestination(e.target.value)}
+                placeholder={t.deliveryDestinationPlaceholder}
+                className="rounded-xl mt-1"
+                maxLength={150}
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <Label>{t.deliveryDriver || 'Chauffeur de livraison'}</Label>
+                <Input
+                  value={driver}
+                  onChange={e => setDriver(e.target.value)}
+                  placeholder={t.deliveryDriverPlaceholder}
+                  className="rounded-xl mt-1"
+                  maxLength={100}
+                />
+              </div>
+              <div>
+                <Label>{t.deliveryVehiclePlate || 'matricule'}</Label>
+                <Input
+                  value={plate}
+                  onChange={e => setPlate(e.target.value)}
+                  placeholder={t.deliveryVehiclePlatePlaceholder}
+                  className="rounded-xl mt-1"
+                  maxLength={50}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" className="flex-1 rounded-xl gap-2" onClick={() => setStep(1)} disabled={isSubmitting}>
+                <ArrowLeft className="h-4 w-4" />
+                {t.back}
+              </Button>
               <Button className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
                 {isSubmitting ? t.loading : t.createDischarge}
               </Button>
             </div>
+          </>
+        )}
           </div>
         </DialogContent>
       </Dialog>

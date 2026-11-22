@@ -25,6 +25,10 @@ export interface Discharge {
   status: string;
   notes: string | null;
   project: string | null;
+  has_delivery_note?: boolean;
+  delivery_destination?: string | null;
+  delivery_driver?: string | null;
+  delivery_vehicle_plate?: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -97,6 +101,11 @@ export const useDischarges = () => {
     quantity: number;
     notes?: string;
     project?: string;
+    date_out?: string;
+    has_delivery_note?: boolean;
+    delivery_destination?: string;
+    delivery_driver?: string;
+    delivery_vehicle_plate?: string;
     additional_items?: { product_id: string; quantity: number }[];
   }) => {
     const user = (await supabase.auth.getUser()).data.user;
@@ -108,6 +117,11 @@ export const useDischarges = () => {
       quantity: data.quantity,
       notes: data.notes,
       project: data.project,
+      date_out: data.date_out,
+      has_delivery_note: data.has_delivery_note ?? false,
+      delivery_destination: data.delivery_destination,
+      delivery_driver: data.delivery_driver,
+      delivery_vehicle_plate: data.delivery_vehicle_plate,
       reference,
       created_by: user?.id,
     } as any).select().single();
@@ -206,6 +220,10 @@ export const useDischarges = () => {
       project?: string | null;
       notes?: string | null;
       date_out?: string;
+      has_delivery_note?: boolean;
+      delivery_destination?: string | null;
+      delivery_driver?: string | null;
+      delivery_vehicle_plate?: string | null;
       items?: { id?: string; product_id: string; quantity: number }[];
     },
     onStockAdjust?: (productId: string, delta: number) => Promise<void>
@@ -216,6 +234,10 @@ export const useDischarges = () => {
     if (data.project !== undefined) updates.project = data.project;
     if (data.notes !== undefined) updates.notes = data.notes;
     if (data.date_out !== undefined) updates.date_out = data.date_out;
+    if (data.has_delivery_note !== undefined) updates.has_delivery_note = data.has_delivery_note;
+    if (data.delivery_destination !== undefined) updates.delivery_destination = data.delivery_destination;
+    if (data.delivery_driver !== undefined) updates.delivery_driver = data.delivery_driver;
+    if (data.delivery_vehicle_plate !== undefined) updates.delivery_vehicle_plate = data.delivery_vehicle_plate;
     if (Object.keys(updates).length > 0) {
       const { error } = await supabase.from('discharges').update(updates).eq('id', id);
       if (error) throw error;

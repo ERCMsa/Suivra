@@ -66,7 +66,19 @@ const Index = () => {
     await fetchDischarges();
   };
 
-  const handleDischargeSubmit = async (data: { employee_id: string; product_id: string; quantity: number; notes?: string; project?: string; date_out?: string; additional_items?: { product_id: string; quantity: number }[] }) => {
+  const handleDischargeSubmit = async (data: {
+    employee_id: string;
+    product_id: string;
+    quantity: number;
+    notes?: string;
+    project?: string;
+    date_out?: string;
+    has_delivery_note?: boolean;
+    delivery_destination?: string;
+    delivery_driver?: string;
+    delivery_vehicle_plate?: string;
+    additional_items?: { product_id: string; quantity: number }[];
+  }) => {
     const discharge = await createDischarge(data);
     await refresh();
     return discharge;
@@ -96,7 +108,16 @@ const Index = () => {
 
   const handleEditDischarge = async (
     id: string,
-    data: { employee_id?: string; project?: string | null; notes?: string | null; items?: { id?: string; product_id: string; quantity: number }[] },
+    data: {
+      employee_id?: string;
+      project?: string | null;
+      notes?: string | null;
+      has_delivery_note?: boolean;
+      delivery_destination?: string | null;
+      delivery_driver?: string | null;
+      delivery_vehicle_plate?: string | null;
+      items?: { id?: string; product_id: string; quantity: number }[];
+    },
   ) => {
     await updateDischarge(id, data, handleStockAdjust);
     await refresh();

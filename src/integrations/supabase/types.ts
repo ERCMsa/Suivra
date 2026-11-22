@@ -253,7 +253,11 @@ export type Database = {
           created_by: string | null
           date_out: string
           date_returned: string | null
+          delivery_destination: string | null
+          delivery_driver: string | null
+          delivery_vehicle_plate: string | null
           employee_id: string
+          has_delivery_note: boolean
           id: string
           notes: string | null
           product_id: string
@@ -269,7 +273,11 @@ export type Database = {
           created_by?: string | null
           date_out?: string
           date_returned?: string | null
+          delivery_destination?: string | null
+          delivery_driver?: string | null
+          delivery_vehicle_plate?: string | null
           employee_id: string
+          has_delivery_note?: boolean
           id?: string
           notes?: string | null
           product_id: string
@@ -285,7 +293,11 @@ export type Database = {
           created_by?: string | null
           date_out?: string
           date_returned?: string | null
+          delivery_destination?: string | null
+          delivery_driver?: string | null
+          delivery_vehicle_plate?: string | null
           employee_id?: string
+          has_delivery_note?: boolean
           id?: string
           notes?: string | null
           product_id?: string
