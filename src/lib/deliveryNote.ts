@@ -239,7 +239,7 @@ export const buildDeliveryNote = async (input: DeliveryNoteInput, products: Prod
   doc.setFont(PDF_FONT, 'italic');
   doc.setFontSize(7);
   doc.text(
-    "RCMsa - Étude Réalisation Constructions Métalliques - Salhi Adel Zone Industriel Ouled Moussa Algerie",
+    "ERCMsa - Étude Réalisation Constructions Métalliques - Salhi Adel Zone Industriel Ouled Moussa Algerie",
     pageW / 2,
     pageH - 16,
     { align: 'center' }
