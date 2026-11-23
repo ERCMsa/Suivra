@@ -216,7 +216,7 @@ const Inventory = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="current" className="mt-0" forceMount>
+              <TabsContent value="current" className="mt-0">
                 <InventoryEditor
                   products={products}
                   isFirstInventory={isFirstInventory}
