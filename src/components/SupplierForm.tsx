@@ -137,7 +137,7 @@ const SupplierForm = ({ initial, products, submitLabel, busy = false, onSubmit, 
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="relative space-y-4 overflow-hidden">
       <div className="flex items-center gap-3">
         <SupplierAvatar
           name={value.name || '?'}
